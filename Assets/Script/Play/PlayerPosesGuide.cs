@@ -6,42 +6,42 @@ public class PlayerPosesGuide : MonoBehaviour
 {
     Handy handy;
     WorldInfo worldInfo;
-    public GameObject playerPosesLine;
-    List<GameObject> playerPosesLines;
-    List<SpriteRenderer> playerPosesLinesRenderer;
-    // List<DottedLine> playerPosesLinesInfo;
+    public GameObject playerPosDotPrefab;
+    List<GameObject> playerPosDots;
+    List<SpriteRenderer> playerPosDotsRend;
     void Awake()
     {
         handy = Handy.Property;
-        playerPosesLines = new List<GameObject>();
-        playerPosesLinesRenderer = new List<SpriteRenderer>();
-        // playerPosesLinesInfo = new List<DottedLine>();
+        playerPosDots = new List<GameObject>();
+        playerPosDotsRend = new List<SpriteRenderer>();
         for (int i = 0; i < handy.GetMaxStdDegCount(); i++)
         {
-            playerPosesLines.Add(Instantiate(playerPosesLine, transform));
-            playerPosesLinesRenderer.Add(playerPosesLines[i].GetComponent<SpriteRenderer>());
-            playerPosesLines[i].transform.position = handy.GetWorldInfo().centerPos;
-            playerPosesLines[i].SetActive(false);
-            // playerPosesLinesInfo.Add(playerPosesLines[i].GetComponent<DottedLine>());
-            // playerPosesLinesInfo[i].poses = new List<Vector3>(){worldInfo.centerPos, handy.GetCircularPos(worldInfo.stdDegs[i], Mathf.Clamp(handy.playerScript.radius - playerCenterRadius, 0f, handy.playerScript.radius), worldInfo.centerPos)};
-            // playerPosesLinesInfo[i].SetRepeatCount(2.545f * handy.playerScript.radius);
+            playerPosDots.Add(Instantiate(playerPosDotPrefab, transform));
+            playerPosDotsRend.Add(playerPosDots[i].GetComponent<SpriteRenderer>());
+            playerPosDots[i].transform.position = handy.GetWorldInfo().centerPos;
+            playerPosDots[i].SetActive(false);
         }
     }
     void Update()
     {
         worldInfo = handy.GetWorldInfo();
-        foreach (var PPL in playerPosesLines)
+        foreach (var PPD in playerPosDots)
         {
-            PPL.transform.position = worldInfo.centerPos;
-            PPL.SetActive(false);
+            PPD.transform.position = worldInfo.centerPos;
+            PPD.SetActive(false);
         }
-        float playerCenterRadius = handy.GetScaleAverage(handy.playerCenter.transform.localScale) * handy.GetScaleAverage(new Vector2(handy.playerCenterRenderer.sprite.texture.width, handy.playerCenterRenderer.sprite.texture.height)) * 0.005f;
+        // float playerCenterRadius = handy.GetScaleAverage(handy.GetPlayerCenter().transform.localScale.x * handy.GetPlayerCenterRend().sprite.texture.width, handy.GetPlayerCenter().transform.localScale.y * handy.GetPlayerCenterRend().sprite.texture.height) * 0.005f;
         for (int i = 0; i < worldInfo.stdDegs.Count; i++)
         {
-            playerPosesLines[i].transform.position = handy.GetCircularPos(worldInfo.stdDegs[i], Mathf.Clamp(handy.playerScript.radius - playerCenterRadius, 0f, handy.playerScript.radius), worldInfo.centerPos);
-            if (!handy.CheckObjInOtherObj(playerPosesLines[i], handy.playerCenter, new Vector2(playerPosesLinesRenderer[i].sprite.texture.width, playerPosesLinesRenderer[i].sprite.texture.height), new Vector2(handy.playerCenterRenderer.sprite.texture.width, handy.playerCenterRenderer.sprite.texture.height))/* i != handy.GetWorldInfo(handy.noteIndex - 1).nextDegIndex */)
+            playerPosDotsRend[i].color = handy.GetColor01(worldInfo.playerPosesGuideColor);
+            playerPosDots[i].transform.position = handy.GetCircularPos(worldInfo.stdDegs[i], /* Mathf.Clamp( */handy.GetPlayerScript().curRadius/*  - playerCenterRadius, 0f, handy.GetPlayerScript().curRadius) */, worldInfo.centerPos);
+            for (int j = 0; j <= worldInfo.playerIndex; j++)
             {
-                playerPosesLines[i].SetActive(true);
+                Vector2 playerPos = handy.GetCircularPos(handy.GetPlayerScript(j).curDeg, handy.GetPlayerScript().curRadius, worldInfo.centerPos);
+                if (!handy.CheckObjInOtherObj(playerPosDots[i], playerPos, handy.GetPlayerCenter(j).transform.localScale, handy.GetSpritePixels(playerPosDotsRend[i].sprite), handy.GetSpritePixels(handy.GetPlayerCenterRend(j).sprite)))
+                {
+                    playerPosDots[i].SetActive(true);
+                }
             }
         }
     }

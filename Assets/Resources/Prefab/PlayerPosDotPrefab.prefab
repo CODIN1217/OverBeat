@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4965967185321030577}
   - component: {fileID: 4965967185321030582}
   m_Layer: 6
-  m_Name: PlayerPosGuidePrefab
+  m_Name: PlayerPosDotPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: 96880278abe178d4f90ad78ea4015d72, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.44908908, g: 0.33205768, b: 0.78431374, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

@@ -14,12 +14,14 @@ public class Handy : MonoBehaviour
     public NoteGenerator noteGeneratorScript;
     public GameObject worldReader;
     public WorldReader worldReaderScript;
-    public GameObject player;
-    public Player playerScript;
-    public GameObject playerSide;
-    public SpriteRenderer playerSideRenderer;
-    public GameObject playerCenter;
-    public SpriteRenderer playerCenterRenderer;
+    public GameObject playerController;
+    public PlayerController playerControllerScript;
+    /* List<GameObject> player;
+    List<Player> playerScript;
+    List<GameObject> playerSide;
+    List<SpriteRenderer> playerSideRend;
+    List<GameObject> playerCenter;
+    List<SpriteRenderer> playerCenterRend; */
     public GameObject judgmentGen;
     public JudgmentGen judgmentGenScript;
     public GameObject boundary;
@@ -37,8 +39,6 @@ public class Handy : MonoBehaviour
     int stdDegCount_temp;
     List<float> stdDegs;
     List<float> stdDegs_temp;
-    // bool needInput_handy;
-    // public bool needInput_temp;
     private static Handy instance = null;
     void Awake()
     {
@@ -56,7 +56,6 @@ public class Handy : MonoBehaviour
     }
     void LateUpdate()
     {
-        // needInput_handy = needInput_temp;
         stdDegCount = stdDegCount_temp;
         stdDegs = stdDegs_temp;
     }
@@ -89,9 +88,9 @@ public class Handy : MonoBehaviour
             index = noteIndex;
         return worldReaderScript.worldInfos[Mathf.Clamp((int)index, 0, worldReaderScript.notesCount)];
     }
-    public float GetDistanceDeg(float tarDeg, float curDeg, bool maxIs360)
+    public float GetDistanceDeg(float tarDeg, float curDeg, bool maxIs360, int direction)
     {
-        float distanceDeg = (tarDeg - curDeg) * (float)GetWorldInfo(noteIndex).direction;
+        float distanceDeg = (tarDeg - curDeg) * direction/* (float)GetWorldInfo().direction[GetWorldInfo().playerIndex] */;
         return maxIs360 ? GetCorrectDegMaxIs360(distanceDeg) : GetCorrectDegMaxIs0(distanceDeg);
     }
     public Vector2 GetCircularPos(float deg, float radius, Vector2? centerPos = null)
@@ -106,18 +105,17 @@ public class Handy : MonoBehaviour
         if (index == null)
             index = noteIndex;
         // return GetWorldInfo(noteIndex).nextDeg;
-        return GetWorldInfo(index).stdDegs[GetWorldInfo(index).nextDegIndex];
+        return GetWorldInfo(index).stdDegs[GetWorldInfo(index).nextDegIndex[GetWorldInfo(index).playerIndex]];
     }
     public float GetNextDeg(WorldInfo worldInfo)
     {
-        return worldInfo.stdDegs[worldInfo.nextDegIndex];
+        return worldInfo.stdDegs[worldInfo.nextDegIndex[worldInfo.playerIndex]];
     }
     public float GetBeforeDeg(int? index = null)
     {
         if (index == null)
             index = noteIndex;
-        // return GetWorldInfo(noteIndex - 1).nextDeg;
-        return GetWorldInfo(index - 1).stdDegs[GetWorldInfo(index - 1).nextDegIndex];
+        return GetWorldInfo(index - 1).stdDegs[GetWorldInfo(index - 1).nextDegIndex[GetWorldInfo(index - 1).playerIndex]];
     }
     public float GetNoteWaitTime(int? index = null)
     {
@@ -167,6 +165,10 @@ public class Handy : MonoBehaviour
     {
         return (Mathf.Abs(scale.x) + Mathf.Abs(scale.y)) * 0.5f;
     }
+    public float GetScaleAverage(float x, float y)
+    {
+        return (Mathf.Abs(x) + Mathf.Abs(y)) * 0.5f;
+    }
     public float GetBiggerAbsScale(GameObject go)
     {
         return Mathf.Abs(go.transform.localScale.x) > Mathf.Abs(go.transform.localScale.y) ? go.transform.localScale.x : go.transform.localScale.y;
@@ -175,13 +177,21 @@ public class Handy : MonoBehaviour
     {
         return Mathf.Abs(scale.x) > Mathf.Abs(scale.y) ? scale.x : scale.y;
     }
-    public float GetJudgmentValue()
+    public float GetBiggerAbsScale(float x, float y)
     {
+        return Mathf.Abs(x) > Mathf.Abs(y) ? x : y;
+    }
+    public float GetJudgmentValue(float? elapsedTimeWhenNeedlessInput01 = null, float? elapsedTimeWhenNeedInput01 = null)
+    {
+        if (elapsedTimeWhenNeedlessInput01 == null)
+            elapsedTimeWhenNeedlessInput01 = GameManager.Property.elapsedTimeWhenNeedlessInput01;
+        if (elapsedTimeWhenNeedInput01 == null)
+            elapsedTimeWhenNeedInput01 = GameManager.Property.elapsedTimeWhenNeedInput01;
         float judgmentValue = 1f;
-        if (GameManager.Property.elapsedTimeWhenNeedInput01 > 0f)
-            judgmentValue = GameManager.Property.elapsedTimeWhenNeedInput01;
-        else if (GameManager.Property.elapsedTimeWhenNeedlessInput01 >= 1f - judgmentRange)
-            judgmentValue = 1f - GameManager.Property.elapsedTimeWhenNeedlessInput01;
+        if (elapsedTimeWhenNeedInput01 > 0f)
+            judgmentValue = (float)elapsedTimeWhenNeedInput01;
+        else if (elapsedTimeWhenNeedlessInput01 >= 1f - judgmentRange)
+            judgmentValue = 1f - (float)elapsedTimeWhenNeedlessInput01;
         return judgmentValue;
     }
     public void WaitCodeUntilUpdateEnd(Action PlayCode)
@@ -199,23 +209,31 @@ public class Handy : MonoBehaviour
     }
     public bool CheckObjInOtherObj(GameObject includedObj, GameObject includeObj, Vector2 includedObjImagePixelCount, Vector2 includeObjImagePixelCount)
     {
-        if (Vector2.Distance(includedObj.transform.position, includeObj.transform.position) <= GetScaleAverage(includeObj) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f + GetScaleAverage(includedObj) * (includedObjImagePixelCount.x + includedObjImagePixelCount.y) * 0.0025f)
+        if (Vector2.Distance(includedObj.transform.position, includeObj.transform.position) <= GetScaleAverage(includedObj) * (includedObjImagePixelCount.x + includedObjImagePixelCount.y) * 0.0025f + GetScaleAverage(includeObj) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f)
         {
             return true;
         }
         return false;
     }
-    public bool CheckObjInOtherObj(Vector2 includedObjPos/* , Vector2 includedObjScale */, GameObject includeObj, Vector2 includeObjImagePixelCount)
+    public bool CheckObjInOtherObj(Vector2 includedObjPos, Vector2 includedObjScale, GameObject includeObj, Vector2 includedObjImagePixelCount, Vector2 includeObjImagePixelCount)
     {
-        if (Vector2.Distance(includedObjPos, includeObj.transform.position)/*  - (GetScaleAverage(includedObjScale) + GetScaleAverage(includeObj)) * 0.5f */ <= GetScaleAverage(includeObj) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f)
+        if (Vector2.Distance(includedObjPos, includeObj.transform.position) <= GetScaleAverage(includedObjScale) * (includedObjImagePixelCount.x + includedObjImagePixelCount.y) * 0.0025f + GetScaleAverage(includeObj) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f)
         {
             return true;
         }
         return false;
     }
-    public bool CheckObjInOtherObj(Vector2 includedObjPos, Vector2 includeObjPos, Vector2 includeObjScale, Vector2 includeObjImagePixelCount)
+    public bool CheckObjInOtherObj(GameObject includedObj, Vector2 includeObjPos, Vector2 includeObjScale, Vector2 includedObjImagePixelCount, Vector2 includeObjImagePixelCount)
     {
-        if (Vector2.Distance(includedObjPos, includeObjPos) <= GetScaleAverage(includeObjScale) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f)
+        if (Vector2.Distance(includedObj.transform.position, includeObjPos) <= GetScaleAverage(includedObj) * (includedObjImagePixelCount.x + includedObjImagePixelCount.y) * 0.0025f + GetScaleAverage(includeObjScale) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f)
+        {
+            return true;
+        }
+        return false;
+    }
+    public bool CheckObjInOtherObj(Vector2 includedObjPos, Vector2 includedObjScale, Vector2 includeObjPos, Vector2 includeObjScale, Vector2 includedObjImagePixelCount, Vector2 includeObjImagePixelCount)
+    {
+        if (Vector2.Distance(includedObjPos, includeObjPos) <= GetScaleAverage(includedObjScale) * (includedObjImagePixelCount.x + includedObjImagePixelCount.y) * 0.0025f + GetScaleAverage(includeObjScale) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f)
         {
             return true;
         }
@@ -225,7 +243,7 @@ public class Handy : MonoBehaviour
     {
         return value <= 0f ? -1f : 1f;
     }
-    public bool GetIsStdDegsChanged(){
+    /* public bool GetIsStdDegsChanged(){
         bool isStdDegsChanged = false;
         if(stdDegCount != GetWorldInfo().stdDegs.Count){
             isStdDegsChanged = true;
@@ -240,20 +258,107 @@ public class Handy : MonoBehaviour
         stdDegCount_temp = GetWorldInfo().stdDegs.Count;
         stdDegs_temp = GetWorldInfo().stdDegs;
         return isStdDegsChanged;
-    }
-    public int GetMaxStdDegCount(){
+    } */
+    public int GetMaxStdDegCount()
+    {
         int maxStdDegCount = 0;
-        for(int i = 0; i < worldReaderScript.notesCount; i++){
-            if(maxStdDegCount < GetWorldInfo(i).stdDegs.Count){
+        for (int i = 0; i <= worldReaderScript.notesCount; i++)
+        {
+            if (maxStdDegCount < GetWorldInfo(i).stdDegs.Count)
+            {
                 maxStdDegCount = GetWorldInfo(i).stdDegs.Count;
             }
         }
         return maxStdDegCount;
     }
-    public int GetCorrectNextDegIndex(int nextDegIndex, int? noteIndex = null){
-        if(noteIndex == null)
-        noteIndex = this.noteIndex;
-        return nextDegIndex >= 0 ? nextDegIndex : nextDegIndex + GetWorldInfo(noteIndex).stdDegs.Count;
+    public int GetCorrectNextDegIndex(int nextDegIndex, int? index = null)
+    {
+        if (index == null)
+            index = noteIndex;
+        return nextDegIndex >= 0 ? nextDegIndex : nextDegIndex + GetWorldInfo(index).stdDegs.Count;
+    }
+    public int GetTotalMaxPlayerIndex()
+    {
+        int totalMaxPlayerIndex = 0;
+        for (int i = 0; i <= worldReaderScript.notesCount; i++)
+        {
+            if (totalMaxPlayerIndex < GetWorldInfo(i).playerIndex)
+            {
+                totalMaxPlayerIndex = GetWorldInfo(i).playerIndex;
+            }
+        }
+        return totalMaxPlayerIndex;
+    }
+    public int GetActivePlayerCount()
+    {
+        int curMaxPlayerIndex = 0;
+        for (int i = 0; i <= GetTotalMaxPlayerIndex(); i++)
+        {
+            if (GetPlayer(i).activeSelf)
+                curMaxPlayerIndex++;
+        }
+        return curMaxPlayerIndex;
+    }
+    public GameObject GetPlayer(int? playerIndex = null)
+    {
+        if (playerIndex == null)
+            playerIndex = GetWorldInfo().playerIndex;
+        return playerControllerScript.players[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
+    }
+    public Player GetPlayerScript(int? playerIndex = null)
+    {
+        if (playerIndex == null)
+            playerIndex = GetWorldInfo().playerIndex;
+        return playerControllerScript.playerScripts[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
+    }
+    public GameObject GetPlayerSide(int? playerIndex = null)
+    {
+        if (playerIndex == null)
+            playerIndex = GetWorldInfo().playerIndex;
+        return playerControllerScript.playerSides[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
+    }
+    public SpriteRenderer GetPlayerSideRend(int? playerIndex = null)
+    {
+        if (playerIndex == null)
+            playerIndex = GetWorldInfo().playerIndex;
+        return playerControllerScript.playerSideRends[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
+    }
+    public GameObject GetPlayerCenter(int? playerIndex = null)
+    {
+        if (playerIndex == null)
+            playerIndex = GetWorldInfo().playerIndex;
+        return playerControllerScript.playerCenters[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
+    }
+    public SpriteRenderer GetPlayerCenterRend(int? playerIndex = null)
+    {
+        if (playerIndex == null)
+            playerIndex = GetWorldInfo().playerIndex;
+        return playerControllerScript.playerCenterRends[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
+    }
+    public Vector2 GetSpritePixels(Sprite sprite){
+        return new Vector2(sprite.texture.width, sprite.texture.height);
+    }
+    public Color GetRGB01(Color color){
+        return new Color(color.r / 255f, color.g / 255f, color.b / 255f, color.a);
+    }
+    public Color GetColor01(Color color){
+        return color / 255f;
+    }
+    public GameObject GetNextNoteToSamePlayer(int playerIndex, int noteIndex){
+        for(int i = noteIndex; i <= worldReaderScript.notesCount; i++){
+            if(playerIndex == GetWorldInfo(i).playerIndex){
+                return GetNote(i);
+            }
+        }
+        return GetNote(noteIndex);
+    }
+    public NotePrefab GetNextNoteScriptToSamePlayer(int playerIndex, int noteIndex){
+        for(int i = noteIndex; i <= worldReaderScript.notesCount; i++){
+            if(playerIndex == GetWorldInfo(i).playerIndex){
+                return GetNoteScripts(i);
+            }
+        }
+        return GetNoteScripts(noteIndex);
     }
     Handy()
     {

@@ -24,15 +24,7 @@ public class Center : MonoBehaviour
         centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, HP01, Time.unscaledDeltaTime * 4f);
         transform.localScale = worldInfo.centerScale;
         transform.position = worldInfo.centerPos;
-        centerColor = worldInfo.centerColor;
+        centerColor = handy.GetColor01(worldInfo.centerColor);
         centerImage.color = centerColor;
     }
-    /* public void TryKillColorTweener(bool isComplete = true)
-    {
-        if (colorTweener != null)
-        {
-            colorTweener.Kill(isComplete);
-            colorTweener = null;
-        }
-    } */
 }

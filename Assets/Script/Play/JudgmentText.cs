@@ -20,8 +20,8 @@ public class JudgmentText : MonoBehaviour
         handy = Handy.Property;
         judgmentType = GameManager.Property.judgmentType;
         judgmentText_TMP.text = judgmentType.ToString();
-        stdPlayerPos = handy.player.transform.position;
-        stdPlayerScale = handy.player.transform.localScale;
+        stdPlayerPos = handy.GetPlayer().transform.position;
+        stdPlayerScale = handy.GetPlayer().transform.localScale;
         FadeTweener = DOTween.Sequence()
         .Append(judgmentText_TMP.DOFade(1f, 0.05f))
         .AppendInterval(0.2f)
@@ -30,10 +30,4 @@ public class JudgmentText : MonoBehaviour
         .SetUpdate(true);
         transform.position = stdPlayerPos + new Vector2(0, 0.61f * handy.GetScaleAverage(stdPlayerScale) + GetComponent<RectTransform>().sizeDelta.y * 0.5f);
     }
-    /* public void SetJudgmentText(JudgmentType judgmentType, GameObject player)
-    {
-        this.judgmentType = judgmentType;
-        stdPlayerPos = player.transform.position;
-        stdPlayerScale = player.transform.localScale;
-    } */
 }

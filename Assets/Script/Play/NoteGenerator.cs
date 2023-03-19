@@ -47,10 +47,10 @@ public class NoteGenerator : MonoBehaviour
         NotePrefab newNoteScript = newNote.GetComponent<NotePrefab>();
 
         WorldInfo worldInfo = handy.GetWorldInfo(index);
-        newNoteScript.noteWaitTime = Mathf.Abs(worldInfo.noteStartRadius - worldInfo.playerRadius) / 3.5f / worldInfo.speed;
+        newNoteScript.noteWaitTime = Mathf.Abs(worldInfo.noteStartRadius[worldInfo.playerIndex] - worldInfo.playerTarRadius[worldInfo.playerIndex]) / 3.5f / worldInfo.speed[worldInfo.playerIndex];
         newNoteScript.noteWaitTime *= Mathf.Clamp01(index);
         noteWaitTimes.Add(newNoteScript.noteWaitTime);
-        newNoteScript.noteLengthTime = worldInfo.noteLength / worldInfo.speed;
+        newNoteScript.noteLengthTime = worldInfo.noteLength[worldInfo.playerIndex] / worldInfo.speed[worldInfo.playerIndex];
         newNoteScript.noteLengthTime *= Mathf.Clamp01(index);
         noteLengthTimes.Add(newNoteScript.noteLengthTime);
         notes.Add(newNote);
