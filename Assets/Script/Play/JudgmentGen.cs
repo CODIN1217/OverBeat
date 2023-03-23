@@ -12,15 +12,20 @@ public class JudgmentGen : MonoBehaviour
     }
     void Update()
     {
-        if (GameManager.Property.GetIsProperKeyDown())
+        for (int i = 0; i <= handy.GetTotalMaxPlayerIndex(); i++)
         {
-            SetJudgmentText();
+            if (GameManager.Property.GetIsProperKeyDown(i))
+            {
+                SetJudgmentText(i);
+            }
         }
     }
-    public void SetJudgmentText(JudgmentType? judgmentType = null)
+    public void SetJudgmentText(int playerIndex, JudgmentType? judgmentType = null)
     {
         if (judgmentType != null)
-            GameManager.Property.judgmentType = (JudgmentType)judgmentType;
+            GameManager.Property.judgmentTypes[playerIndex] = (JudgmentType)judgmentType;
         GameObject newJudgmentText = Instantiate(judgmentTextPrefab, transform);
+        JudgmentText newJudgmentTextScript = newJudgmentText.GetComponent<JudgmentText>();
+        newJudgmentTextScript.playerIndex = playerIndex;
     }
 }

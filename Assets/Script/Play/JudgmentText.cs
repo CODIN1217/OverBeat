@@ -14,14 +14,15 @@ public class JudgmentText : MonoBehaviour
     Handy handy;
     Sequence FadeTweener;
     bool isAwake;
+    public int playerIndex;
     void Awake()
     {
         judgmentText_TMP = GetComponent<TextMeshProUGUI>();
         handy = Handy.Property;
-        judgmentType = GameManager.Property.judgmentType;
+        judgmentType = GameManager.Property.judgmentTypes[playerIndex];
         judgmentText_TMP.text = judgmentType.ToString();
-        stdPlayerPos = handy.GetPlayer().transform.position;
-        stdPlayerScale = handy.GetPlayer().transform.localScale;
+        stdPlayerPos = handy.GetPlayer(playerIndex).transform.position;
+        stdPlayerScale = handy.GetPlayer(playerIndex).transform.localScale;
         FadeTweener = DOTween.Sequence()
         .Append(judgmentText_TMP.DOFade(1f, 0.05f))
         .AppendInterval(0.2f)

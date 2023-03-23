@@ -5,8 +5,8 @@ using UnityEngine;
 public class NoteGenerator : MonoBehaviour
 {
     public GameObject notePrefab;
-    public GameObject closestNote;
-    public NotePrefab closestNoteScript;
+    public List<GameObject> closestNotes;
+    public List<NotePrefab> closestNoteScripts;
     public List<float> noteWaitTimes;
     public List<float> noteLengthTimes;
     public List<GameObject> notes;
@@ -29,10 +29,13 @@ public class NoteGenerator : MonoBehaviour
             handy.GetNoteScripts(i).InitNote();
             handy.GetNote(i).SetActive(false);
         }
-        closestNote = transform.GetChild(0).gameObject;
-        closestNoteScript = closestNote.GetComponent<NotePrefab>();
+        for (int i = 0; i <= handy.GetTotalMaxPlayerIndex(); i++)
+        {
+            closestNotes[handy.GetNextNoteIndexToSamePlayer(i, 0)].SetActive(true);
+            closestNotes.Add(transform.GetChild(handy.GetNextNoteIndexToSamePlayer(i, 0)).gameObject);
+            closestNoteScripts.Add(closestNotes[handy.GetNextNoteIndexToSamePlayer(i, 0)].GetComponent<NotePrefab>());
+        }
         isAwake = true;
-        closestNote.SetActive(true);
     }
     void Update()
     {
@@ -46,11 +49,11 @@ public class NoteGenerator : MonoBehaviour
         GameObject newNote = Instantiate(notePrefab, transform);
         NotePrefab newNoteScript = newNote.GetComponent<NotePrefab>();
 
-        WorldInfo worldInfo = handy.GetWorldInfo(index);
-        newNoteScript.noteWaitTime = Mathf.Abs(worldInfo.noteStartRadius[worldInfo.playerIndex] - worldInfo.playerTarRadius[worldInfo.playerIndex]) / 3.5f / worldInfo.speed[worldInfo.playerIndex];
+        WorldInfo worldInfo = handy.worldReaderScript.worldInfos[index];
+        newNoteScript.noteWaitTime = Mathf.Abs(worldInfo.NoteInfo.StartRadius - worldInfo.PlayerInfo.TarRadius) / 3.5f / worldInfo.NoteInfo.Speed;
         newNoteScript.noteWaitTime *= Mathf.Clamp01(index);
         noteWaitTimes.Add(newNoteScript.noteWaitTime);
-        newNoteScript.noteLengthTime = worldInfo.noteLength[worldInfo.playerIndex] / worldInfo.speed[worldInfo.playerIndex];
+        newNoteScript.noteLengthTime = worldInfo.NoteInfo.Length / worldInfo.NoteInfo.Speed;
         newNoteScript.noteLengthTime *= Mathf.Clamp01(index);
         noteLengthTimes.Add(newNoteScript.noteLengthTime);
         notes.Add(newNote);

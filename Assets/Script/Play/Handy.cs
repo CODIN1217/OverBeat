@@ -28,11 +28,11 @@ public class Handy : MonoBehaviour
     public Boundary boundaryScript;
     public GameObject baseCamera;
     public BaseCamera baseCameraScript;
-    public GameObject closestNote;
-    public NotePrefab closestNoteScript;
-    public int noteIndex;
-    public float judgmentRange;
-    public float bestJudgmentRange;
+    public List<GameObject> closestNotes;
+    public List<NotePrefab> closestNoteScripts;
+    public List<int> noteIndexes;
+    public List<float> judgmentRanges;
+    public List<float> bestJudgmentRanges;
     public readonly float minJudgmentRange;
     public readonly float maxJudgmentRange;
     int stdDegCount;
@@ -48,11 +48,15 @@ public class Handy : MonoBehaviour
     }
     void Update()
     {
-        closestNote = noteGeneratorScript.closestNote;
-        closestNoteScript = noteGeneratorScript.closestNoteScript;
-        noteIndex = closestNoteScript.myNoteIndex;
-        judgmentRange = Mathf.Clamp(GetWorldInfo(noteIndex).judgmentRange, minJudgmentRange, maxJudgmentRange);
-        bestJudgmentRange = judgmentRange * 0.2f;
+        closestNotes = noteGeneratorScript.closestNotes;
+        closestNoteScripts = noteGeneratorScript.closestNoteScripts;
+        noteIndexes = new List<int>();
+        for (int i = 0; i <= GetTotalMaxPlayerIndex(); i++)
+        {
+            noteIndexes.Add(closestNoteScripts[i].myNoteIndex);
+            judgmentRanges.Add(Mathf.Clamp(GetWorldInfo(i, noteIndexes[i]).JudgmentInfo.Range, minJudgmentRange, maxJudgmentRange));
+            bestJudgmentRanges.Add(judgmentRanges[i] * 0.2f);
+        }
     }
     void LateUpdate()
     {
@@ -82,15 +86,15 @@ public class Handy : MonoBehaviour
         }
         return deg;
     }
-    public WorldInfo GetWorldInfo(int? index = null)
+    public WorldInfo GetWorldInfo(int playerIndex, int? noteIndex = null)
     {
-        if (index == null)
-            index = noteIndex;
-        return worldReaderScript.worldInfos[Mathf.Clamp((int)index, 0, worldReaderScript.notesCount)];
+        if (noteIndex == null)
+            noteIndex = this.noteIndexes[(int)Mathf.Clamp(playerIndex, 0, playerControllerScript.players.Count)];
+        return worldReaderScript.worldInfos[Mathf.Clamp((int)noteIndex, 0, worldReaderScript.notesCount)];
     }
     public float GetDistanceDeg(float tarDeg, float curDeg, bool maxIs360, int direction)
     {
-        float distanceDeg = (tarDeg - curDeg) * direction/* (float)GetWorldInfo().direction[GetWorldInfo().playerIndex] */;
+        float distanceDeg = (tarDeg - curDeg) * direction/* (float)GetWorldInfo().direction[GetWorldInfo().PlayerInfo.Index] */;
         return maxIs360 ? GetCorrectDegMaxIs360(distanceDeg) : GetCorrectDegMaxIs0(distanceDeg);
     }
     public Vector2 GetCircularPos(float deg, float radius, Vector2? centerPos = null)
@@ -100,46 +104,46 @@ public class Handy : MonoBehaviour
         float rad = deg * Mathf.Deg2Rad;
         return new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * radius + (Vector2)centerPos;
     }
-    public float GetNextDeg(int? index = null)
+    public float GetNextDeg(int playerIndex, int? noteIndex = null)
     {
-        if (index == null)
-            index = noteIndex;
+        if (noteIndex == null)
+            noteIndex = this.noteIndexes[(int)Mathf.Clamp(playerIndex, 0, GetTotalMaxPlayerIndex())];
         // return GetWorldInfo(noteIndex).nextDeg;
-        return GetWorldInfo(index).stdDegs[GetWorldInfo(index).nextDegIndex[GetWorldInfo(index).playerIndex]];
+        return GetWorldInfo(playerIndex, noteIndex).PlayerInfo.StdDegs[GetWorldInfo(playerIndex, noteIndex).NoteInfo.NextDegIndex];
     }
     public float GetNextDeg(WorldInfo worldInfo)
     {
-        return worldInfo.stdDegs[worldInfo.nextDegIndex[worldInfo.playerIndex]];
+        return worldInfo.PlayerInfo.StdDegs[worldInfo.NoteInfo.NextDegIndex];
     }
-    public float GetBeforeDeg(int? index = null)
+    public float GetBeforeDeg(int playerIndex, int? noteIndex = null)
     {
-        if (index == null)
-            index = noteIndex;
-        return GetWorldInfo(index - 1).stdDegs[GetWorldInfo(index - 1).nextDegIndex[GetWorldInfo(index - 1).playerIndex]];
+        if (noteIndex == null)
+            noteIndex = this.noteIndexes[(int)Mathf.Clamp(playerIndex, 0, GetTotalMaxPlayerIndex())];
+        return GetWorldInfo(playerIndex, noteIndex - 1).PlayerInfo.StdDegs[GetWorldInfo(playerIndex, noteIndex - 1).NoteInfo.NextDegIndex];
     }
-    public float GetNoteWaitTime(int? index = null)
+    public float GetNoteWaitTime(int playerIndex, int? noteIndex = null)
     {
-        if (index == null)
-            index = noteIndex;
-        return noteGeneratorScript.noteWaitTimes[Mathf.Clamp((int)index, 0, worldReaderScript.notesCount)];
+        if (noteIndex == null)
+            noteIndex = this.noteIndexes[(int)Mathf.Clamp(playerIndex, 0, GetTotalMaxPlayerIndex())];
+        return noteGeneratorScript.noteWaitTimes[Mathf.Clamp((int)noteIndex, 0, worldReaderScript.notesCount)];
     }
-    public float GetNoteLengthTime(int? index = null)
+    public float GetNoteLengthTime(int playerIndex, int? noteIndex = null)
     {
-        if (index == null)
-            index = noteIndex;
-        return noteGeneratorScript.noteLengthTimes[Mathf.Clamp((int)index, 0, worldReaderScript.notesCount)];
+        if (noteIndex == null)
+            noteIndex = this.noteIndexes[(int)Mathf.Clamp(playerIndex, 0, GetTotalMaxPlayerIndex())];
+        return noteGeneratorScript.noteLengthTimes[Mathf.Clamp((int)noteIndex, 0, worldReaderScript.notesCount)];
     }
-    public GameObject GetNote(int? index = null)
+    public GameObject GetNote(int playerIndex, int? noteIndex = null)
     {
-        if (index == null)
-            index = noteIndex;
-        return noteGeneratorScript.notes[Mathf.Clamp((int)index, 0, worldReaderScript.notesCount)];
+        if (noteIndex == null)
+            noteIndex = this.noteIndexes[(int)Mathf.Clamp(playerIndex, 0, GetTotalMaxPlayerIndex())];
+        return noteGeneratorScript.notes[Mathf.Clamp((int)noteIndex, 0, worldReaderScript.notesCount)];
     }
-    public NotePrefab GetNoteScripts(int? index = null)
+    public NotePrefab GetNoteScripts(int playerIndex, int? noteIndex = null)
     {
-        if (index == null)
-            index = noteIndex;
-        return noteGeneratorScript.noteScripts[Mathf.Clamp((int)index, 0, worldReaderScript.notesCount)];
+        if (noteIndex == null)
+            noteIndex = this.noteIndexes[(int)Mathf.Clamp(playerIndex, 0, GetTotalMaxPlayerIndex())];
+        return noteGeneratorScript.noteScripts[Mathf.Clamp((int)noteIndex, 0, worldReaderScript.notesCount)];
     }
     public void WriteLog(params object[] contents)
     {
@@ -181,16 +185,16 @@ public class Handy : MonoBehaviour
     {
         return Mathf.Abs(x) > Mathf.Abs(y) ? x : y;
     }
-    public float GetJudgmentValue(float? elapsedTimeWhenNeedlessInput01 = null, float? elapsedTimeWhenNeedInput01 = null)
+    public float GetJudgmentValue(int playerIndex, float? elapsedTimeWhenNeedlessInput01 = null, float? elapsedTimeWhenNeedInput01 = null)
     {
         if (elapsedTimeWhenNeedlessInput01 == null)
-            elapsedTimeWhenNeedlessInput01 = GameManager.Property.elapsedTimeWhenNeedlessInput01;
+            elapsedTimeWhenNeedlessInput01 = GetElapsedTimeWhenNeedlessInput01(playerIndex);
         if (elapsedTimeWhenNeedInput01 == null)
-            elapsedTimeWhenNeedInput01 = GameManager.Property.elapsedTimeWhenNeedInput01;
+            elapsedTimeWhenNeedInput01 = GetElapsedTimeWhenNeedInput01(playerIndex);
         float judgmentValue = 1f;
         if (elapsedTimeWhenNeedInput01 > 0f)
             judgmentValue = (float)elapsedTimeWhenNeedInput01;
-        else if (elapsedTimeWhenNeedlessInput01 >= 1f - judgmentRange)
+        else if (elapsedTimeWhenNeedlessInput01 >= 1f - judgmentRanges[(int)Mathf.Clamp(playerIndex, 0, GetTotalMaxPlayerIndex())])
             judgmentValue = 1f - (float)elapsedTimeWhenNeedlessInput01;
         return judgmentValue;
     }
@@ -245,120 +249,171 @@ public class Handy : MonoBehaviour
     }
     /* public bool GetIsStdDegsChanged(){
         bool isStdDegsChanged = false;
-        if(stdDegCount != GetWorldInfo().stdDegs.Count){
+        if(stdDegCount != GetWorldInfo().PlayerInfo.StdDegs.Count){
             isStdDegsChanged = true;
         }
         else{
-            for(int i = 0; i < GetWorldInfo().stdDegs.Count; i++){
-                if(GetWorldInfo().stdDegs[i] != stdDegs[i]){
+            for(int i = 0; i < GetWorldInfo().PlayerInfo.StdDegs.Count; i++){
+                if(GetWorldInfo().PlayerInfo.StdDegs[i] != stdDegs[i]){
                     isStdDegsChanged = true;
                 }
             }
         }
-        stdDegCount_temp = GetWorldInfo().stdDegs.Count;
-        stdDegs_temp = GetWorldInfo().stdDegs;
+        stdDegCount_temp = GetWorldInfo().PlayerInfo.StdDegs.Count;
+        stdDegs_temp = GetWorldInfo().PlayerInfo.StdDegs;
         return isStdDegsChanged;
     } */
-    public int GetMaxStdDegCount()
+    public int GetMaxStdDegCount(int playerIndex)
     {
         int maxStdDegCount = 0;
         for (int i = 0; i <= worldReaderScript.notesCount; i++)
         {
-            if (maxStdDegCount < GetWorldInfo(i).stdDegs.Count)
+            if (maxStdDegCount < GetWorldInfo(GetCorrectIndex(playerIndex, GetTotalMaxPlayerIndex()), i).PlayerInfo.StdDegs.Count)
             {
-                maxStdDegCount = GetWorldInfo(i).stdDegs.Count;
+                maxStdDegCount = GetWorldInfo(GetCorrectIndex(playerIndex, GetTotalMaxPlayerIndex()), i).PlayerInfo.StdDegs.Count;
             }
         }
         return maxStdDegCount;
     }
-    public int GetCorrectNextDegIndex(int nextDegIndex, int? index = null)
+    public int GetCorrectNextDegIndex(int playerIndex, int nextDegIndex, int? noteIndex = null)
     {
-        if (index == null)
-            index = noteIndex;
-        return nextDegIndex >= 0 ? nextDegIndex : nextDegIndex + GetWorldInfo(index).stdDegs.Count;
+        if (noteIndex == null)
+            noteIndex = this.noteIndexes[(int)Mathf.Clamp(playerIndex, 0, GetTotalMaxPlayerIndex())];
+        return nextDegIndex >= 0 ? nextDegIndex : nextDegIndex + GetWorldInfo(playerIndex, noteIndex).PlayerInfo.StdDegs.Count;
+    }
+    public int GetCorrectIndex(int index, int? maxIndex = null)
+    {
+        if (maxIndex == null)
+            maxIndex = int.MaxValue;
+        return (int)Mathf.Clamp(index, 0f, (float)maxIndex);
     }
     public int GetTotalMaxPlayerIndex()
     {
-        int totalMaxPlayerIndex = 0;
+        int maxPlayerIndex = 0;
         for (int i = 0; i <= worldReaderScript.notesCount; i++)
         {
-            if (totalMaxPlayerIndex < GetWorldInfo(i).playerIndex)
+            if (maxPlayerIndex < worldReaderScript.worldInfos[GetCorrectIndex(i, worldReaderScript.notesCount)].PlayerInfo.Index)
             {
-                totalMaxPlayerIndex = GetWorldInfo(i).playerIndex;
+                maxPlayerIndex = worldReaderScript.worldInfos[GetCorrectIndex(i, worldReaderScript.notesCount)].PlayerInfo.Index;
             }
         }
-        return totalMaxPlayerIndex;
+        return maxPlayerIndex;
     }
     public int GetActivePlayerCount()
     {
-        int curMaxPlayerIndex = 0;
+        int activeMaxPlayerCount = 0;
         for (int i = 0; i <= GetTotalMaxPlayerIndex(); i++)
         {
             if (GetPlayer(i).activeSelf)
-                curMaxPlayerIndex++;
+                activeMaxPlayerCount++;
         }
-        return curMaxPlayerIndex;
+        return activeMaxPlayerCount;
     }
-    public GameObject GetPlayer(int? playerIndex = null)
+    public GameObject GetPlayer(int playerIndex)
     {
-        if (playerIndex == null)
-            playerIndex = GetWorldInfo().playerIndex;
+        // if (playerIndex == null)
+        //     playerIndex = GetWorldInfo().PlayerInfo.Index;
         return playerControllerScript.players[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
     }
-    public Player GetPlayerScript(int? playerIndex = null)
+    public Player GetPlayerScript(int playerIndex)
     {
-        if (playerIndex == null)
-            playerIndex = GetWorldInfo().playerIndex;
+        // if (playerIndex == null)
+        //     playerIndex = GetWorldInfo().PlayerInfo.Index;
         return playerControllerScript.playerScripts[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
     }
-    public GameObject GetPlayerSide(int? playerIndex = null)
+    public GameObject GetPlayerSide(int playerIndex)
     {
-        if (playerIndex == null)
-            playerIndex = GetWorldInfo().playerIndex;
+        // if (playerIndex == null)
+        //     playerIndex = GetWorldInfo().PlayerInfo.Index;
         return playerControllerScript.playerSides[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
     }
-    public SpriteRenderer GetPlayerSideRend(int? playerIndex = null)
+    public SpriteRenderer GetPlayerSideRend(int playerIndex)
     {
-        if (playerIndex == null)
-            playerIndex = GetWorldInfo().playerIndex;
+        // if (playerIndex == null)
+        //     playerIndex = GetWorldInfo().PlayerInfo.Index;
         return playerControllerScript.playerSideRends[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
     }
-    public GameObject GetPlayerCenter(int? playerIndex = null)
+    public GameObject GetPlayerCenter(int playerIndex)
     {
-        if (playerIndex == null)
-            playerIndex = GetWorldInfo().playerIndex;
+        // if (playerIndex == null)
+        //     playerIndex = GetWorldInfo().PlayerInfo.Index;
         return playerControllerScript.playerCenters[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
     }
-    public SpriteRenderer GetPlayerCenterRend(int? playerIndex = null)
+    public SpriteRenderer GetPlayerCenterRend(int playerIndex)
     {
-        if (playerIndex == null)
-            playerIndex = GetWorldInfo().playerIndex;
+        // if (playerIndex == null)
+        //     playerIndex = GetWorldInfo().PlayerInfo.Index;
         return playerControllerScript.playerCenterRends[(int)Mathf.Clamp((float)playerIndex, 0f, GetTotalMaxPlayerIndex())];
     }
-    public Vector2 GetSpritePixels(Sprite sprite){
+    public Vector2 GetSpritePixels(Sprite sprite)
+    {
         return new Vector2(sprite.texture.width, sprite.texture.height);
     }
-    public Color GetRGB01(Color color){
+    public Color GetRGB01(Color color)
+    {
         return new Color(color.r / 255f, color.g / 255f, color.b / 255f, color.a);
     }
-    public Color GetColor01(Color color){
+    public Color GetColor01(Color color)
+    {
         return color / 255f;
     }
-    public GameObject GetNextNoteToSamePlayer(int playerIndex, int noteIndex){
-        for(int i = noteIndex; i <= worldReaderScript.notesCount; i++){
-            if(playerIndex == GetWorldInfo(i).playerIndex){
+    public GameObject GetNextNoteToSamePlayer(int playerIndex, int noteIndex)
+    {
+        for (int i = noteIndex; i <= worldReaderScript.notesCount; i++)
+        {
+            if (playerIndex == worldReaderScript.worldInfos[i].PlayerInfo.Index)
+            {
                 return GetNote(i);
             }
         }
         return GetNote(noteIndex);
     }
-    public NotePrefab GetNextNoteScriptToSamePlayer(int playerIndex, int noteIndex){
-        for(int i = noteIndex; i <= worldReaderScript.notesCount; i++){
-            if(playerIndex == GetWorldInfo(i).playerIndex){
+    public NotePrefab GetNextNoteScriptToSamePlayer(int playerIndex, int noteIndex)
+    {
+        for (int i = noteIndex; i <= worldReaderScript.notesCount; i++)
+        {
+            if (playerIndex == worldReaderScript.worldInfos[i].PlayerInfo.Index)
+            {
                 return GetNoteScripts(i);
             }
         }
         return GetNoteScripts(noteIndex);
+    }
+    public int GetNextNoteIndexToSamePlayer(int playerIndex, int noteIndex)
+    {
+        for (int i = noteIndex; i <= worldReaderScript.notesCount; i++)
+        {
+            if (playerIndex == worldReaderScript.worldInfos[i].PlayerInfo.Index)
+            {
+                return i;
+            }
+        }
+        return noteIndex;
+    }
+    public void RepeatCode(Action<int> code, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            code(i);
+        }
+    }
+    public float GetElapsedTimeWhenNeedlessInput01(int playerIndex, int? noteIndex = null)
+    {
+        playerIndex = (int)Mathf.Clamp(playerIndex, 0, GetTotalMaxPlayerIndex());
+        if (noteIndex == null)
+            noteIndex = this.noteIndexes[playerIndex];
+        if (GetNoteScripts(playerIndex, noteIndex) != null)
+            return GetNoteScripts(playerIndex, noteIndex).elapsedTimeWhenNeedlessInput01;
+        return 0f;
+    }
+    public float GetElapsedTimeWhenNeedInput01(int playerIndex, int? noteIndex = null)
+    {
+        playerIndex = (int)Mathf.Clamp(playerIndex, 0, GetTotalMaxPlayerIndex());
+        if (noteIndex == null)
+            noteIndex = this.noteIndexes[playerIndex];
+        if (GetNoteScripts(playerIndex, noteIndex) != null)
+            return GetNoteScripts(playerIndex, noteIndex).elapsedTimeWhenNeedInput01;
+        return 0f;
     }
     Handy()
     {

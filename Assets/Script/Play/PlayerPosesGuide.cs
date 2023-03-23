@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerPosesGuide : MonoBehaviour
 {
     Handy handy;
-    WorldInfo worldInfo;
+    // WorldInfo worldInfo;
     public GameObject playerPosDotPrefab;
     List<GameObject> playerPosDots;
     List<SpriteRenderer> playerPosDotsRend;
@@ -14,34 +14,39 @@ public class PlayerPosesGuide : MonoBehaviour
         handy = Handy.Property;
         playerPosDots = new List<GameObject>();
         playerPosDotsRend = new List<SpriteRenderer>();
-        for (int i = 0; i < handy.GetMaxStdDegCount(); i++)
+        for (int i = 0; i <= handy.GetTotalMaxPlayerIndex(); i++)
         {
-            playerPosDots.Add(Instantiate(playerPosDotPrefab, transform));
-            playerPosDotsRend.Add(playerPosDots[i].GetComponent<SpriteRenderer>());
-            playerPosDots[i].transform.position = handy.GetWorldInfo().centerPos;
-            playerPosDots[i].SetActive(false);
+            for (int j = 0; j < handy.GetMaxStdDegCount(i); j++)
+            {
+                playerPosDots.Add(Instantiate(playerPosDotPrefab, transform));
+                playerPosDotsRend.Add(playerPosDots[j].GetComponent<SpriteRenderer>());
+                playerPosDots[j].transform.position = handy.GetWorldInfo(i).CenterInfo.Pos;
+                playerPosDots[j].SetActive(false);
+            }
+
         }
     }
     void Update()
     {
-        worldInfo = handy.GetWorldInfo();
-        foreach (var PPD in playerPosDots)
-        {
-            PPD.transform.position = worldInfo.centerPos;
-            PPD.SetActive(false);
-        }
+        // handy.RepeatCode((i) => worldInfo = handy.GetWorldInfo(i), handy.GetTotalMaxPlayerIndex() + 1);
         // float playerCenterRadius = handy.GetScaleAverage(handy.GetPlayerCenter().transform.localScale.x * handy.GetPlayerCenterRend().sprite.texture.width, handy.GetPlayerCenter().transform.localScale.y * handy.GetPlayerCenterRend().sprite.texture.height) * 0.005f;
-        for (int i = 0; i < worldInfo.stdDegs.Count; i++)
+
+        for (int i = 0; i <= handy.GetTotalMaxPlayerIndex(); i++)
         {
-            playerPosDotsRend[i].color = handy.GetColor01(worldInfo.playerPosesGuideColor);
-            playerPosDots[i].transform.position = handy.GetCircularPos(worldInfo.stdDegs[i], /* Mathf.Clamp( */handy.GetPlayerScript().curRadius/*  - playerCenterRadius, 0f, handy.GetPlayerScript().curRadius) */, worldInfo.centerPos);
-            for (int j = 0; j <= worldInfo.playerIndex; j++)
+            if (handy.GetPlayer(i).activeSelf)
             {
-                Vector2 playerPos = handy.GetCircularPos(handy.GetPlayerScript(j).curDeg, handy.GetPlayerScript().curRadius, worldInfo.centerPos);
-                if (!handy.CheckObjInOtherObj(playerPosDots[i], playerPos, handy.GetPlayerCenter(j).transform.localScale, handy.GetSpritePixels(playerPosDotsRend[i].sprite), handy.GetSpritePixels(handy.GetPlayerCenterRend(j).sprite)))
+                for (int j = 0; j < handy.GetWorldInfo(i).PlayerInfo.StdDegs.Count; j++)
                 {
-                    playerPosDots[i].SetActive(true);
+                    playerPosDots[j].SetActive(false);
+                    playerPosDotsRend[j].color = handy.GetColor01(handy.GetWorldInfo(i).PlayerInfo.PosesGuideColor);
+                    playerPosDots[j].transform.position = handy.GetCircularPos(handy.GetWorldInfo(i).PlayerInfo.StdDegs[j], /* Mathf.Clamp( */handy.GetPlayerScript(i).curRadius/*  - playerCenterRadius, 0f, handy.GetPlayerScript().curRadius) */, handy.GetWorldInfo(i).CenterInfo.Pos);
+                    Vector2 playerPos = handy.GetCircularPos(handy.GetPlayerScript(i).curDeg, handy.GetPlayerScript(i).curRadius, handy.GetWorldInfo(i).CenterInfo.Pos);
+                    if (!handy.CheckObjInOtherObj(playerPosDots[j], playerPos, handy.GetPlayerCenter(i).transform.localScale, handy.GetSpritePixels(playerPosDotsRend[j].sprite), handy.GetSpritePixels(handy.GetPlayerCenterRend(i).sprite)))
+                    {
+                        playerPosDots[j].SetActive(true);
+                    }
                 }
+
             }
         }
     }

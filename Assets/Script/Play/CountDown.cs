@@ -46,9 +46,9 @@ public class CountDown : MonoBehaviour
     }
 
     public void PlayCountDown(){
-        worldInfo = handy.GetWorldInfo(handy.noteIndex);
-        numberOfCountDownTick = worldInfo.numberOfCountDownTick;
-        intervalOfCountDownTick = worldInfo.intervalOfCountDownTick;
+        worldInfo = handy.GetWorldInfo(0);
+        numberOfCountDownTick = worldInfo.CountDownInfo.NumberOfTick;
+        intervalOfCountDownTick = worldInfo.CountDownInfo.IntervalOfTick;
         totalCountDownTime = (float)numberOfCountDownTick * intervalOfCountDownTick;
         isCountDown = true;
         isAwake = true;

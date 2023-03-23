@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     public List<SpriteRenderer> playerSideRends;
     public List<GameObject> playerCenters;
     public List<SpriteRenderer> playerCenterRends;
+    public int maxPlayerIndex;
     Handy handy;
     void Awake() {
         handy = Handy.Property;
