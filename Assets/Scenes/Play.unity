@@ -169,16 +169,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InputCount: 0
   missCount: 0
-  isKeyDowns: 
-  isKeyPresses: 
-  isKeyUps: 
   lastHitedNoteIndex: 0
   isPause: 0
   isGameOver: 0
   isAutoPlay: 0
-  canInputKeys: 
-  elapsedTimeWhenNeedlessInput01: 0
-  elapsedTimeWhenNeedInput01: 0
   sumNoteAccuracy01: 0
   noteWaitTime: 0
   progress01: 0
@@ -188,7 +182,7 @@ MonoBehaviour:
   toleranceTimeWhenNeedInput: 0
   handy: {fileID: 1282508016}
   curNotePos: {x: 0, y: 0, z: 0}
-  judgmentType: 0
+  judgmentTypes: 
   totalElapsedSeconds: 0
   toleranceTimeWhenAwake: 0
 --- !u!1 &394644008
@@ -242,6 +236,7 @@ MonoBehaviour:
   playerSideRends: []
   playerCenters: []
   playerCenterRends: []
+  maxPlayerIndex: 0
 --- !u!1 &465357647
 GameObject:
   m_ObjectHideFlags: 0
@@ -994,11 +989,11 @@ MonoBehaviour:
   boundaryScript: {fileID: 1708547847}
   baseCamera: {fileID: 519420028}
   baseCameraScript: {fileID: 519420033}
-  closestNote: {fileID: 0}
-  closestNoteScript: {fileID: 0}
-  noteIndex: 0
-  judgmentRange: 0
-  bestJudgmentRange: 0
+  closestNotes: []
+  closestNoteScripts: []
+  noteIndexes: 
+  judgmentRanges: []
+  bestJudgmentRanges: []
 --- !u!4 &1282508017
 Transform:
   m_ObjectHideFlags: 0
@@ -1059,12 +1054,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notePrefab: {fileID: 6953654910098136422, guid: 2eae1d3addf77dd41ad85a30921a751d, type: 3}
-  closestNote: {fileID: 0}
-  closestNoteScript: {fileID: 0}
+  closestNotes: []
+  closestNoteScripts: []
   noteWaitTimes: []
   noteLengthTimes: []
   notes: []
   noteScripts: []
+  worldReader: {fileID: 2060904675}
+  worldReaderScript: {fileID: 2060904676}
 --- !u!1 &1486238822
 GameObject:
   m_ObjectHideFlags: 0

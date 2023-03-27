@@ -18,7 +18,6 @@ public class WorldReader : MonoBehaviour
     // public List<WorldInfo.BoundaryInfo> boundaryInfos;
     // public List<WorldInfo.JudgmentInfo> judgmentInfos;
     // public List<WorldInfo.CreditInfo> creditInfos;
-    public int notesCount;
     // Handy handy;
     void Awake()
     {
@@ -42,7 +41,6 @@ public class WorldReader : MonoBehaviour
         for(int i = 0; i < worldInfosObj.transform.childCount; i++){
             worldInfos.Add(worldInfosObj.transform.GetChild(i).GetComponent<WorldInfo>());
         }
-        notesCount = worldInfos.Count - 1;
 
         // objectInfos = new Hashtable();
     }

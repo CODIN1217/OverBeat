@@ -114,8 +114,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   NoteInfo:
-    NextDegIndex: 1
-    AwakeTime: 0
+    NextDegIndex: 2
+    AwakeTime: 1
     Speed: 1
     StartRadius: 5
     Length: 0
@@ -324,8 +324,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   NoteInfo:
-    NextDegIndex: 3
-    AwakeTime: 0
+    NextDegIndex: 0
+    AwakeTime: 3
     Speed: 1
     StartRadius: 5
     Length: 0
@@ -780,7 +780,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   NoteInfo:
-    NextDegIndex: 0
+    NextDegIndex: 1
     AwakeTime: 0
     Speed: 1
     StartRadius: 5
@@ -990,8 +990,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   NoteInfo:
-    NextDegIndex: 2
-    AwakeTime: 0
+    NextDegIndex: 3
+    AwakeTime: 2
     Speed: 1
     StartRadius: 5
     Length: 0

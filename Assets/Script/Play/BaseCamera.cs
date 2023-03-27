@@ -15,7 +15,7 @@ public class BaseCamera : MonoBehaviour
     }
     void Update()
     {
-        worldInfo = handy.GetWorldInfo(0);
+        worldInfo = handy.GetWorldInfo();
         baseCamera.orthographicSize = stdSize * worldInfo.CameraInfo.Size;
         baseCamera.backgroundColor = handy.GetColor01(worldInfo.CameraInfo.BGColor);
         transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(worldInfo.CameraInfo.Rotation));

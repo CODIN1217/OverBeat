@@ -32,9 +32,16 @@ public class WorldInfo : MonoBehaviour
         }
     }
     [Serializable] [ExecuteInEditMode]
+    public class SeveralModeInfo_Class{
+        public int Count;
+        public SeveralModeInfo_Class(){
+            Count = 1;
+        }
+    }
+    [Serializable] [ExecuteInEditMode]
     public class PlayerInfo_Class
     {
-        public /* readonly */ int Index;
+        // public /* readonly */ int Index;
         public /* readonly */ int MoveDir;
         public /* readonly */ float TarRadius;
         public /* readonly */ float Rotation;
@@ -47,7 +54,7 @@ public class WorldInfo : MonoBehaviour
         public /* readonly */ AnimationCurve TarRadiusEase;
         public PlayerInfo_Class()
         {
-            Index = 0;
+            // Index = 0;
             MoveDir = 1;
             TarRadius = 1.5f;
             Rotation = 0f;
@@ -64,7 +71,7 @@ public class WorldInfo : MonoBehaviour
     public class NoteInfo_Class
     {
         public /* readonly */ int NextDegIndex;
-        public /* readonly */ float AwakeTime;
+        // public /* readonly */ float AwakeTime;
         public /* readonly */ float Speed;
         public /* readonly */ float StartRadius;
         public /* readonly */ float Length;
@@ -79,7 +86,7 @@ public class WorldInfo : MonoBehaviour
         public NoteInfo_Class()
         {
             NextDegIndex = 0;
-            AwakeTime = 0f;
+            // AwakeTime = 0f;
             Speed = 1f;
             StartRadius = 5f;
             Length = 0f;
@@ -143,21 +150,25 @@ public class WorldInfo : MonoBehaviour
             SongWriter = "Empty";
         }
     }
-    public CameraInfo_Class CameraInfo;
-    public CountDownInfo_Class CountDownInfo;
-    public PlayerInfo_Class PlayerInfo;
-    public NoteInfo_Class NoteInfo;
-    public CenterInfo_Class CenterInfo;
-    public BoundaryInfo_Class BoundaryInfo;
-    public JudgmentInfo_Class JudgmentInfo;
-    public CreditInfo_Class CreditInfo;
+    public readonly float IntervalTimeToWait;
+    public readonly CameraInfo_Class CameraInfo;
+    public readonly CountDownInfo_Class CountDownInfo;
+    public readonly SeveralModeInfo_Class SeveralModeInfo;
+    public readonly List<PlayerInfo_Class> PlayerInfo;
+    public readonly List<NoteInfo_Class> NoteInfo;
+    public readonly CenterInfo_Class CenterInfo;
+    public readonly BoundaryInfo_Class BoundaryInfo;
+    public readonly JudgmentInfo_Class JudgmentInfo;
+    public readonly CreditInfo_Class CreditInfo;
 
     public WorldInfo()
     {
+        IntervalTimeToWait = 1f;
         CameraInfo = new CameraInfo_Class();
         CountDownInfo = new CountDownInfo_Class();
-        PlayerInfo = new PlayerInfo_Class();
-        NoteInfo = new NoteInfo_Class();
+        SeveralModeInfo = new SeveralModeInfo_Class();
+        PlayerInfo = new List<PlayerInfo_Class>(SeveralModeInfo.Count);
+        NoteInfo = new List<NoteInfo_Class>(SeveralModeInfo.Count);
         CenterInfo = new CenterInfo_Class();
         BoundaryInfo = new BoundaryInfo_Class();
         JudgmentInfo = new JudgmentInfo_Class();

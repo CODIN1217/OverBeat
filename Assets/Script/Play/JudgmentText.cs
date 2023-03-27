@@ -29,6 +29,6 @@ public class JudgmentText : MonoBehaviour
         .Append(judgmentText_TMP.DOFade(0f, 0.05f))
         .OnComplete(() => gameObject.SetActive(false))
         .SetUpdate(true);
-        transform.position = stdPlayerPos + new Vector2(0, 0.61f * handy.GetScaleAverage(stdPlayerScale) + GetComponent<RectTransform>().sizeDelta.y * 0.5f);
+        transform.position = stdPlayerPos + new Vector2(0, 0.61f * handy.GetScaleAbsAverage(stdPlayerScale) + GetComponent<RectTransform>().sizeDelta.y * 0.5f);
     }
 }

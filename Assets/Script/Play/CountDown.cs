@@ -18,6 +18,8 @@ public class CountDown : MonoBehaviour
     {
         handy = Handy.Property;
         countDownTMP = GetComponent<TextMeshProUGUI>();
+    }
+    void OnEnable() {
         PlayCountDown();
     }
     void Update()
@@ -46,7 +48,7 @@ public class CountDown : MonoBehaviour
     }
 
     public void PlayCountDown(){
-        worldInfo = handy.GetWorldInfo(0);
+        worldInfo = handy.GetWorldInfo();
         numberOfCountDownTick = worldInfo.CountDownInfo.NumberOfTick;
         intervalOfCountDownTick = worldInfo.CountDownInfo.IntervalOfTick;
         totalCountDownTime = (float)numberOfCountDownTick * intervalOfCountDownTick;
