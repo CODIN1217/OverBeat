@@ -22,9 +22,9 @@ public class Center : MonoBehaviour
         worldInfo = handy.GetWorldInfo();
         HP01 = GameManager.Property.HP01;
         centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, HP01, Time.unscaledDeltaTime * 4f);
-        transform.localScale = worldInfo.CenterInfo.Scale;
-        transform.position = worldInfo.CenterInfo.Pos;
-        centerColor = handy.GetColor01(worldInfo.CenterInfo.Color);
+        transform.localScale = worldInfo.centerInfo.scale;
+        transform.position = worldInfo.centerInfo.pos;
+        centerColor = handy.GetColor01(worldInfo.centerInfo.color);
         centerImage.color = centerColor;
     }
 }

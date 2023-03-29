@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-enum InfoType { Camera, CountDown, Player, Note, Center, Boundary, Judgment, Credit }
 // [ExecuteInEditMode]
 public class WorldReader : MonoBehaviour
 {

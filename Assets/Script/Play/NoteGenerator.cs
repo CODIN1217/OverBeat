@@ -18,19 +18,39 @@ public class NoteGenerator : MonoBehaviour
     void Awake()
     {
         handy = Handy.Property;
-        noteWaitTimes = new float?[handy.GetMaxPlayerCount(), handy.GetWorldInfoCount()];
-        noteLengthTimes = new float?[handy.GetMaxPlayerCount(), handy.GetWorldInfoCount()];
-        notes = new GameObject[handy.GetMaxPlayerCount(), handy.GetWorldInfoCount()];
-        noteScripts = new NotePrefab[handy.GetMaxPlayerCount(), handy.GetWorldInfoCount()];
-        closestNotes = new GameObject[handy.GetMaxPlayerCount()];
-        closestNoteScripts = new NotePrefab[handy.GetMaxPlayerCount()];
-        for (int i = 0; i < handy.GetMaxPlayerCount(); i++)
+        noteWaitTimes = new float?[handy.GetPlayerCount(), handy.GetWorldInfoCount()];
+        noteLengthTimes = new float?[handy.GetPlayerCount(), handy.GetWorldInfoCount()];
+        notes = new GameObject[handy.GetPlayerCount(), handy.GetWorldInfoCount()];
+        noteScripts = new NotePrefab[handy.GetPlayerCount(), handy.GetWorldInfoCount()];
+        closestNotes = new GameObject[handy.GetPlayerCount()];
+        closestNoteScripts = new NotePrefab[handy.GetPlayerCount()];
+        for (int i = 0; i < handy.GetPlayerCount(); i++)
         {
             for (int j = 0; j < handy.GetWorldInfoCount(); j++)
             {
                 SetNotePrefab(i, j);
             }
         }
+        for (int i = 0; i < handy.GetPlayerCount(); i++)
+        {
+            for (int j = 0; j < handy.GetWorldInfoCount(); j++)
+            {
+                GameObject curNote = handy.GetNote(i, j);
+                NotePrefab curNoteScript = handy.GetNoteScript(i, j);
+                curNoteScript.InitNote();
+                if (j == 0)
+                {
+                    closestNotes[i] = curNote;
+                    closestNoteScripts[i] = curNoteScript;
+                }
+                curNote.SetActive(false);
+            }
+        }
+        foreach (var CN in closestNotes)
+        {
+            CN.SetActive(true);
+        }
+        isAwake = true;
         /* for (int i = 0; i < transform.childCount; i++)
         {
             int curNoteIndex = transform.GetChild(i).GetComponent<NotePrefab>().myNoteIndex;
@@ -45,11 +65,6 @@ public class NoteGenerator : MonoBehaviour
             handy.GetNoteScripts(0, i).InitNote();
             handy.GetNote(0, i).SetActive(false);
         } */
-        foreach (var CN in closestNotes)
-        {
-            CN.SetActive(true);
-        }
-        isAwake = true;
     }
     void Update()
     {
@@ -65,22 +80,22 @@ public class NoteGenerator : MonoBehaviour
 
         WorldInfo worldInfo = handy.GetWorldInfo();
         playerIndex = handy.GetCorrectIndex(playerIndex, handy.GetMaxPlayerIndex());
-        newNoteScript.noteWaitTime = Mathf.Abs(worldInfo.NoteInfo[playerIndex].StartRadius - worldInfo.PlayerInfo[playerIndex].TarRadius) / 3.5f / worldInfo.NoteInfo[playerIndex].Speed;
+        newNoteScript.noteWaitTime = Mathf.Abs(worldInfo.noteInfo[playerIndex].startRadius - worldInfo.playerInfo[playerIndex].tarRadius) / 3.5f / worldInfo.noteInfo[playerIndex].speed;
         newNoteScript.noteWaitTime *= Mathf.Clamp01(noteIndex);
         noteWaitTimes[playerIndex, noteIndex] = newNoteScript.noteWaitTime;
-        newNoteScript.noteLengthTime = worldInfo.NoteInfo[playerIndex].Length / worldInfo.NoteInfo[playerIndex].Speed;
+        newNoteScript.noteLengthTime = worldInfo.noteInfo[playerIndex].length / worldInfo.noteInfo[playerIndex].speed;
         newNoteScript.noteLengthTime *= Mathf.Clamp01(noteIndex);
         noteLengthTimes[playerIndex, noteIndex] = newNoteScript.noteLengthTime;
         notes[playerIndex, noteIndex] = newNote;
         noteScripts[playerIndex, noteIndex] = newNoteScript;
         newNoteScript.myNoteIndex = noteIndex;
         newNoteScript.playerIndex = playerIndex;
-        newNoteScript.InitNote();
+        /* newNoteScript.InitNote();
         if (noteIndex == 0)
         {
             closestNotes[playerIndex] = newNote;
             closestNoteScripts[playerIndex] = newNoteScript;
         }
-        newNote.SetActive(false);
+        newNote.SetActive(false); */
     }
 }

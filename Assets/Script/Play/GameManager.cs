@@ -8,7 +8,6 @@ using Debug = UnityEngine.Debug;
 
 public class GameManager : MonoBehaviour
 {
-    int noteCount;
     public int InputCount;
     public int missCount;
     public List<List<bool>> isKeyDowns;
@@ -38,19 +37,24 @@ public class GameManager : MonoBehaviour
     // WorldInfo worldInfo;
     // public List<JudgmentType> judgmentTypes;
     public JudgmentType[] judgmentTypes;
-    public Stopwatch elapsedTime;
-    public float elapsedSeconds;
+    public Stopwatch[] partOfElapsedTime;
+    public float[] partOfElapsedSeconds;
     public int worldInfoIndex;
     void Awake()
     {
         instance = this;
-        worldInfoIndex = 0;
         isPause = true;
         canInputKeys = new List<List<KeyCode>>() { new List<KeyCode>() { KeyCode.W, KeyCode.D, KeyCode.S, KeyCode.A }, new List<KeyCode>() { KeyCode.I, KeyCode.L, KeyCode.K, KeyCode.J } };
         accuracy01 = 1f;
-        elapsedTime = new Stopwatch();
-        elapsedTime.Reset();
-        judgmentTypes = new JudgmentType[handy.GetMaxPlayerCount()];
+        partOfElapsedTime = new Stopwatch[handy.GetPlayerCount()];
+        partOfElapsedSeconds = new float[handy.GetPlayerCount()];
+        for (int i = 0; i < handy.GetPlayerCount(); i++)
+        {
+            partOfElapsedTime[i] = new Stopwatch();
+            partOfElapsedTime[i].Reset();
+            partOfElapsedTime[i].Stop();
+        }
+        judgmentTypes = new JudgmentType[handy.GetPlayerCount()];
         isKeyDowns = new List<List<bool>>();
         isKeyPresses = new List<List<bool>>();
         isKeyUps = new List<List<bool>>();
@@ -59,7 +63,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         // worldInfo = handy.GetWorldInfo();
-        worldInfoIndex = 0;
         Time.timeScale = isPause ? 0f : 1f;
         isKeyDowns.Clear();
         for (int i = 0; i < canInputKeys.Count; i++)
@@ -88,48 +91,36 @@ public class GameManager : MonoBehaviour
                 isKeyUps[i].Add(false);
             }
         }
-        noteCount = handy.GetNoteCount();
-        progress01 = (float)lastHitedNoteIndex / (float)noteCount;
-        MaxMissCount = (int)Mathf.Clamp(Mathf.Floor(noteCount * 0.4f), 1f, (float)MaxHPCount);
+        progress01 = (float)lastHitedNoteIndex / (float)handy.GetNoteCount();
+        MaxMissCount = (int)Mathf.Clamp(Mathf.Floor((float)handy.GetNoteCount() * 0.4f), 1f, (float)MaxHPCount);
         HP01 = 1f - (float)missCount / MaxMissCount;
         if (isPause)
         {
-            elapsedTime.Stop();
+            foreach (var POET in partOfElapsedTime)
+            {
+                POET.Stop();
+            }
             return;
         }
-        elapsedTime.Start();
-        elapsedSeconds = elapsedTime.ElapsedMilliseconds * 0.001f;
-        for (int i = 0; i < handy.GetMaxPlayerCount(); i++)
+        foreach (var POET in partOfElapsedTime)
         {
-            if (handy.GetPlayer(i).activeSelf)
-            {
-                if (handy.GetWorldInfo(worldInfoIndex + 1).IntervalTimeToWait <= elapsedSeconds)
-                {
-                    isInputted = false;
-                    for (int j = worldInfoIndex + 1; j < handy.GetWorldInfoCount(); j++)
-                    {
-                        worldInfoIndex = j;
-                        handy.GetNote(i, j).SetActive(true);
-                        handy.GetNoteScripts(i, j).toleranceTimeWhenAwake = elapsedSeconds - handy.GetWorldInfo(j).IntervalTimeToWait;
-                        if (handy.GetWorldInfo(j + 1).IntervalTimeToWait > handy.GetNoteScripts(i, j).toleranceTimeWhenAwake)
-                            break;
-                    }
-                }
-            }
-
+            POET.Start();
         }
-        /* for (int j = lastActivedNoteIndex + 1; j <= noteCount; j++)
+        for (int i = 0; i < handy.GetPlayerCount(); i++)
         {
-            if (handy.GetWorldInfo(j).NoteInfo.AwakeTime <= elapsedSeconds)
+            SetPartOfElapsedSeconds(i);
+            float noteActivedSeconds = handy.GetNoteWaitTime(i) + (handy.GetNoteLengthTime(i) == 0f ? handy.judgmentRange : handy.GetNoteLengthTime(i));
+            if (noteActivedSeconds <= partOfElapsedSeconds[i])
             {
-                handy.noteGenerator.transform.GetChild(j).gameObject.SetActive(true);
-                lastActivedNoteIndex = j;
-                handy.noteGenerator.transform.GetChild(j).GetComponent<NotePrefab>().toleranceTimeWhenAwake = elapsedSeconds - handy.GetWorldInfo(j).NoteInfo.AwakeTime;
+                worldInfoIndex++;
+                handy.GetNote(i).SetActive(true);
+                handy.GetNoteScript(i).toleranceTimeWhenAwake = partOfElapsedSeconds[i] - noteActivedSeconds;
+                partOfElapsedTime[i].Reset();
             }
-        } */
+        }
         if (isAutoPlay)
         {
-            for (int i = 0; i < handy.GetMaxPlayerCount(); i++)
+            for (int i = 0; i < handy.GetPlayerCount(); i++)
             {
                 if (handy.GetPlayer(i).activeSelf)
                 {
@@ -141,7 +132,7 @@ public class GameManager : MonoBehaviour
                     {
                         if (!isInputted)
                         {
-                            isKeyDowns[i][handy.GetCorrectNextDegIndex(i, handy.GetWorldInfo().NoteInfo[i].NextDegIndex - 1)] = true;
+                            isKeyDowns[i][handy.GetCorrectNextDegIndex(i, handy.GetWorldInfo().noteInfo[i].nextDegIndex - 1)] = true;
                             InputCount++;
                             handy.noteGeneratorScript.closestNoteScripts[i].isInputted = true;
                             isInputted = true;
@@ -149,16 +140,16 @@ public class GameManager : MonoBehaviour
                     }
                     if (isInputted && handy.closestNoteScripts[i].noteLengthTime != 0f)
                     {
-                        isKeyPresses[i][handy.GetCorrectNextDegIndex(i, handy.GetWorldInfo().NoteInfo[i].NextDegIndex - 1)] = true;
+                        isKeyPresses[i][handy.GetCorrectNextDegIndex(i, handy.GetWorldInfo().noteInfo[i].nextDegIndex - 1)] = true;
                     }
                     if (isInputted)
-                        isKeyUps[i][handy.GetCorrectNextDegIndex(i, handy.GetWorldInfo().NoteInfo[i].NextDegIndex - 1)] = true;
+                        isKeyUps[i][handy.GetCorrectNextDegIndex(i, handy.GetWorldInfo().noteInfo[i].nextDegIndex - 1)] = true;
                 }
             }
         }
         else
         {
-            for (int i = 0; i < handy.GetMaxPlayerCount(); i++)
+            for (int i = 0; i < handy.GetPlayerCount(); i++)
             {
                 if (handy.GetPlayer(i).activeSelf)
                 {
@@ -168,7 +159,7 @@ public class GameManager : MonoBehaviour
                         {
                             isKeyDowns[i][j] = true;
                             InputCount++;
-                            handy.noteGeneratorScript.closestNoteScripts[i].isInputted = true; ;
+                            handy.closestNoteScripts[i].isInputted = true; ;
                         }
                         if (Input.GetKey(canInputKeys[i][j]))
                         {
@@ -182,7 +173,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        for (int i = 0; i < handy.GetMaxPlayerCount(); i++)
+        for (int i = 0; i < handy.GetPlayerCount(); i++)
         {
             if (GetIsKeyDown(i))
             {
@@ -222,6 +213,11 @@ public class GameManager : MonoBehaviour
             isEnd = true;
             isPause = true;
         }
+    }
+    void SetPartOfElapsedSeconds(int playerIndex)
+    {
+        playerIndex = handy.GetCorrectIndex(playerIndex, handy.GetMaxPlayerIndex());
+        partOfElapsedSeconds[playerIndex] = partOfElapsedTime[playerIndex].ElapsedMilliseconds * 0.001f + handy.GetNoteScript(playerIndex).toleranceTimeWhenAwake/*  - lastNoteInitSeconds[playerIndex] */;
     }
     public static GameManager Property
     {
@@ -296,9 +292,9 @@ public class GameManager : MonoBehaviour
     }
     public bool GetIsProperKeyDown(int playerIndex, int? nextDegIndex = null)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, handy.GetMaxPlayerCount());
+        playerIndex = handy.GetCorrectIndex(playerIndex, handy.GetMaxPlayerIndex());
         if (nextDegIndex == null)
-            nextDegIndex = handy.GetWorldInfo(worldInfoIndex - 1).NoteInfo[playerIndex].NextDegIndex;
+            nextDegIndex = handy.GetWorldInfo(worldInfoIndex - 1).noteInfo[playerIndex].nextDegIndex;
         if (isKeyDowns[playerIndex][handy.GetCorrectIndex((int)nextDegIndex)])
         {
             return true;
@@ -308,9 +304,9 @@ public class GameManager : MonoBehaviour
     public bool GetIsProperKeyPress(int playerIndex, int? nextDegIndex = null)
     {
 
-        playerIndex = handy.GetCorrectIndex(playerIndex, handy.GetMaxPlayerCount());
+        playerIndex = handy.GetCorrectIndex(playerIndex, handy.GetMaxPlayerIndex());
         if (nextDegIndex == null)
-            nextDegIndex = handy.GetWorldInfo(worldInfoIndex - 1).NoteInfo[playerIndex].NextDegIndex;
+            nextDegIndex = handy.GetWorldInfo(worldInfoIndex - 1).noteInfo[playerIndex].nextDegIndex;
         if (isKeyPresses[playerIndex][handy.GetCorrectIndex((int)nextDegIndex)])
         {
             return true;
@@ -320,9 +316,9 @@ public class GameManager : MonoBehaviour
     public bool GetIsProperKeyUp(int playerIndex, int? nextDegIndex = null)
     {
 
-        playerIndex = handy.GetCorrectIndex(playerIndex, handy.GetMaxPlayerCount());
+        playerIndex = handy.GetCorrectIndex(playerIndex, handy.GetMaxPlayerIndex());
         if (nextDegIndex == null)
-            nextDegIndex = handy.GetWorldInfo(worldInfoIndex - 1).NoteInfo[playerIndex].NextDegIndex;
+            nextDegIndex = handy.GetWorldInfo(worldInfoIndex - 1).noteInfo[playerIndex].nextDegIndex;
         if (isKeyUps[playerIndex][handy.GetCorrectIndex((int)nextDegIndex)])
         {
             return true;

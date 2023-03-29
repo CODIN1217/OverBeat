@@ -4,174 +4,226 @@ using UnityEngine;
 using DG.Tweening;
 using System;
 
-[Serializable] [ExecuteInEditMode]
+[Serializable]
+[ExecuteInEditMode]
 public class WorldInfo : MonoBehaviour
 {
-    [Serializable] [ExecuteInEditMode]
-    public class CameraInfo_Class
+    [Serializable]
+    [ExecuteInEditMode]
+    public class CameraInfo
     {
-        public /* readonly */ float Rotation;
-        public /* readonly */ float Size;
-        public /* readonly */ Color BGColor;
-        public CameraInfo_Class()
+        [SerializeField] float _rotation;
+        [SerializeField] float _size;
+        [SerializeField] Color _BGColor;
+        public CameraInfo()
         {
-            Rotation = 0f;
-            Size = 1f;
-            BGColor = new Color(39, 29, 35, 255);
+            _rotation = 0f;
+            _size = 1f;
+            _BGColor = new Color(39, 29, 35, 255);
         }
+        public float rotation { get { return _rotation; } set { _rotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
+        public float size { get { return _size; } set { _size = Mathf.Clamp(value, -100f, 100f); } }
+        public Color BGColor { get { return _BGColor; } set { _BGColor = Handy.Property.GetCorrectRGBA(value); } }
     }
-    [Serializable] [ExecuteInEditMode]
-    public class CountDownInfo_Class
+    [Serializable]
+    [ExecuteInEditMode]
+    public class CountDownInfo
     {
-        public /* readonly */ int NumberOfTick;
-        public /* readonly */ float IntervalOfTick;
-        public CountDownInfo_Class()
+        [SerializeField] int _numberOfTick;
+        [SerializeField] float _intervalOfTick;
+        public CountDownInfo()
         {
-            NumberOfTick = 4;
-            IntervalOfTick = 1f;
+            _numberOfTick = 4;
+            _intervalOfTick = 1f;
         }
+        public int numberOfTick { get { return _numberOfTick; } set { _numberOfTick = (int)Mathf.Clamp(value, 1, 400); } }
+        public float intervalOfTick { get { return _intervalOfTick; } set { _intervalOfTick = Mathf.Clamp(value, 0.01f, 100f); } }
     }
-    [Serializable] [ExecuteInEditMode]
-    public class SeveralModeInfo_Class{
-        public int Count;
-        public SeveralModeInfo_Class(){
-            Count = 1;
-        }
-    }
-    [Serializable] [ExecuteInEditMode]
-    public class PlayerInfo_Class
+    [Serializable]
+    [ExecuteInEditMode]
+    public class SeveralModeInfo
     {
-        // public /* readonly */ int Index;
-        public /* readonly */ int MoveDir;
-        public /* readonly */ float TarRadius;
-        public /* readonly */ float Rotation;
-        public /* readonly */ List<float> StdDegs;
-        public /* readonly */ Color PosesGuideColor;
-        public /* readonly */ Color SideColor;
-        public /* readonly */ Color CenterColor;
-        public /* readonly */ Vector2 Scale;
-        public /* readonly */ AnimationCurve DegEase;
-        public /* readonly */ AnimationCurve TarRadiusEase;
-        public PlayerInfo_Class()
+        [SerializeField] int _count;
+        public SeveralModeInfo()
+        {
+            _count = 1;
+        }
+        public int count { get { return _count; } set { _count = (int)Mathf.Clamp(value, 1, 2); } }
+    }
+    [Serializable]
+    [ExecuteInEditMode]
+    public class PlayerInfo
+    {
+        // int Index;
+        [SerializeField] int _moveDir;
+        [SerializeField] float _tarRadius;
+        [SerializeField] float _rotation;
+        [SerializeField] List<float> _stdDegs;
+        [SerializeField] Color _posesGuideColor;
+        [SerializeField] Color _sideColor;
+        [SerializeField] Color _centerColor;
+        [SerializeField] Vector2 _scale;
+        [SerializeField] AnimationCurve _degEase;
+        [SerializeField] AnimationCurve _tarRadiusEase;
+        public PlayerInfo()
         {
             // Index = 0;
-            MoveDir = 1;
-            TarRadius = 1.5f;
-            Rotation = 0f;
-            StdDegs = new List<float>() { 0f, 90f, 180f, 270f };
-            PosesGuideColor = new Color(115, 85, 200, 255);
-            SideColor = new Color(100, 45, 250, 255);
-            CenterColor = new Color(65, 20, 185, 255);
-            Scale = Vector2.one;
-            DegEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-            TarRadiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+            _moveDir = 1;
+            _tarRadius = 1.5f;
+            _rotation = 0f;
+            _stdDegs = new List<float>() { 0f, 90f, 180f, 270f };
+            _posesGuideColor = new Color(115, 85, 200, 255);
+            _sideColor = new Color(100, 45, 250, 255);
+            _centerColor = new Color(65, 20, 185, 255);
+            _scale = Vector2.one;
+            _degEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+            _tarRadiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
         }
+        public int moveDir { get { return _moveDir; } set { _moveDir = (int)Handy.Property.GetSign0Is0(value); } }
+        public float tarRadius { get { return _tarRadius; } set { _tarRadius = Mathf.Clamp(value, 0f, 500f); } }
+        public float rotation { get { return _rotation; } set { _rotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
+        public List<float> stdDegs { get { return _stdDegs; } set { _stdDegs = Handy.Property.GetCorrectStdDegs(value); } }
+        public Color posesGuideColor { get { return _posesGuideColor; } set { _posesGuideColor = Handy.Property.GetCorrectRGBA(value); } }
+        public Color sideColor { get { return _sideColor; } set { _sideColor = Handy.Property.GetCorrectRGBA(value); } }
+        public Color centerColor { get { return _centerColor; } set { _centerColor = Handy.Property.GetCorrectRGBA(value); } }
+        public Vector2 scale { get { return _scale; } set { _scale = Handy.Property.GetCorrectXY(value, -100f, 100f); } }
+        public AnimationCurve degEase { get { return _degEase; } set { _degEase = value; } }
+        public AnimationCurve tarRadiusEase { get { return _tarRadiusEase; } set { _tarRadiusEase = value; } }
     }
-    [Serializable] [ExecuteInEditMode]
-    public class NoteInfo_Class
+    [Serializable]
+    [ExecuteInEditMode]
+    public class NoteInfo
     {
-        public /* readonly */ int NextDegIndex;
-        // public /* readonly */ float AwakeTime;
-        public /* readonly */ float Speed;
-        public /* readonly */ float StartRadius;
-        public /* readonly */ float Length;
-        public /* readonly */ float Rotation;
-        public /* readonly */ string SideImageName;
-        public /* readonly */ Color StartColor;
-        public /* readonly */ Color ProcessColor;
-        public /* readonly */ Color EndColor;
-        public /* readonly */ AnimationCurve RadiusEase;
-        public /* readonly */ AnimationCurve HoldRadiusEase;
-        public /* readonly */ AnimationCurve AppearEase;
-        public NoteInfo_Class()
+        [SerializeField] int _nextDegIndex;
+        // float AwakeTime;
+        [SerializeField] float _speed;
+        [SerializeField] float _startRadius;
+        [SerializeField] float _length;
+        [SerializeField] float _rotation;
+        [SerializeField] string _sideImageName;
+        [SerializeField] Color _startColor;
+        [SerializeField] Color _processColor;
+        [SerializeField] Color _endColor;
+        [SerializeField] AnimationCurve _radiusEase;
+        [SerializeField] AnimationCurve _holdRadiusEase;
+        [SerializeField] AnimationCurve _appearEase;
+        public NoteInfo()
         {
-            NextDegIndex = 0;
+            _nextDegIndex = 0;
             // AwakeTime = 0f;
-            Speed = 1f;
-            StartRadius = 5f;
-            Length = 0f;
-            Rotation = 0f;
-            SideImageName = "Basic";
-            StartColor = new Color(100, 45, 250, 255);
-            ProcessColor = new Color(130, 80, 255, 255);
-            EndColor = new Color(100, 45, 250, 255);
-            RadiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-            HoldRadiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-            AppearEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+            _speed = 1f;
+            _startRadius = 5f;
+            _length = 0f;
+            _rotation = 0f;
+            _sideImageName = "Basic";
+            _startColor = new Color(100, 45, 250, 255);
+            _processColor = new Color(130, 80, 255, 255);
+            _endColor = new Color(100, 45, 250, 255);
+            _radiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+            _holdRadiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+            _appearEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
         }
+        public int nextDegIndex { get { return _nextDegIndex; } set { _nextDegIndex = value; } }
+        public float speed { get { return _speed; } set { _speed = Mathf.Clamp(value, 0.01f, 100f); } }
+        public float startRadius { get { return _startRadius; } set { _startRadius = Mathf.Clamp(value, 0f, 500f); } }
+        public float length { get { return _length; } set { _length = Mathf.Clamp(value, 0f, 500f); } }
+        public float rotation { get { return _rotation; } set { _rotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
+        public string sideImageName { get { return _sideImageName; } set { _sideImageName = value; } }
+        public Color startColor { get { return _startColor; } set { _startColor = Handy.Property.GetCorrectRGBA(value); } }
+        public Color processColor { get { return _processColor; } set { _processColor = Handy.Property.GetCorrectRGBA(value); } }
+        public Color endColor { get { return _endColor; } set { _endColor = Handy.Property.GetCorrectRGBA(value); } }
+        public AnimationCurve radiusEase { get { return _radiusEase; } set { _radiusEase = value; } }
+        public AnimationCurve holdRadiusEase { get { return _holdRadiusEase; } set { _holdRadiusEase = value; } }
+        public AnimationCurve appearEase { get { return _appearEase; } set { _appearEase = value; } }
     }
-    [Serializable] [ExecuteInEditMode]
-    public class CenterInfo_Class
+    [Serializable]
+    [ExecuteInEditMode]
+    public class CenterInfo
     {
-        public /* readonly */ Color Color;
-        public /* readonly */ Vector2 Pos;
-        public /* readonly */ Vector2 Scale;
-        public CenterInfo_Class()
+        [SerializeField] Color _color;
+        [SerializeField] Vector2 _pos;
+        [SerializeField] Vector2 _scale;
+        public CenterInfo()
         {
-            Color = new Color(0, 255, 160, 255);
-            Pos = Vector2.zero;
-            Scale = Vector2.one;
+            _color = new Color(0, 255, 160, 255);
+            _pos = Vector2.zero;
+            _scale = Vector2.one;
         }
+        public Color color { get { return _color; } set { _color = Handy.Property.GetCorrectRGBA(value); } }
+        public Vector2 pos { get { return _pos; } set { _pos = value; } }
+        public Vector2 scale { get { return _scale; } set { _scale = Handy.Property.GetCorrectXY(value, -100f, 100f); } }
     }
-    [Serializable] [ExecuteInEditMode]
-    public class BoundaryInfo_Class
+    [Serializable]
+    [ExecuteInEditMode]
+    public class BoundaryInfo
     {
-        public /* readonly */ Color LineColor;
-        public /* readonly */ Color? CoverColor;
-        public /* readonly */ Vector2 Scale;
-        public BoundaryInfo_Class()
+        [SerializeField] Color _lineColor;
+        [SerializeField] Color? _coverColor;
+        [SerializeField] Vector2 _scale;
+        public BoundaryInfo()
         {
-            LineColor = new Color(0, 255, 160, 255);
-            CoverColor = null/* new Color(39, 29, 35, 255) */;
-            Scale = Vector2.one;
+            _lineColor = new Color(0, 255, 160, 255);
+            _coverColor = null/* new Color(39, 29, 35, 255) */;
+            _scale = Vector2.one;
         }
+        public Color lineColor { get { return _lineColor; } set { _lineColor = Handy.Property.GetCorrectRGBA(value); } }
+        public Color? coverColor { get { return _coverColor; } set { _coverColor = Handy.Property.GetCorrectRGBA(value); } }
+        public Vector2 scale { get { return _scale; } set { _scale = Handy.Property.GetCorrectXY(value, -100f, 100f); } }
     }
-    [Serializable] [ExecuteInEditMode]
-    public class JudgmentInfo_Class
+    [Serializable]
+    [ExecuteInEditMode]
+    public class JudgmentInfo
     {
-        public /* readonly */ float Range;
-        public JudgmentInfo_Class()
+        [SerializeField] float _range;
+        public JudgmentInfo()
         {
-            Range = 0.5f;
+            _range = 0.5f;
         }
+        public float range { get { return _range; } set { _range = Mathf.Clamp(value, 0.05f, 0.5f); } }
     }
-    [Serializable] [ExecuteInEditMode]
-    public class CreditInfo_Class
+    [Serializable]
+    [ExecuteInEditMode]
+    public class CreditInfo
     {
-        public /* readonly */ string WorldName;
-        public /* readonly */ string WorldEditor;
-        public /* readonly */ string SongName;
-        public /* readonly */ string SongWriter;
-        public CreditInfo_Class()
+        [SerializeField] string _worldName;
+        [SerializeField] string _worldEditor;
+        [SerializeField] string _songName;
+        [SerializeField] string _songWriter;
+        public CreditInfo()
         {
-            WorldName = "Empty";
-            WorldEditor = "Empty";
-            SongName = "Empty";
-            SongWriter = "Empty";
+            _worldName = "Empty";
+            _worldEditor = "Empty";
+            _songName = "Empty";
+            _songWriter = "Empty";
         }
+        public string worldName { get { return _worldName; } set { _worldName = value; } }
+        public string worldEditor { get { return _worldEditor; } set { _worldEditor = value; } }
+        public string songName { get { return _songName; } set { _songName = value; } }
+        public string songWriter { get { return _songWriter; } set { _songWriter = value; } }
     }
-    public readonly float IntervalTimeToWait;
-    public readonly CameraInfo_Class CameraInfo;
-    public readonly CountDownInfo_Class CountDownInfo;
-    public readonly SeveralModeInfo_Class SeveralModeInfo;
-    public readonly List<PlayerInfo_Class> PlayerInfo;
-    public readonly List<NoteInfo_Class> NoteInfo;
-    public readonly CenterInfo_Class CenterInfo;
-    public readonly BoundaryInfo_Class BoundaryInfo;
-    public readonly JudgmentInfo_Class JudgmentInfo;
-    public readonly CreditInfo_Class CreditInfo;
+    // [SerializeField] float _waitTime;
+    public CameraInfo cameraInfo;
+    public CountDownInfo countDownInfo;
+    public SeveralModeInfo severalModeInfo;
+    public PlayerInfo[] playerInfo;
+    public NoteInfo[] noteInfo;
+    public CenterInfo centerInfo;
+    public BoundaryInfo boundaryInfo;
+    public JudgmentInfo judgmentInfo;
+    public CreditInfo creditInfo;
 
     public WorldInfo()
     {
-        IntervalTimeToWait = 1f;
-        CameraInfo = new CameraInfo_Class();
-        CountDownInfo = new CountDownInfo_Class();
-        SeveralModeInfo = new SeveralModeInfo_Class();
-        PlayerInfo = new List<PlayerInfo_Class>(SeveralModeInfo.Count);
-        NoteInfo = new List<NoteInfo_Class>(SeveralModeInfo.Count);
-        CenterInfo = new CenterInfo_Class();
-        BoundaryInfo = new BoundaryInfo_Class();
-        JudgmentInfo = new JudgmentInfo_Class();
-        CreditInfo = new CreditInfo_Class();
+        // _waitTime = 1f;
+        cameraInfo = new CameraInfo();
+        countDownInfo = new CountDownInfo();
+        severalModeInfo = new SeveralModeInfo();
+        playerInfo = new PlayerInfo[severalModeInfo.count];
+        noteInfo = new NoteInfo[severalModeInfo.count];
+        centerInfo = new CenterInfo();
+        boundaryInfo = new BoundaryInfo();
+        judgmentInfo = new JudgmentInfo();
+        creditInfo = new CreditInfo();
     }
+    // public float waitTime { get { return _waitTime; } set { _waitTime = value; } }
 }

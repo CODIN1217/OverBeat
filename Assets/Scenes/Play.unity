@@ -172,6 +172,7 @@ MonoBehaviour:
   lastHitedNoteIndex: 0
   isPause: 0
   isGameOver: 0
+  isEnd: 0
   isAutoPlay: 0
   sumNoteAccuracy01: 0
   noteWaitTime: 0
@@ -183,8 +184,8 @@ MonoBehaviour:
   handy: {fileID: 1282508016}
   curNotePos: {x: 0, y: 0, z: 0}
   judgmentTypes: 
-  totalElapsedSeconds: 0
-  toleranceTimeWhenAwake: 0
+  elapsedSeconds: 0
+  worldInfoIndex: 0
 --- !u!1 &394644008
 GameObject:
   m_ObjectHideFlags: 0
@@ -991,9 +992,8 @@ MonoBehaviour:
   baseCameraScript: {fileID: 519420033}
   closestNotes: []
   closestNoteScripts: []
-  noteIndexes: 
-  judgmentRanges: []
-  bestJudgmentRanges: []
+  judgmentRange: 0
+  bestJudgmentRange: 0
 --- !u!4 &1282508017
 Transform:
   m_ObjectHideFlags: 0
@@ -1056,12 +1056,6 @@ MonoBehaviour:
   notePrefab: {fileID: 6953654910098136422, guid: 2eae1d3addf77dd41ad85a30921a751d, type: 3}
   closestNotes: []
   closestNoteScripts: []
-  noteWaitTimes: []
-  noteLengthTimes: []
-  notes: []
-  noteScripts: []
-  worldReader: {fileID: 2060904675}
-  worldReaderScript: {fileID: 2060904676}
 --- !u!1 &1486238822
 GameObject:
   m_ObjectHideFlags: 0
@@ -1755,7 +1749,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  notesCount: 0
 --- !u!4 &2060904677
 Transform:
   m_ObjectHideFlags: 0

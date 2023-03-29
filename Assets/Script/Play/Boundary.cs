@@ -19,8 +19,8 @@ public class Boundary : MonoBehaviour
     void Update()
     {
         worldInfo = handy.GetWorldInfo();
-        boundaryCoverImage.color = worldInfo.BoundaryInfo.CoverColor == null ? handy.GetColor01(worldInfo.CameraInfo.BGColor) : handy.GetColor01((Color)worldInfo.BoundaryInfo.CoverColor);
-        boundaryLineImage.color = handy.GetColor01(worldInfo.BoundaryInfo.LineColor);
-        transform.localScale = (/* worldInfo.boundaryScale == null ? Vector2.one * (worldInfo.noteStartRadius > worldInfo.playerRadius  ? worldInfo.noteStartRadius * 0.2f : worldInfo.playerRadius / 1.5f) :  */worldInfo.BoundaryInfo.Scale) / worldInfo.CameraInfo.Size;
+        boundaryCoverImage.color = worldInfo.boundaryInfo.coverColor == null ? handy.GetColor01(worldInfo.cameraInfo.BGColor) : handy.GetColor01((Color)worldInfo.boundaryInfo.coverColor);
+        boundaryLineImage.color = handy.GetColor01(worldInfo.boundaryInfo.lineColor);
+        transform.localScale = (/* worldInfo.boundaryScale == null ? Vector2.one * (worldInfo.noteStartRadius > worldInfo.playerRadius  ? worldInfo.noteStartRadius * 0.2f : worldInfo.playerRadius / 1.5f) :  */worldInfo.boundaryInfo.scale) / worldInfo.cameraInfo.size;
     }
 }

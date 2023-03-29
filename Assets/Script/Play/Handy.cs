@@ -33,8 +33,6 @@ public class Handy : MonoBehaviour
     // public List<int> noteIndexes;
     public float judgmentRange;
     public float bestJudgmentRange;
-    public readonly float minJudgmentRange;
-    public readonly float maxJudgmentRange;
     int stdDegCount;
     int stdDegCount_temp;
     List<float> stdDegs;
@@ -50,7 +48,7 @@ public class Handy : MonoBehaviour
         // noteIndexes = new List<int>();
         // judgmentRange = new List<float>();
         // bestJudgmentRange = new List<float>();
-        judgmentRange = Mathf.Clamp(GetWorldInfo().JudgmentInfo.Range, minJudgmentRange, maxJudgmentRange);
+        judgmentRange = GetWorldInfo().judgmentInfo.range;
         bestJudgmentRange = judgmentRange * 0.2f;
         /* for (int i = 0; i <= GetTotalMaxPlayerIndex(); i++)
         {
@@ -64,7 +62,7 @@ public class Handy : MonoBehaviour
         // noteIndexes.Clear();
         // judgmentRange.Clear();
         // bestJudgmentRange.Clear();
-        judgmentRange = Mathf.Clamp(GetWorldInfo().JudgmentInfo.Range, minJudgmentRange, maxJudgmentRange);
+        judgmentRange = GetWorldInfo().judgmentInfo.range;
         bestJudgmentRange = judgmentRange * 0.2f;
         closestNotes = noteGeneratorScript.closestNotes;
         closestNoteScripts = noteGeneratorScript.closestNoteScripts;
@@ -109,7 +107,7 @@ public class Handy : MonoBehaviour
             worldInfoIndex = GM.worldInfoIndex;
         // if (noteIndex == null)
         //     noteIndex = this.noteIndexes[(int)Mathf.Clamp(playerIndex, 0, playerControllerScript.players.Count)];
-        return worldReaderScript.worldInfos[GetCorrectIndex((int)worldInfoIndex, GetWorldInfoCount() - 1)];
+        return worldReaderScript.worldInfos[GetCorrectIndex((int)worldInfoIndex, GetNoteCount())];
     }
     /* public WorldInfo GetWorldInfo(int noteIndex)
     {
@@ -131,48 +129,48 @@ public class Handy : MonoBehaviour
     {
         if (worldInfoIndex == null)
             worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).SeveralModeInfo.Count - 1);
-        return GetWorldInfo(worldInfoIndex).PlayerInfo[playerIndex].StdDegs[GetWorldInfo(worldInfoIndex).NoteInfo[playerIndex].NextDegIndex];
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        return GetWorldInfo(worldInfoIndex).playerInfo[playerIndex].stdDegs[GetWorldInfo(worldInfoIndex).noteInfo[playerIndex].nextDegIndex];
     }
     public float GetNextDeg(int playerIndex, WorldInfo worldInfo)
     {
-        playerIndex = GetCorrectIndex(playerIndex, worldInfo.SeveralModeInfo.Count - 1);
-        return worldInfo.PlayerInfo[playerIndex].StdDegs[worldInfo.NoteInfo[playerIndex].NextDegIndex];
+        playerIndex = GetCorrectIndex(playerIndex, worldInfo.severalModeInfo.count - 1);
+        return worldInfo.playerInfo[playerIndex].stdDegs[worldInfo.noteInfo[playerIndex].nextDegIndex];
     }
     public float GetBeforeDeg(int playerIndex, int? worldInfoIndex = null)
     {
         if (worldInfoIndex == null)
             worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex - 1).SeveralModeInfo.Count - 1);
-        return GetWorldInfo(worldInfoIndex - 1).PlayerInfo[playerIndex].StdDegs[GetWorldInfo(worldInfoIndex - 1).NoteInfo[playerIndex].NextDegIndex];
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex - 1).severalModeInfo.count - 1);
+        return GetWorldInfo(worldInfoIndex - 1).playerInfo[playerIndex].stdDegs[GetWorldInfo(worldInfoIndex - 1).noteInfo[playerIndex].nextDegIndex];
     }
     public float GetNoteWaitTime(int playerIndex, int? worldInfoIndex = null)
     {
         if (worldInfoIndex == null)
             worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).SeveralModeInfo.Count - 1);
-        return (float)noteGeneratorScript.noteWaitTimes[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetWorldInfoCount() - 1)];
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        return (float)noteGeneratorScript.noteWaitTimes[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetNoteCount())];
     }
     public float GetNoteLengthTime(int playerIndex, int? worldInfoIndex = null)
     {
         if (worldInfoIndex == null)
             worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).SeveralModeInfo.Count - 1);
-        return (float)noteGeneratorScript.noteLengthTimes[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetWorldInfoCount() - 1)];
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        return (float)noteGeneratorScript.noteLengthTimes[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetNoteCount())];
     }
     public GameObject GetNote(int playerIndex, int? worldInfoIndex = null)
     {
         if (worldInfoIndex == null)
             worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).SeveralModeInfo.Count - 1);
-        return noteGeneratorScript.notes[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetWorldInfoCount() - 1)];
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        return noteGeneratorScript.notes[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetNoteCount())];
     }
-    public NotePrefab GetNoteScripts(int playerIndex, int? worldInfoIndex = null)
+    public NotePrefab GetNoteScript(int playerIndex, int? worldInfoIndex = null)
     {
         if (worldInfoIndex == null)
             worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).SeveralModeInfo.Count - 1);
-        return noteGeneratorScript.noteScripts[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetWorldInfoCount() - 1)];
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        return noteGeneratorScript.noteScripts[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetNoteCount())];
     }
     public void WriteLog(params object[] contents)
     {
@@ -276,6 +274,12 @@ public class Handy : MonoBehaviour
     {
         return value <= 0f ? -1f : 1f;
     }
+    public float GetSign0Is0(float value)
+    {
+        if (value != 0f)
+            return Mathf.Sign(value);
+        return 0f;
+    }
     /* public bool GetIsStdDegsChanged(){
         bool isStdDegsChanged = false;
         if(stdDegCount != GetWorldInfo().PlayerInfo.StdDegs.Count){
@@ -297,10 +301,10 @@ public class Handy : MonoBehaviour
         int maxStdDegCount = 0;
         for (int i = 0; i < GetWorldInfoCount(); i++)
         {
-            int _playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(i).SeveralModeInfo.Count - 1);
-            if (maxStdDegCount < GetWorldInfo(i).PlayerInfo[_playerIndex].StdDegs.Count)
+            int _playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(i).severalModeInfo.count - 1);
+            if (maxStdDegCount < GetWorldInfo(i).playerInfo[_playerIndex].stdDegs.Count)
             {
-                maxStdDegCount = GetWorldInfo(i).PlayerInfo[_playerIndex].StdDegs.Count;
+                maxStdDegCount = GetWorldInfo(i).playerInfo[_playerIndex].stdDegs.Count;
             }
         }
         return maxStdDegCount;
@@ -309,9 +313,9 @@ public class Handy : MonoBehaviour
     {
         if (worldInfoIndex == null)
             worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).SeveralModeInfo.Count - 1);
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
         // return GetCorrectIndex(nextDegIndex, GetWorldInfo(worldInfoIndex).PlayerInfo[playerIndex].StdDegs.Count - 1);
-        return nextDegIndex >= 0 ? nextDegIndex : nextDegIndex + GetWorldInfo(worldInfoIndex).PlayerInfo[playerIndex].StdDegs.Count;
+        return nextDegIndex >= 0 ? nextDegIndex : nextDegIndex + GetWorldInfo(worldInfoIndex).playerInfo[playerIndex].stdDegs.Count;
     }
     public int GetCorrectIndex(int index, int? maxIndex = null)
     {
@@ -319,34 +323,38 @@ public class Handy : MonoBehaviour
             maxIndex = int.MaxValue;
         return (int)Mathf.Clamp(index, 0f, (float)maxIndex);
     }
-    public int GetMaxPlayerCount()
+    public int GetPlayerCount()
     {
         int maxPlayerCount = 0;
         for (int i = 0; i < GetWorldInfoCount(); i++)
         {
-            if (maxPlayerCount < GetWorldInfo(i).SeveralModeInfo.Count)
+            if (maxPlayerCount < GetWorldInfo(i).severalModeInfo.count)
             {
-                maxPlayerCount = GetWorldInfo(i).SeveralModeInfo.Count;
+                maxPlayerCount = GetWorldInfo(i).severalModeInfo.count;
             }
         }
         return maxPlayerCount;
     }
     public int GetMaxPlayerIndex()
     {
-        return GetMaxPlayerCount() - 1;
+        return GetPlayerCount() - 1;
     }
     public int GetWorldInfoCount()
     {
         return worldReaderScript.worldInfos.Count;
     }
+    public int GetMaxWorldInfoIndex()
+    {
+        return GetWorldInfoCount() - 1;
+    }
     public int GetNoteCount()
     {
-        return worldReaderScript.worldInfos.Count - 1;
+        return GetWorldInfoCount() - 1;
     }
     public int GetActivePlayerCount()
     {
         int activeMaxPlayerCount = 0;
-        for (int i = 0; i < GetMaxPlayerCount(); i++)
+        for (int i = 0; i < GetPlayerCount(); i++)
         {
             if (GetPlayer(i).activeSelf)
                 activeMaxPlayerCount++;
@@ -474,23 +482,47 @@ public class Handy : MonoBehaviour
     {
         if (worldInfoIndex == null)
             worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).SeveralModeInfo.Count - 1);
-        if (GetNoteScripts(playerIndex, worldInfoIndex) != null)
-            return GetNoteScripts(playerIndex, worldInfoIndex).elapsedTimeWhenNeedlessInput01;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        if (GetNoteScript(playerIndex, worldInfoIndex) != null)
+            return GetNoteScript(playerIndex, worldInfoIndex).elapsedTimeWhenNeedlessInput01;
         return 0f;
     }
     public float GetElapsedTimeWhenNeedInput01(int playerIndex, int? worldInfoIndex = null)
     {
         if (worldInfoIndex == null)
             worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).SeveralModeInfo.Count - 1);
-        if (GetNoteScripts(playerIndex, worldInfoIndex) != null)
-            return GetNoteScripts(playerIndex, worldInfoIndex).elapsedTimeWhenNeedInput01;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        if (GetNoteScript(playerIndex, worldInfoIndex) != null)
+            return GetNoteScript(playerIndex, worldInfoIndex).elapsedTimeWhenNeedInput01;
         return 0f;
     }
-    Handy()
+    public List<float> GetCorrectStdDegs(List<float> stdDegs)
     {
-        minJudgmentRange = 0.05f;
-        maxJudgmentRange = 0.5f;
+        List<float> stdDegs_temp = new List<float>();
+        for (int i = 0; i < stdDegs.Count; i++)
+        {
+            stdDegs_temp.Add(GetCorrectDegMaxIs0(stdDegs[i]));
+        }
+        return stdDegs_temp;
+    }
+    public Vector2 GetCorrectXY(Vector2 XY, float minXY, float maxXY)
+    {
+        return new Vector2(Mathf.Clamp(XY.x, minXY, maxXY), Mathf.Clamp(XY.y, minXY, maxXY));
+    }
+    public Vector2? GetCorrectXY(Vector2? XY, float minXY, float maxXY)
+    {
+        if (XY == null)
+            return null;
+        return new Vector2(Mathf.Clamp(((Vector2)XY).x, minXY, maxXY), Mathf.Clamp(((Vector2)XY).y, minXY, maxXY));
+    }
+    public Color GetCorrectRGBA(Color RGBA, float minRGBA = 0f, float maxRGBA = 255f)
+    {
+        return new Color(Mathf.Clamp(RGBA.r, minRGBA, maxRGBA), Mathf.Clamp(RGBA.g, minRGBA, maxRGBA), Mathf.Clamp(RGBA.b, minRGBA, maxRGBA), Mathf.Clamp(RGBA.a, minRGBA, maxRGBA));
+    }
+    public Color? GetCorrectRGBA(Color? RGBA, float minRGBA = 0f, float maxRGBA = 255f)
+    {
+        if (RGBA == null)
+            return null;
+        return new Color(Mathf.Clamp(((Color)RGBA).r, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).g, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).b, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).a, minRGBA, maxRGBA));
     }
 }

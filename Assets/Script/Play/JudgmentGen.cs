@@ -12,7 +12,7 @@ public class JudgmentGen : MonoBehaviour
     }
     void Update()
     {
-        for (int i = 0; i <= handy.GetMaxPlayerCount(); i++)
+        for (int i = 0; i < handy.GetPlayerCount(); i++)
         {
             if (GameManager.Property.GetIsProperKeyDown(i))
             {

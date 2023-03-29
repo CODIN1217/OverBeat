@@ -21,15 +21,15 @@ public class PlayerController : MonoBehaviour
         playerSideRends = new List<SpriteRenderer>();
         playerCenters = new List<GameObject>();
         playerCenterRends = new List<SpriteRenderer>();
-        for(int i = 0; i < handy.GetMaxPlayerCount(); i++){
+        for(int i = 0; i < handy.GetPlayerCount(); i++){
             players.Add(Instantiate(playerPrefab, transform));
             playerScripts.Add(players[i].GetComponent<Player>());
             playerSides.Add(playerScripts[i].playerSide);
             playerSideRends.Add(playerSides[i].GetComponent<SpriteRenderer>());
             playerCenters.Add(playerScripts[i].playerCenter);
             playerCenterRends.Add(playerCenters[i].GetComponent<SpriteRenderer>());
-            playerSideRends[i].sortingOrder =  (handy.GetMaxPlayerCount() - i) * 2 + 1;
-            playerCenterRends[i].sortingOrder = (handy.GetMaxPlayerCount() - i) * 2;
+            playerSideRends[i].sortingOrder =  (handy.GetPlayerCount() - i) * 2 + 1;
+            playerCenterRends[i].sortingOrder = (handy.GetPlayerCount() - i) * 2;
             playerScripts[i].myPlayerIndex = i;
         }
     }
