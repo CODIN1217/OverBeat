@@ -14,8 +14,10 @@ public class CountDown : MonoBehaviour
     TextMeshProUGUI countDownTMP;
     WorldInfo worldInfo;
     Handy handy;
+    GameManager GM;
     void Awake()
     {
+        GM = GameManager.Property;
         handy = Handy.Property;
         countDownTMP = GetComponent<TextMeshProUGUI>();
     }
@@ -48,7 +50,7 @@ public class CountDown : MonoBehaviour
     }
 
     public void PlayCountDown(){
-        worldInfo = handy.GetWorldInfo();
+        worldInfo = handy.GetWorldInfo(GM.curWorldInfoIndex);
         numberOfCountDownTick = worldInfo.countDownInfo.numberOfTick;
         intervalOfCountDownTick = worldInfo.countDownInfo.intervalOfTick;
         totalCountDownTime = (float)numberOfCountDownTick * intervalOfCountDownTick;

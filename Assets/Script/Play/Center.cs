@@ -12,14 +12,16 @@ public class Center : MonoBehaviour
     Sequence colorTweener;
     WorldInfo worldInfo;
     Handy handy;
+    GameManager GM;
     void Awake()
     {
+        GM = GameManager.Property;
         handy = Handy.Property;
         centerImage = GetComponent<Image>();
     }
     void Update()
     {
-        worldInfo = handy.GetWorldInfo();
+        worldInfo = handy.GetWorldInfo(GM.curWorldInfoIndex);
         HP01 = GameManager.Property.HP01;
         centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, HP01, Time.unscaledDeltaTime * 4f);
         transform.localScale = worldInfo.centerInfo.scale;

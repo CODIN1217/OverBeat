@@ -8,14 +8,16 @@ public class BaseCamera : MonoBehaviour
     public readonly float stdSize;
     Handy handy;
     WorldInfo worldInfo;
+    GameManager GM;
     void Awake()
     {
+        GM = GameManager.Property;
         handy = Handy.Property;
         baseCamera = Camera.main;
     }
     void Update()
     {
-        worldInfo = handy.GetWorldInfo();
+        worldInfo = handy.GetWorldInfo(GM.curWorldInfoIndex);
         baseCamera.orthographicSize = stdSize * worldInfo.cameraInfo.size;
         baseCamera.backgroundColor = handy.GetColor01(worldInfo.cameraInfo.BGColor);
         transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(worldInfo.cameraInfo.rotation));

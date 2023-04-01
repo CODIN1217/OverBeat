@@ -12,13 +12,13 @@ public class JudgmentGen : MonoBehaviour
     }
     void Update()
     {
-        for (int i = 0; i < handy.GetPlayerCount(); i++)
+        /* for (int i = 0; i < handy.GetPlayerCount(); i++)
         {
             if (GameManager.Property.GetIsProperKeyDown(i))
             {
                 SetJudgmentText(i, GameManager.Property.judgmentTypes[i]);
             }
-        }
+        } */
     }
     public void SetJudgmentText(int playerIndex, JudgmentType judgmentType)
     {
@@ -33,10 +33,11 @@ public class JudgmentGen : MonoBehaviour
         // {
             // GameManager.Property.judgmentTypes = new JudgmentType[handy.GetTotalMaxPlayerIndex() + 1];
             // GameManager.Property.judgmentTypes.Insert(playerIndex, (JudgmentType)judgmentType);
-                GameManager.Property.judgmentTypes[playerIndex] = (JudgmentType)judgmentType;
+                // GameManager.Property.judgmentTypes[playerIndex] = (JudgmentType)judgmentType;
         // }
         GameObject newJudgmentText = Instantiate(judgmentTextPrefab, transform);
         JudgmentText newJudgmentTextScript = newJudgmentText.GetComponent<JudgmentText>();
         newJudgmentTextScript.playerIndex = playerIndex;
+        newJudgmentTextScript.judgmentType = judgmentType;
     }
 }

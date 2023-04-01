@@ -11,6 +11,7 @@ public class NoteGenerator : MonoBehaviour
     public float?[,] noteLengthTimes;
     public GameObject[,] notes;
     public NotePrefab[,] noteScripts;
+    float[] lastNoteActivedTotalSeconds;
     // public GameObject worldReader;
     // public WorldReader worldReaderScript;
     bool isAwake;
@@ -24,6 +25,7 @@ public class NoteGenerator : MonoBehaviour
         noteScripts = new NotePrefab[handy.GetPlayerCount(), handy.GetWorldInfoCount()];
         closestNotes = new GameObject[handy.GetPlayerCount()];
         closestNoteScripts = new NotePrefab[handy.GetPlayerCount()];
+        lastNoteActivedTotalSeconds = new float[handy.GetPlayerCount()];
         for (int i = 0; i < handy.GetPlayerCount(); i++)
         {
             for (int j = 0; j < handy.GetWorldInfoCount(); j++)
@@ -78,7 +80,7 @@ public class NoteGenerator : MonoBehaviour
         GameObject newNote = Instantiate(notePrefab, transform);
         NotePrefab newNoteScript = newNote.GetComponent<NotePrefab>();
 
-        WorldInfo worldInfo = handy.GetWorldInfo();
+        WorldInfo worldInfo = handy.GetWorldInfo(noteIndex);
         playerIndex = handy.GetCorrectIndex(playerIndex, handy.GetMaxPlayerIndex());
         newNoteScript.noteWaitTime = Mathf.Abs(worldInfo.noteInfo[playerIndex].startRadius - worldInfo.playerInfo[playerIndex].tarRadius) / 3.5f / worldInfo.noteInfo[playerIndex].speed;
         newNoteScript.noteWaitTime *= Mathf.Clamp01(noteIndex);
@@ -90,6 +92,10 @@ public class NoteGenerator : MonoBehaviour
         noteScripts[playerIndex, noteIndex] = newNoteScript;
         newNoteScript.myNoteIndex = noteIndex;
         newNoteScript.playerIndex = playerIndex;
+        GameManager.Property.notesActivedSeconds[playerIndex, noteIndex] = newNoteScript.noteWaitTime + (newNoteScript.noteLengthTime == 0f ? handy.judgmentRange[playerIndex] : newNoteScript.noteLengthTime);
+        GameManager.Property.notesActivedSeconds[playerIndex, noteIndex] *= Mathf.Clamp01(noteIndex);
+        lastNoteActivedTotalSeconds[playerIndex] += GameManager.Property.notesActivedSeconds[playerIndex, noteIndex];
+        GameManager.Property.notesActivedTotalSeconds[playerIndex, noteIndex] = lastNoteActivedTotalSeconds[playerIndex];
         /* newNoteScript.InitNote();
         if (noteIndex == 0)
         {

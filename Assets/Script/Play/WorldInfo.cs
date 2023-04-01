@@ -41,14 +41,14 @@ public class WorldInfo : MonoBehaviour
     }
     [Serializable]
     [ExecuteInEditMode]
-    public class SeveralModeInfo
+    public class VariousModeInfo
     {
-        [SerializeField] int _count;
-        public SeveralModeInfo()
+        [SerializeField] int _variousModeCount;
+        public VariousModeInfo()
         {
-            _count = 1;
+            _variousModeCount = 1;
         }
-        public int count { get { return _count; } set { _count = (int)Mathf.Clamp(value, 1, 2); } }
+        public int variousModeCount { get { return _variousModeCount; } set { _variousModeCount = (int)Mathf.Clamp(value, 1, 2); } }
     }
     [Serializable]
     [ExecuteInEditMode]
@@ -56,6 +56,7 @@ public class WorldInfo : MonoBehaviour
     {
         // int Index;
         [SerializeField] int _moveDir;
+        // [SerializeField] int _noteCount;
         [SerializeField] float _tarRadius;
         [SerializeField] float _rotation;
         [SerializeField] List<float> _stdDegs;
@@ -69,6 +70,7 @@ public class WorldInfo : MonoBehaviour
         {
             // Index = 0;
             _moveDir = 1;
+            // _noteCount = 1;
             _tarRadius = 1.5f;
             _rotation = 0f;
             _stdDegs = new List<float>() { 0f, 90f, 180f, 270f };
@@ -80,6 +82,7 @@ public class WorldInfo : MonoBehaviour
             _tarRadiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
         }
         public int moveDir { get { return _moveDir; } set { _moveDir = (int)Handy.Property.GetSign0Is0(value); } }
+        // public int noteCount { get { return _noteCount; } set { _noteCount = (int)Mathf.Clamp(value, 1, int.MaxValue); } }
         public float tarRadius { get { return _tarRadius; } set { _tarRadius = Mathf.Clamp(value, 0f, 500f); } }
         public float rotation { get { return _rotation; } set { _rotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
         public List<float> stdDegs { get { return _stdDegs; } set { _stdDegs = Handy.Property.GetCorrectStdDegs(value); } }
@@ -94,8 +97,8 @@ public class WorldInfo : MonoBehaviour
     [ExecuteInEditMode]
     public class NoteInfo
     {
-        [SerializeField] int _nextDegIndex;
-        // float AwakeTime;
+        [SerializeField] int _stdDegIndex;
+        // [SerializeField] float _awakeTime01;
         [SerializeField] float _speed;
         [SerializeField] float _startRadius;
         [SerializeField] float _length;
@@ -109,8 +112,8 @@ public class WorldInfo : MonoBehaviour
         [SerializeField] AnimationCurve _appearEase;
         public NoteInfo()
         {
-            _nextDegIndex = 0;
-            // AwakeTime = 0f;
+            _stdDegIndex = 0;
+            // _awakeTime01 = 0f;
             _speed = 1f;
             _startRadius = 5f;
             _length = 0f;
@@ -123,7 +126,8 @@ public class WorldInfo : MonoBehaviour
             _holdRadiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
             _appearEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
         }
-        public int nextDegIndex { get { return _nextDegIndex; } set { _nextDegIndex = value; } }
+        public int stdDegIndex { get { return _stdDegIndex; } set { _stdDegIndex = value; } }
+        // public float awakeTime01 { get { return _awakeTime01; } set { _awakeTime01 = Mathf.Clamp(value, 0f, 1f); } }
         public float speed { get { return _speed; } set { _speed = Mathf.Clamp(value, 0.01f, 100f); } }
         public float startRadius { get { return _startRadius; } set { _startRadius = Mathf.Clamp(value, 0f, 500f); } }
         public float length { get { return _length; } set { _length = Mathf.Clamp(value, 0f, 500f); } }
@@ -204,26 +208,32 @@ public class WorldInfo : MonoBehaviour
     // [SerializeField] float _waitTime;
     public CameraInfo cameraInfo;
     public CountDownInfo countDownInfo;
-    public SeveralModeInfo severalModeInfo;
+    public VariousModeInfo variousModeInfo;
     public PlayerInfo[] playerInfo;
     public NoteInfo[] noteInfo;
     public CenterInfo centerInfo;
     public BoundaryInfo boundaryInfo;
     public JudgmentInfo judgmentInfo;
     public CreditInfo creditInfo;
+    
+    public PlayerInfo playerInfo_temp;
+    public NoteInfo noteInfo_temp;
 
     public WorldInfo()
     {
         // _waitTime = 1f;
         cameraInfo = new CameraInfo();
         countDownInfo = new CountDownInfo();
-        severalModeInfo = new SeveralModeInfo();
-        playerInfo = new PlayerInfo[severalModeInfo.count];
-        noteInfo = new NoteInfo[severalModeInfo.count];
+        variousModeInfo = new VariousModeInfo();
+        playerInfo = new PlayerInfo[variousModeInfo.variousModeCount];
+        noteInfo = new NoteInfo[variousModeInfo.variousModeCount];
         centerInfo = new CenterInfo();
         boundaryInfo = new BoundaryInfo();
         judgmentInfo = new JudgmentInfo();
         creditInfo = new CreditInfo();
+
+        playerInfo_temp = new PlayerInfo();
+        noteInfo_temp = new NoteInfo();
     }
     // public float waitTime { get { return _waitTime; } set { _waitTime = value; } }
 }

@@ -31,8 +31,8 @@ public class Handy : MonoBehaviour
     public GameObject[] closestNotes;
     public NotePrefab[] closestNoteScripts;
     // public List<int> noteIndexes;
-    public float judgmentRange;
-    public float bestJudgmentRange;
+    public float[] judgmentRange;
+    public float[] bestJudgmentRange;
     int stdDegCount;
     int stdDegCount_temp;
     List<float> stdDegs;
@@ -48,8 +48,9 @@ public class Handy : MonoBehaviour
         // noteIndexes = new List<int>();
         // judgmentRange = new List<float>();
         // bestJudgmentRange = new List<float>();
-        judgmentRange = GetWorldInfo().judgmentInfo.range;
-        bestJudgmentRange = judgmentRange * 0.2f;
+        judgmentRange = new float[GetPlayerCount()];
+        bestJudgmentRange = new float[GetPlayerCount()];
+        UpdateJudgmentRange();
         /* for (int i = 0; i <= GetTotalMaxPlayerIndex(); i++)
         {
             noteIndexes.Add(GetClosestNoteIndexToSamePlayer(i, 0));
@@ -62,8 +63,7 @@ public class Handy : MonoBehaviour
         // noteIndexes.Clear();
         // judgmentRange.Clear();
         // bestJudgmentRange.Clear();
-        judgmentRange = GetWorldInfo().judgmentInfo.range;
-        bestJudgmentRange = judgmentRange * 0.2f;
+        UpdateJudgmentRange();
         closestNotes = noteGeneratorScript.closestNotes;
         closestNoteScripts = noteGeneratorScript.closestNoteScripts;
         /* for (int i = 0; i <= GetTotalMaxPlayerIndex(); i++)
@@ -85,6 +85,14 @@ public class Handy : MonoBehaviour
             return instance;
         }
     }
+    public void UpdateJudgmentRange()
+    {
+        for (int i = 0; i < GetPlayerCount(); i++)
+        {
+            judgmentRange[i] = GetWorldInfo(GM.closestNoteIndex[i]).judgmentInfo.range;
+            bestJudgmentRange[i] = judgmentRange[i] * 0.2f;
+        }
+    }
     public float GetCorrectDegMaxIs0(float deg)
     {
         if (deg < 0f || deg >= 360f)
@@ -101,13 +109,13 @@ public class Handy : MonoBehaviour
         }
         return deg;
     }
-    public WorldInfo GetWorldInfo(/* int playerIndex, int? noteIndex = null */int? worldInfoIndex = null)
-    {
+    public WorldInfo GetWorldInfo(/* int playerIndex, int? noteIndex = null */int worldInfoIndex)
+    {/* 
         if (worldInfoIndex == null)
-            worldInfoIndex = GM.worldInfoIndex;
+            worldInfoIndex = GM.curWorldInfoIndex; */
         // if (noteIndex == null)
         //     noteIndex = this.noteIndexes[(int)Mathf.Clamp(playerIndex, 0, playerControllerScript.players.Count)];
-        return worldReaderScript.worldInfos[GetCorrectIndex((int)worldInfoIndex, GetNoteCount())];
+        return worldReaderScript.worldInfos[GetCorrectIndex(/* (int) */worldInfoIndex, GetMaxWorldInfoIndex())];
     }
     /* public WorldInfo GetWorldInfo(int noteIndex)
     {
@@ -125,51 +133,58 @@ public class Handy : MonoBehaviour
         float rad = deg * Mathf.Deg2Rad;
         return new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * radius + (Vector2)centerPos;
     }
-    public float GetNextDeg(int playerIndex/* , int? noteIndex = null */, int? worldInfoIndex = null)
+    public float GetNextDeg(int playerIndex/* , int? noteIndex = null */, int worldInfoIndex)
     {
-        if (worldInfoIndex == null)
-            worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
-        return GetWorldInfo(worldInfoIndex).playerInfo[playerIndex].stdDegs[GetWorldInfo(worldInfoIndex).noteInfo[playerIndex].nextDegIndex];
+        // if (worldInfoIndex == null)
+        //     worldInfoIndex = GM.curWorldInfoIndex;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).variousModeInfo.variousModeCount - 1);
+        return GetWorldInfo(worldInfoIndex + 1).playerInfo[playerIndex].stdDegs[GetWorldInfo(worldInfoIndex + 1).noteInfo[playerIndex].stdDegIndex];
     }
-    public float GetNextDeg(int playerIndex, WorldInfo worldInfo)
+    /* public float GetNextDeg(int playerIndex, WorldInfo worldInfo)
     {
-        playerIndex = GetCorrectIndex(playerIndex, worldInfo.severalModeInfo.count - 1);
-        return worldInfo.playerInfo[playerIndex].stdDegs[worldInfo.noteInfo[playerIndex].nextDegIndex];
+        playerIndex = GetCorrectIndex(playerIndex, worldInfo.variousModeInfo.variousModeCount - 1);
+        return worldInfo.playerInfo[playerIndex].stdDegs[worldInfo.noteInfo[playerIndex].curDegIndex];
+    } */
+    public float GetStdDeg(int playerIndex, int worldInfoIndex)
+    {
+        // if (worldInfoIndex == null)
+        //     worldInfoIndex = GM.curWorldInfoIndex;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).variousModeInfo.variousModeCount - 1);
+        return GetWorldInfo(worldInfoIndex).playerInfo[playerIndex].stdDegs[GetWorldInfo(worldInfoIndex).noteInfo[playerIndex].stdDegIndex];
     }
-    public float GetBeforeDeg(int playerIndex, int? worldInfoIndex = null)
+    public float GetBeforeDeg(int playerIndex, int worldInfoIndex)
     {
-        if (worldInfoIndex == null)
-            worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex - 1).severalModeInfo.count - 1);
-        return GetWorldInfo(worldInfoIndex - 1).playerInfo[playerIndex].stdDegs[GetWorldInfo(worldInfoIndex - 1).noteInfo[playerIndex].nextDegIndex];
+        // if (worldInfoIndex == null)
+        //     worldInfoIndex = GM.curWorldInfoIndex;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex - 1).variousModeInfo.variousModeCount - 1);
+        return GetWorldInfo(worldInfoIndex - 1).playerInfo[playerIndex].stdDegs[GetWorldInfo(worldInfoIndex - 1).noteInfo[playerIndex].stdDegIndex];
     }
-    public float GetNoteWaitTime(int playerIndex, int? worldInfoIndex = null)
+    public float GetNoteWaitTime(int playerIndex, int worldInfoIndex)
     {
-        if (worldInfoIndex == null)
-            worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        // if (worldInfoIndex == null)
+        //     worldInfoIndex = GM.curWorldInfoIndex;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).variousModeInfo.variousModeCount - 1);
         return (float)noteGeneratorScript.noteWaitTimes[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetNoteCount())];
     }
-    public float GetNoteLengthTime(int playerIndex, int? worldInfoIndex = null)
+    public float GetNoteLengthTime(int playerIndex, int worldInfoIndex)
     {
-        if (worldInfoIndex == null)
-            worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        // if (worldInfoIndex == null)
+        //     worldInfoIndex = GM.curWorldInfoIndex;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).variousModeInfo.variousModeCount - 1);
         return (float)noteGeneratorScript.noteLengthTimes[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetNoteCount())];
     }
-    public GameObject GetNote(int playerIndex, int? worldInfoIndex = null)
+    public GameObject GetNote(int playerIndex, int worldInfoIndex)
     {
-        if (worldInfoIndex == null)
-            worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        // if (worldInfoIndex == null)
+        //     worldInfoIndex = GM.curWorldInfoIndex;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).variousModeInfo.variousModeCount - 1);
         return noteGeneratorScript.notes[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetNoteCount())];
     }
-    public NotePrefab GetNoteScript(int playerIndex, int? worldInfoIndex = null)
+    public NotePrefab GetNoteScript(int playerIndex, int worldInfoIndex)
     {
-        if (worldInfoIndex == null)
-            worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        // if (worldInfoIndex == null)
+        //     worldInfoIndex = GM.curWorldInfoIndex;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).variousModeInfo.variousModeCount - 1);
         return noteGeneratorScript.noteScripts[playerIndex, GetCorrectIndex((int)worldInfoIndex, GetNoteCount())];
     }
     public void WriteLog(params object[] contents)
@@ -215,13 +230,13 @@ public class Handy : MonoBehaviour
     public float GetJudgmentValue(int playerIndex, float? elapsedTimeWhenNeedlessInput01 = null, float? elapsedTimeWhenNeedInput01 = null)
     {
         if (elapsedTimeWhenNeedlessInput01 == null)
-            elapsedTimeWhenNeedlessInput01 = GetElapsedTimeWhenNeedlessInput01(playerIndex);
+            elapsedTimeWhenNeedlessInput01 = GetElapsedTimeWhenNeedlessInput01(playerIndex, GM.closestNoteIndex[playerIndex]);
         if (elapsedTimeWhenNeedInput01 == null)
-            elapsedTimeWhenNeedInput01 = GetElapsedTimeWhenNeedInput01(playerIndex);
+            elapsedTimeWhenNeedInput01 = GetElapsedTimeWhenNeedInput01(playerIndex, GM.closestNoteIndex[playerIndex]);
         float judgmentValue = 1f;
         if (elapsedTimeWhenNeedInput01 > 0f)
             judgmentValue = (float)elapsedTimeWhenNeedInput01;
-        else if (elapsedTimeWhenNeedlessInput01 >= 1f - judgmentRange)
+        else if (elapsedTimeWhenNeedlessInput01 >= 1f - judgmentRange[playerIndex])
             judgmentValue = 1f - (float)elapsedTimeWhenNeedlessInput01;
         return judgmentValue;
     }
@@ -301,7 +316,7 @@ public class Handy : MonoBehaviour
         int maxStdDegCount = 0;
         for (int i = 0; i < GetWorldInfoCount(); i++)
         {
-            int _playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(i).severalModeInfo.count - 1);
+            int _playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(i).variousModeInfo.variousModeCount - 1);
             if (maxStdDegCount < GetWorldInfo(i).playerInfo[_playerIndex].stdDegs.Count)
             {
                 maxStdDegCount = GetWorldInfo(i).playerInfo[_playerIndex].stdDegs.Count;
@@ -309,11 +324,11 @@ public class Handy : MonoBehaviour
         }
         return maxStdDegCount;
     }
-    public int GetCorrectNextDegIndex(int playerIndex, int nextDegIndex, int? worldInfoIndex = null)
+    public int GetCorrectNextDegIndex(int playerIndex, int nextDegIndex, int worldInfoIndex)
     {
-        if (worldInfoIndex == null)
-            worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        // if (worldInfoIndex == null)
+        //     worldInfoIndex = GM.curWorldInfoIndex;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).variousModeInfo.variousModeCount - 1);
         // return GetCorrectIndex(nextDegIndex, GetWorldInfo(worldInfoIndex).PlayerInfo[playerIndex].StdDegs.Count - 1);
         return nextDegIndex >= 0 ? nextDegIndex : nextDegIndex + GetWorldInfo(worldInfoIndex).playerInfo[playerIndex].stdDegs.Count;
     }
@@ -328,9 +343,9 @@ public class Handy : MonoBehaviour
         int maxPlayerCount = 0;
         for (int i = 0; i < GetWorldInfoCount(); i++)
         {
-            if (maxPlayerCount < GetWorldInfo(i).severalModeInfo.count)
+            if (maxPlayerCount < GetWorldInfo(i).variousModeInfo.variousModeCount)
             {
-                maxPlayerCount = GetWorldInfo(i).severalModeInfo.count;
+                maxPlayerCount = GetWorldInfo(i).variousModeInfo.variousModeCount;
             }
         }
         return maxPlayerCount;
@@ -478,20 +493,20 @@ public class Handy : MonoBehaviour
             code(i);
         }
     }
-    public float GetElapsedTimeWhenNeedlessInput01(int playerIndex, int? worldInfoIndex = null)
+    public float GetElapsedTimeWhenNeedlessInput01(int playerIndex, int worldInfoIndex)
     {
-        if (worldInfoIndex == null)
-            worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        // if (worldInfoIndex == null)
+        //     worldInfoIndex = GM.curWorldInfoIndex;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).variousModeInfo.variousModeCount - 1);
         if (GetNoteScript(playerIndex, worldInfoIndex) != null)
             return GetNoteScript(playerIndex, worldInfoIndex).elapsedTimeWhenNeedlessInput01;
         return 0f;
     }
-    public float GetElapsedTimeWhenNeedInput01(int playerIndex, int? worldInfoIndex = null)
+    public float GetElapsedTimeWhenNeedInput01(int playerIndex, int worldInfoIndex)
     {
-        if (worldInfoIndex == null)
-            worldInfoIndex = GM.worldInfoIndex;
-        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).severalModeInfo.count - 1);
+        // if (worldInfoIndex == null)
+        //     worldInfoIndex = GM.curWorldInfoIndex;
+        playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex).variousModeInfo.variousModeCount - 1);
         if (GetNoteScript(playerIndex, worldInfoIndex) != null)
             return GetNoteScript(playerIndex, worldInfoIndex).elapsedTimeWhenNeedInput01;
         return 0f;
