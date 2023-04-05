@@ -41,7 +41,7 @@ public class Player : MonoBehaviour
         SetPlayerRenderer();
         stdRadius = handy.GetWorldInfo(GameManager.Property.closestNoteIndex[myPlayerIndex] - 1).playerInfo[myPlayerIndex].tarRadius;
         tarRadius = worldInfo.playerInfo[myPlayerIndex].tarRadius;
-        stdDeg = handy.GetStdDeg(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex]);
+        UpdateDegs();
         // curRadius = stdRadius;
         curDeg = handy.GetCorrectDegMaxIs0(curDeg);
         // if(curDeg == 0f)
@@ -60,9 +60,9 @@ public class Player : MonoBehaviour
 
         if (GameManager.Property.isPause)
             return;
-        if (GameManager.Property.GetIsProperKeyDown(myPlayerIndex))
+        if (!isInputted)
         {
-            if (handy.GetJudgmentValue(myPlayerIndex) <= handy.judgmentRange[myPlayerIndex] && !isInputted)
+            if (GameManager.Property.GetIsProperKeyDown(myPlayerIndex) && handy.GetJudgmentValue(myPlayerIndex) <= handy.judgmentRange[myPlayerIndex])
             {
                 tarDeg += worldInfo.playerInfo[myPlayerIndex].moveDir * tarDeg < worldInfo.playerInfo[myPlayerIndex].moveDir * curDeg ? worldInfo.playerInfo[myPlayerIndex].moveDir * 360f : 0f;
                 handy.closestNoteScripts[myPlayerIndex].TryKillFadeTweener(true);
@@ -81,6 +81,10 @@ public class Player : MonoBehaviour
                 .SetUpdate(true);
                 isInputted = true;
             }
+            else
+            {
+                curDeg = stdDeg;
+            }
         }
         /* else if (GameManager.Property.GetIsKeyDown(myPlayerIndex))
         {
@@ -97,6 +101,11 @@ public class Player : MonoBehaviour
             radiusTweener.Play();
         } */
 
+    }
+    public void UpdateDegs()
+    {
+        stdDeg = handy.GetStartDeg(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex]);
+        tarDeg = handy.GetEndDeg(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex]);
     }
     void SetPlayerTransform()
     {
@@ -157,18 +166,19 @@ public class Player : MonoBehaviour
     }
     IEnumerator CheckInputtingKeys(int worldInfoIndex)
     {
-        while (GameManager.Property.GetIsProperKeyPress(myPlayerIndex, handy.GetWorldInfo(worldInfoIndex).noteInfo[myPlayerIndex].stdDegIndex)/*  && handy.GetElapsedTimeWhenNeedInput01(myPlayerIndex) < 1f */)
+        while (GameManager.Property.GetIsProperKeyPress(myPlayerIndex, handy.GetWorldInfo(worldInfoIndex).noteInfo[myPlayerIndex].startDegIndex) && handy.GetNoteScript(myPlayerIndex, worldInfoIndex).noteLengthTime != 0f/*  && handy.GetElapsedTimeWhenNeedInput01(myPlayerIndex) < 1f */)
         {
             yield return null;
         }
-        if (/* handy.GetElapsedTimeWhenNeedInput01(myPlayerIndex) < 1f &&  */handy.GetNoteScript(myPlayerIndex, worldInfoIndex).noteLengthTime != 0f)
+        // if (/* handy.GetElapsedTimeWhenNeedInput01(myPlayerIndex) < 1f &&  */handy.GetNoteScript(myPlayerIndex, worldInfoIndex).noteLengthTime != 0f)
+        // {
+        if (handy.GetNote(myPlayerIndex, worldInfoIndex).activeSelf)
         {
-            if (handy.GetNote(myPlayerIndex, worldInfoIndex).activeSelf)
-            {
-                // handy.judgmentGenScript.SetJudgmentText(myPlayerIndex, GameManager.Property.GetJudgment(myPlayerIndex, 1f - handy.GetElapsedTimeWhenNeedInput01(myPlayerIndex, worldInfoIndex)));
-                handy.GetNoteScript(myPlayerIndex, worldInfoIndex).StopNote();
-            }
+            handy.GetNoteScript(myPlayerIndex, worldInfoIndex).ActiveNextNote();
+            // handy.judgmentGenScript.SetJudgmentText(myPlayerIndex, GameManager.Property.GetJudgment(myPlayerIndex, 1f - handy.GetElapsedTimeWhenNeedInput01(myPlayerIndex, worldInfoIndex)));
+            handy.GetNoteScript(myPlayerIndex, worldInfoIndex).StopNote();
         }
+        // }
         /* else if (handy.closestNoteScripts[myPlayerIndex].noteLengthTime != 0f)
         {
             handy.judgmentGenScript.SetJudgmentText(myPlayerIndex, JudgmentType.Perfect);

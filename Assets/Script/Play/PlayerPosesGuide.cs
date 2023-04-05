@@ -39,7 +39,7 @@ public class PlayerPosesGuide : MonoBehaviour
         {
             if (handy.GetPlayer(i).activeSelf)
             {
-                for (int j = 0; j < handy.GetWorldInfo(GM.curWorldInfoIndex).playerInfo[i].stdDegs.Count; j++)
+                for (int j = 0; j < handy.GetWorldInfo(GM.curWorldInfoIndex).playerInfo[i].stdDegs.Length; j++)
                 {
                     playerPosDots[i][j].SetActive(false);
                     playerPosDotsRend[i][j].color = handy.GetColor01(handy.GetWorldInfo(GM.curWorldInfoIndex).playerInfo[i].posesGuideColor);

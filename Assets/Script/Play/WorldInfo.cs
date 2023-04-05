@@ -59,7 +59,7 @@ public class WorldInfo : MonoBehaviour
         // [SerializeField] int _noteCount;
         [SerializeField] float _tarRadius;
         [SerializeField] float _rotation;
-        [SerializeField] List<float> _stdDegs;
+        [SerializeField] float[] _stdDegs;
         [SerializeField] Color _posesGuideColor;
         [SerializeField] Color _sideColor;
         [SerializeField] Color _centerColor;
@@ -73,7 +73,7 @@ public class WorldInfo : MonoBehaviour
             // _noteCount = 1;
             _tarRadius = 1.5f;
             _rotation = 0f;
-            _stdDegs = new List<float>() { 0f, 90f, 180f, 270f };
+            _stdDegs = new float[] { 0f, 90f, 180f, 270f };
             _posesGuideColor = new Color(115, 85, 200, 255);
             _sideColor = new Color(100, 45, 250, 255);
             _centerColor = new Color(65, 20, 185, 255);
@@ -85,7 +85,7 @@ public class WorldInfo : MonoBehaviour
         // public int noteCount { get { return _noteCount; } set { _noteCount = (int)Mathf.Clamp(value, 1, int.MaxValue); } }
         public float tarRadius { get { return _tarRadius; } set { _tarRadius = Mathf.Clamp(value, 0f, 500f); } }
         public float rotation { get { return _rotation; } set { _rotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
-        public List<float> stdDegs { get { return _stdDegs; } set { _stdDegs = Handy.Property.GetCorrectStdDegs(value); } }
+        public float[] stdDegs { get { return _stdDegs; } set { _stdDegs = Handy.Property.GetCorrectStdDegs(value); } }
         public Color posesGuideColor { get { return _posesGuideColor; } set { _posesGuideColor = Handy.Property.GetCorrectRGBA(value); } }
         public Color sideColor { get { return _sideColor; } set { _sideColor = Handy.Property.GetCorrectRGBA(value); } }
         public Color centerColor { get { return _centerColor; } set { _centerColor = Handy.Property.GetCorrectRGBA(value); } }
@@ -97,7 +97,8 @@ public class WorldInfo : MonoBehaviour
     [ExecuteInEditMode]
     public class NoteInfo
     {
-        [SerializeField] int _stdDegIndex;
+        [SerializeField] int _startDegIndex;
+        [SerializeField] int _endDegIndex;
         // [SerializeField] float _awakeTime01;
         [SerializeField] float _speed;
         [SerializeField] float _startRadius;
@@ -112,7 +113,8 @@ public class WorldInfo : MonoBehaviour
         [SerializeField] AnimationCurve _appearEase;
         public NoteInfo()
         {
-            _stdDegIndex = 0;
+            _startDegIndex = 0;
+            _endDegIndex = 0;
             // _awakeTime01 = 0f;
             _speed = 1f;
             _startRadius = 5f;
@@ -126,7 +128,8 @@ public class WorldInfo : MonoBehaviour
             _holdRadiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
             _appearEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
         }
-        public int stdDegIndex { get { return _stdDegIndex; } set { _stdDegIndex = value; } }
+        public int startDegIndex { get { return _startDegIndex; } set { _startDegIndex = value; } }
+        public int endDegIndex { get { return _endDegIndex; } set { _endDegIndex = value; } }
         // public float awakeTime01 { get { return _awakeTime01; } set { _awakeTime01 = Mathf.Clamp(value, 0f, 1f); } }
         public float speed { get { return _speed; } set { _speed = Mathf.Clamp(value, 0.01f, 100f); } }
         public float startRadius { get { return _startRadius; } set { _startRadius = Mathf.Clamp(value, 0f, 500f); } }

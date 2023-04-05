@@ -6,8 +6,10 @@ public class JudgmentGen : MonoBehaviour
 {
     public GameObject judgmentTextPrefab;
     Handy handy;
+    GameManager GM;
     void Awake()
     {
+        GM = GameManager.Property;
         handy = Handy.Property;
     }
     void Update()
@@ -31,9 +33,9 @@ public class JudgmentGen : MonoBehaviour
         } */
         // else
         // {
-            // GameManager.Property.judgmentTypes = new JudgmentType[handy.GetTotalMaxPlayerIndex() + 1];
-            // GameManager.Property.judgmentTypes.Insert(playerIndex, (JudgmentType)judgmentType);
-                // GameManager.Property.judgmentTypes[playerIndex] = (JudgmentType)judgmentType;
+        // GameManager.Property.judgmentTypes = new JudgmentType[handy.GetTotalMaxPlayerIndex() + 1];
+        // GameManager.Property.judgmentTypes.Insert(playerIndex, (JudgmentType)judgmentType);
+        // GameManager.Property.judgmentTypes[playerIndex] = (JudgmentType)judgmentType;
         // }
         GameObject newJudgmentText = Instantiate(judgmentTextPrefab, transform);
         JudgmentText newJudgmentTextScript = newJudgmentText.GetComponent<JudgmentText>();

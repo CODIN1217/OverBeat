@@ -92,10 +92,10 @@ public class NoteGenerator : MonoBehaviour
         noteScripts[playerIndex, noteIndex] = newNoteScript;
         newNoteScript.myNoteIndex = noteIndex;
         newNoteScript.playerIndex = playerIndex;
-        GameManager.Property.notesActivedSeconds[playerIndex, noteIndex] = newNoteScript.noteWaitTime + (newNoteScript.noteLengthTime == 0f ? handy.judgmentRange[playerIndex] : newNoteScript.noteLengthTime);
-        GameManager.Property.notesActivedSeconds[playerIndex, noteIndex] *= Mathf.Clamp01(noteIndex);
-        lastNoteActivedTotalSeconds[playerIndex] += GameManager.Property.notesActivedSeconds[playerIndex, noteIndex];
-        GameManager.Property.notesActivedTotalSeconds[playerIndex, noteIndex] = lastNoteActivedTotalSeconds[playerIndex];
+        // GameManager.Property.notesActivedSeconds[playerIndex, noteIndex] = newNoteScript.noteWaitTime + (newNoteScript.noteLengthTime == 0f ? handy.judgmentRange[playerIndex] : newNoteScript.noteLengthTime);
+        // GameManager.Property.notesActivedSeconds[playerIndex, noteIndex] *= Mathf.Clamp01(noteIndex);
+        // lastNoteActivedTotalSeconds[playerIndex] += GameManager.Property.notesActivedSeconds[playerIndex, noteIndex];
+        // GameManager.Property.notesActivedTotalSeconds[playerIndex, noteIndex] = lastNoteActivedTotalSeconds[playerIndex];
         /* newNoteScript.InitNote();
         if (noteIndex == 0)
         {

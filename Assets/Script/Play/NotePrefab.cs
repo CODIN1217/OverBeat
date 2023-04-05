@@ -9,7 +9,7 @@ using DG.Tweening;
 
 public class NotePrefab : MonoBehaviour
 {
-    // public bool isInputted;
+    public bool isInputted;
     public int myNoteIndex;
     public int playerIndex;
     int curPathIndex;
@@ -61,8 +61,11 @@ public class NotePrefab : MonoBehaviour
     WorldInfo worldInfo;
     Handy handy;
     public float toleranceTimeWhenAwake;
+    bool isDisable_temp;
+    GameManager GM;
     void Awake()
     {
+        GM = GameManager.Property;
         stopwatch = new Stopwatch();
         isBeforeAwake = true;
         isAfterAwake = true;
@@ -120,10 +123,17 @@ public class NotePrefab : MonoBehaviour
         if (isDisable)
         {
             colorAlpha = 0f;
-            // nextNote.SetActive(true);
-            if ((elapsedTimeWhenNeedInput01 > handy.judgmentRange[playerIndex] || myNoteIndex == 0) && !isStop)
-                StopNote();
+            if (isDisable != isDisable_temp)
+            {
+                ActiveNextNote();
+            }
+            if (!isStop)
+            {
+                if ((elapsedTimeWhenNeedInput01 > handy.judgmentRange[playerIndex] || myNoteIndex == 0))
+                    StopNote();
+            }
         }
+        isDisable_temp = isDisable;
         /* Sprite boundarySprite = handy.boundaryScript.boundaryMaskImage.sprite;
         Sprite nextNoteSprite = nextNoteScript.startNoteSprite;
         float curNextNoteRadius = (afterWorldInfo.noteStartRadius - worldInfo.PlayerInfo.TarRadiuses) + (curRadius + GetLongNoteCurRadius(1f - elapsedTimeWhenNeedInput01));
@@ -159,8 +169,8 @@ public class NotePrefab : MonoBehaviour
         tarRadius = worldInfo.playerInfo[playerIndex].tarRadius;
         centerPos = worldInfo.centerInfo.pos;
         rotation = worldInfo.noteInfo[playerIndex].rotation;
-        stdDeg = handy.GetStdDeg(playerIndex, myNoteIndex);
-        tarDeg = handy.GetNextDeg(playerIndex, myNoteIndex);
+        stdDeg = handy.GetStartDeg(playerIndex, myNoteIndex);
+        tarDeg = handy.GetEndDeg(playerIndex, myNoteIndex);
         nextNote = handy.GetNote(playerIndex, myNoteIndex + 1);
         nextNoteScript = handy.GetNoteScript(playerIndex, myNoteIndex + 1);
         startNoteSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo[playerIndex].sideImageName);
@@ -196,6 +206,11 @@ public class NotePrefab : MonoBehaviour
             curRadius = getRadius() + (worldInfo.noteStartRadius - beforeWorldInfo.PlayerInfo.TarRadiuses);
         }
     } */
+    public void ActiveNextNote()
+    {
+        nextNote.SetActive(true);
+        nextNoteScript.toleranceTimeWhenAwake = elapsedTimeWhenNeedInput - noteLengthTime;
+    }
     public void SetElapsedTime01()
     {
         if (noteWaitTime != 0f)
@@ -218,7 +233,8 @@ public class NotePrefab : MonoBehaviour
         stopwatch.Stop();
         needInput = true;
     }
-    IEnumerator SetCurWorldInfoIndex_co(){
+    IEnumerator SetCurWorldInfoIndex_co()
+    {
         yield return new WaitForSeconds(Mathf.Clamp(-toleranceTimeWhenNeedlessInput, 0f, noteWaitTime));
         GameManager.Property.curWorldInfoIndex = myNoteIndex;
     }
@@ -279,17 +295,34 @@ public class NotePrefab : MonoBehaviour
     {
         TryKillFadeTweener(true);
         TryKillRadiusTweener(true);
-        if (myNoteIndex != 0)
-            handy.judgmentGenScript.SetJudgmentText(playerIndex, GameManager.Property.GetJudgment(playerIndex, 1f - elapsedTimeWhenNeedInput01));
+        if (noteLengthTime != 0f)
+        {
+            float accuracy01_temp = 1f;
+            if (myNoteIndex != 0 && !isInputted)
+            {
+                handy.WriteLog(this.name + " / DidNotKeyDown");
+                handy.judgmentGenScript.SetJudgmentText(playerIndex, JudgmentType.Miss);
+                GM.CountMissNote();
+                accuracy01_temp = 0f;
+            }
+            else if (myNoteIndex != 0)
+            {
+                handy.WriteLog(this.name + " / KeyDowned");
+                handy.judgmentGenScript.SetJudgmentText(playerIndex, GameManager.Property.GetJudgment(playerIndex, 1f - elapsedTimeWhenNeedInput01, () => { accuracy01_temp = elapsedTimeWhenNeedInput01; GM.CountMissNote(); }));
+            }
+            GM.sumNoteAccuracy01 += accuracy01_temp;
+            GM.InputCount++;
+            GM.SetAccuracy01();
+        }
         /* if (!isInputted && myNoteIndex != 0)
         {
             GameManager.Property.SetMissJudgment(playerIndex);
             Debug.Log(myNoteIndex);
         } */
         GameManager.Property.lastHitedNoteIndex += (int)Mathf.Clamp01(myNoteIndex);
-        tarPlayerScript.stdDeg = tarDeg;
-        tarPlayerScript.curDeg = tarDeg;
-        tarPlayerScript.tarDeg = handy.GetNextDeg(playerIndex, myNoteIndex + 1);
+        // tarPlayerScript.stdDeg = tarDeg;
+        // tarPlayerScript.curDeg = tarPlayerScript.stdDeg;
+        // tarPlayerScript.tarDeg = handy.GetEndDeg(playerIndex, myNoteIndex + 1);
         tarPlayerScript.TryKillMoveTweener();
         tarPlayerScript.SideScaleToOrig();
         stopwatch.Stop();
