@@ -44,7 +44,7 @@ public class CountDown : MonoBehaviour
             else{
                 countDownTMP.text = "";
                 isCountDown = false;
-                GameManager.Property.isPause = false;
+                GM.isPause = false;
             }
         }
     }

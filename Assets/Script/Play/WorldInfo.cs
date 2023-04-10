@@ -39,7 +39,7 @@ public class WorldInfo : MonoBehaviour
         public int numberOfTick { get { return _numberOfTick; } set { _numberOfTick = (int)Mathf.Clamp(value, 1, 400); } }
         public float intervalOfTick { get { return _intervalOfTick; } set { _intervalOfTick = Mathf.Clamp(value, 0.01f, 100f); } }
     }
-    [Serializable]
+    /* [Serializable]
     [ExecuteInEditMode]
     public class VariousModeInfo
     {
@@ -49,7 +49,7 @@ public class WorldInfo : MonoBehaviour
             _variousModeCount = 1;
         }
         public int variousModeCount { get { return _variousModeCount; } set { _variousModeCount = (int)Mathf.Clamp(value, 1, 2); } }
-    }
+    } */
     [Serializable]
     [ExecuteInEditMode]
     public class PlayerInfo
@@ -97,9 +97,11 @@ public class WorldInfo : MonoBehaviour
     [ExecuteInEditMode]
     public class NoteInfo
     {
+        [SerializeField] int _eachNoteIndex;
+        [SerializeField] int _tarPlayerIndex;
         [SerializeField] int _startDegIndex;
         [SerializeField] int _endDegIndex;
-        // [SerializeField] float _awakeTime01;
+        [SerializeField] float _awakeTimeSec;
         [SerializeField] float _speed;
         [SerializeField] float _startRadius;
         [SerializeField] float _length;
@@ -113,9 +115,11 @@ public class WorldInfo : MonoBehaviour
         [SerializeField] AnimationCurve _appearEase;
         public NoteInfo()
         {
+            _eachNoteIndex = 0;
+            _tarPlayerIndex = 0;
             _startDegIndex = 0;
             _endDegIndex = 0;
-            // _awakeTime01 = 0f;
+            _awakeTimeSec = 0f;
             _speed = 1f;
             _startRadius = 5f;
             _length = 0f;
@@ -128,9 +132,11 @@ public class WorldInfo : MonoBehaviour
             _holdRadiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
             _appearEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
         }
+        public int eachNoteIndex { get { return _eachNoteIndex; } set { _eachNoteIndex = value; } }
+        public int tarPlayerIndex { get { return _tarPlayerIndex; } set { _tarPlayerIndex = value; } }
         public int startDegIndex { get { return _startDegIndex; } set { _startDegIndex = value; } }
         public int endDegIndex { get { return _endDegIndex; } set { _endDegIndex = value; } }
-        // public float awakeTime01 { get { return _awakeTime01; } set { _awakeTime01 = Mathf.Clamp(value, 0f, 1f); } }
+        public float awakeTimeSec { get { return _awakeTimeSec; } set { _awakeTimeSec = Mathf.Clamp(value, 0f, 1f); } }
         public float speed { get { return _speed; } set { _speed = Mathf.Clamp(value, 0.01f, 100f); } }
         public float startRadius { get { return _startRadius; } set { _startRadius = Mathf.Clamp(value, 0f, 500f); } }
         public float length { get { return _length; } set { _length = Mathf.Clamp(value, 0f, 500f); } }
@@ -211,32 +217,26 @@ public class WorldInfo : MonoBehaviour
     // [SerializeField] float _waitTime;
     public CameraInfo cameraInfo;
     public CountDownInfo countDownInfo;
-    public VariousModeInfo variousModeInfo;
+    // public VariousModeInfo variousModeInfo;
     public PlayerInfo[] playerInfo;
-    public NoteInfo[] noteInfo;
+    public NoteInfo noteInfo;
     public CenterInfo centerInfo;
     public BoundaryInfo boundaryInfo;
     public JudgmentInfo judgmentInfo;
     public CreditInfo creditInfo;
-    
-    public PlayerInfo playerInfo_temp;
-    public NoteInfo noteInfo_temp;
 
     public WorldInfo()
     {
         // _waitTime = 1f;
         cameraInfo = new CameraInfo();
         countDownInfo = new CountDownInfo();
-        variousModeInfo = new VariousModeInfo();
-        playerInfo = new PlayerInfo[variousModeInfo.variousModeCount];
-        noteInfo = new NoteInfo[variousModeInfo.variousModeCount];
+        // variousModeInfo = new VariousModeInfo();
+        playerInfo = new PlayerInfo[2];
+        noteInfo = new NoteInfo();
         centerInfo = new CenterInfo();
         boundaryInfo = new BoundaryInfo();
         judgmentInfo = new JudgmentInfo();
         creditInfo = new CreditInfo();
-
-        playerInfo_temp = new PlayerInfo();
-        noteInfo_temp = new NoteInfo();
     }
     // public float waitTime { get { return _waitTime; } set { _waitTime = value; } }
 }

@@ -16,26 +16,26 @@ public class JudgmentGen : MonoBehaviour
     {
         /* for (int i = 0; i < handy.GetPlayerCount(); i++)
         {
-            if (GameManager.Property.GetIsProperKeyDown(i))
+            if (GM.GetIsProperKeyDown(i))
             {
-                SetJudgmentText(i, GameManager.Property.judgmentTypes[i]);
+                SetJudgmentText(i, GM.judgmentTypes[i]);
             }
         } */
     }
     public void SetJudgmentText(int playerIndex, JudgmentType judgmentType)
     {
-        /* if (GameManager.Property.judgmentTypes != null)
+        /* if (GM.judgmentTypes != null)
         {
-            // if (GameManager.Property.judgmentTypes.Length > playerIndex)
-                GameManager.Property.judgmentTypes[playerIndex] = (JudgmentType)judgmentType;
+            // if (GM.judgmentTypes.Length > playerIndex)
+                GM.judgmentTypes[playerIndex] = (JudgmentType)judgmentType;
             // else
-            //     GameManager.Property.judgmentTypes.Insert(playerIndex, (JudgmentType)judgmentType);
+            //     GM.judgmentTypes.Insert(playerIndex, (JudgmentType)judgmentType);
         } */
         // else
         // {
-        // GameManager.Property.judgmentTypes = new JudgmentType[handy.GetTotalMaxPlayerIndex() + 1];
-        // GameManager.Property.judgmentTypes.Insert(playerIndex, (JudgmentType)judgmentType);
-        // GameManager.Property.judgmentTypes[playerIndex] = (JudgmentType)judgmentType;
+        // GM.judgmentTypes = new JudgmentType[handy.GetTotalMaxPlayerIndex() + 1];
+        // GM.judgmentTypes.Insert(playerIndex, (JudgmentType)judgmentType);
+        // GM.judgmentTypes[playerIndex] = (JudgmentType)judgmentType;
         // }
         GameObject newJudgmentText = Instantiate(judgmentTextPrefab, transform);
         JudgmentText newJudgmentTextScript = newJudgmentText.GetComponent<JudgmentText>();

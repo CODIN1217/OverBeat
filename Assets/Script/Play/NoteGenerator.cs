@@ -7,46 +7,49 @@ public class NoteGenerator : MonoBehaviour
     public GameObject notePrefab;
     public GameObject[] closestNotes;
     public NotePrefab[] closestNoteScripts;
-    public float?[,] noteWaitTimes;
-    public float?[,] noteLengthTimes;
-    public GameObject[,] notes;
-    public NotePrefab[,] noteScripts;
-    float[] lastNoteActivedTotalSeconds;
+    public List<float>[] noteWaitTimes;
+    public List<float>[] noteLengthTimes;
+    public List<GameObject>[] notes;
+    public List<NotePrefab>[] noteScripts;
+    public int[] eachNoteCount;
     // public GameObject worldReader;
     // public WorldReader worldReaderScript;
     bool isAwake;
     Handy handy;
+    GameManager GM;
     void Awake()
     {
         handy = Handy.Property;
-        noteWaitTimes = new float?[handy.GetPlayerCount(), handy.GetWorldInfoCount()];
-        noteLengthTimes = new float?[handy.GetPlayerCount(), handy.GetWorldInfoCount()];
-        notes = new GameObject[handy.GetPlayerCount(), handy.GetWorldInfoCount()];
-        noteScripts = new NotePrefab[handy.GetPlayerCount(), handy.GetWorldInfoCount()];
-        closestNotes = new GameObject[handy.GetPlayerCount()];
-        closestNoteScripts = new NotePrefab[handy.GetPlayerCount()];
-        lastNoteActivedTotalSeconds = new float[handy.GetPlayerCount()];
-        for (int i = 0; i < handy.GetPlayerCount(); i++)
+        GM = GameManager.Property;
+        noteWaitTimes = new List<float>[handy.GetMaxPlayerCount()];
+        noteLengthTimes = new List<float>[handy.GetMaxPlayerCount()];
+        notes = new List<GameObject>[handy.GetMaxPlayerCount()];
+        noteScripts = new List<NotePrefab>[handy.GetMaxPlayerCount()];
+        for (int i = 0; i < handy.GetMaxPlayerCount(); i++)
         {
-            for (int j = 0; j < handy.GetWorldInfoCount(); j++)
-            {
-                SetNotePrefab(i, j);
-            }
+            noteWaitTimes[i] = new List<float>();
+            noteLengthTimes[i] = new List<float>();
+            notes[i] = new List<GameObject>();
+            noteScripts[i] = new List<NotePrefab>();
         }
-        for (int i = 0; i < handy.GetPlayerCount(); i++)
+        eachNoteCount = new int[handy.GetMaxPlayerCount()];
+        closestNotes = new GameObject[handy.GetMaxPlayerCount()];
+        closestNoteScripts = new NotePrefab[handy.GetMaxPlayerCount()];
+        for (int j = 0; j < handy.GetWorldInfoCount(); j++)
         {
-            for (int j = 0; j < handy.GetWorldInfoCount(); j++)
+            SetNotePrefab(j);
+        }
+        for (int j = 0; j < handy.GetWorldInfoCount(); j++)
+        {
+            GameObject curNote = handy.GetNote(handy.GetWorldInfo(j).noteInfo.tarPlayerIndex, handy.GetWorldInfo(j).noteInfo.eachNoteIndex);
+            NotePrefab curNoteScript = handy.GetNoteScript(handy.GetWorldInfo(j).noteInfo.tarPlayerIndex, handy.GetWorldInfo(j).noteInfo.eachNoteIndex);
+            curNoteScript.InitNote();
+            if (curNoteScript.myEachNoteIndex == 0)
             {
-                GameObject curNote = handy.GetNote(i, j);
-                NotePrefab curNoteScript = handy.GetNoteScript(i, j);
-                curNoteScript.InitNote();
-                if (j == 0)
-                {
-                    closestNotes[i] = curNote;
-                    closestNoteScripts[i] = curNoteScript;
-                }
-                curNote.SetActive(false);
+                closestNotes[curNoteScript.tarPlayerIndex] = curNote;
+                closestNoteScripts[curNoteScript.tarPlayerIndex] = curNoteScript;
             }
+            curNote.SetActive(false);
         }
         foreach (var CN in closestNotes)
         {
@@ -75,27 +78,32 @@ public class NoteGenerator : MonoBehaviour
             isAwake = false;
         }
     }
-    void SetNotePrefab(int playerIndex, int noteIndex)
+    void SetNotePrefab(int worldInfoIndex)
     {
         GameObject newNote = Instantiate(notePrefab, transform);
         NotePrefab newNoteScript = newNote.GetComponent<NotePrefab>();
 
-        WorldInfo worldInfo = handy.GetWorldInfo(noteIndex);
-        playerIndex = handy.GetCorrectIndex(playerIndex, handy.GetMaxPlayerIndex());
-        newNoteScript.noteWaitTime = Mathf.Abs(worldInfo.noteInfo[playerIndex].startRadius - worldInfo.playerInfo[playerIndex].tarRadius) / 3.5f / worldInfo.noteInfo[playerIndex].speed;
-        newNoteScript.noteWaitTime *= Mathf.Clamp01(noteIndex);
-        noteWaitTimes[playerIndex, noteIndex] = newNoteScript.noteWaitTime;
-        newNoteScript.noteLengthTime = worldInfo.noteInfo[playerIndex].length / worldInfo.noteInfo[playerIndex].speed;
-        newNoteScript.noteLengthTime *= Mathf.Clamp01(noteIndex);
-        noteLengthTimes[playerIndex, noteIndex] = newNoteScript.noteLengthTime;
-        notes[playerIndex, noteIndex] = newNote;
-        noteScripts[playerIndex, noteIndex] = newNoteScript;
-        newNoteScript.myNoteIndex = noteIndex;
-        newNoteScript.playerIndex = playerIndex;
-        // GameManager.Property.notesActivedSeconds[playerIndex, noteIndex] = newNoteScript.noteWaitTime + (newNoteScript.noteLengthTime == 0f ? handy.judgmentRange[playerIndex] : newNoteScript.noteLengthTime);
-        // GameManager.Property.notesActivedSeconds[playerIndex, noteIndex] *= Mathf.Clamp01(noteIndex);
-        // lastNoteActivedTotalSeconds[playerIndex] += GameManager.Property.notesActivedSeconds[playerIndex, noteIndex];
-        // GameManager.Property.notesActivedTotalSeconds[playerIndex, noteIndex] = lastNoteActivedTotalSeconds[playerIndex];
+        WorldInfo worldInfo = handy.GetWorldInfo(worldInfoIndex);
+        int eachNoteIndex = worldInfo.noteInfo.eachNoteIndex;
+
+        newNoteScript.noteWaitTime = Mathf.Abs(worldInfo.noteInfo.startRadius - worldInfo.playerInfo[worldInfo.noteInfo.tarPlayerIndex].tarRadius) / 3.5f / worldInfo.noteInfo.speed;
+        newNoteScript.noteWaitTime *= Mathf.Clamp01(eachNoteIndex);
+        noteWaitTimes[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript.noteWaitTime);
+
+        newNoteScript.noteLengthTime = worldInfo.noteInfo.length / worldInfo.noteInfo.speed;
+        newNoteScript.noteLengthTime *= Mathf.Clamp01(eachNoteIndex);
+        noteLengthTimes[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript.noteLengthTime);
+
+        notes[worldInfo.noteInfo.tarPlayerIndex].Add(newNote);
+        noteScripts[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript);
+
+        newNoteScript.myEachNoteIndex = eachNoteIndex;
+        newNoteScript.tarPlayerIndex = worldInfo.noteInfo.tarPlayerIndex;
+        eachNoteCount[worldInfo.noteInfo.tarPlayerIndex]++;
+        // GM.notesActivedSeconds[playerIndex, noteIndex] = newNoteScript.noteWaitTime + (newNoteScript.noteLengthTime == 0f ? handy.judgmentRange[playerIndex] : newNoteScript.noteLengthTime);
+        // GM.notesActivedSeconds[playerIndex, noteIndex] *= Mathf.Clamp01(noteIndex);
+        // lastNoteActivedTotalSeconds[playerIndex] += GM.notesActivedSeconds[playerIndex, noteIndex];
+        // GM.notesActivedTotalSeconds[playerIndex, noteIndex] = lastNoteActivedTotalSeconds[playerIndex];
         /* newNoteScript.InitNote();
         if (noteIndex == 0)
         {

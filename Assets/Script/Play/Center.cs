@@ -22,7 +22,7 @@ public class Center : MonoBehaviour
     void Update()
     {
         worldInfo = handy.GetWorldInfo(GM.curWorldInfoIndex);
-        HP01 = GameManager.Property.HP01;
+        HP01 = GM.HP01;
         centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, HP01, Time.unscaledDeltaTime * 4f);
         transform.localScale = worldInfo.centerInfo.scale;
         transform.position = worldInfo.centerInfo.pos;

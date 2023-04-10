@@ -37,8 +37,10 @@ public class WorldReader : MonoBehaviour
             worldInfos[i].NoteInfo.AwakeTimes = (float)(Mathf.Clamp(i - 1, 0f, float.MaxValue));
         } */
         worldInfos = new List<WorldInfo>();
-        for(int i = 0; i < worldInfosObj.transform.childCount; i++){
-            worldInfos.Add(worldInfosObj.transform.GetChild(i).GetComponent<WorldInfo>());
+        for (int i = 0; i < worldInfosObj.transform.childCount; i++)
+        {
+            if (worldInfosObj.transform.GetChild(i).gameObject.activeSelf)
+                worldInfos.Add(worldInfosObj.transform.GetChild(i).GetComponent<WorldInfo>());
         }
 
         // objectInfos = new Hashtable();

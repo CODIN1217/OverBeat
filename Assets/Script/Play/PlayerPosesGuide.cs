@@ -16,7 +16,7 @@ public class PlayerPosesGuide : MonoBehaviour
         handy = Handy.Property;
         playerPosDots = new List<List<GameObject>>();
         playerPosDotsRend = new List<List<SpriteRenderer>>();
-        for (int i = 0; i < handy.GetPlayerCount(); i++)
+        for (int i = 0; i < handy.GetMaxPlayerCount(); i++)
         {
             playerPosDots.Add(new List<GameObject>());
             playerPosDotsRend.Add(new List<SpriteRenderer>());
@@ -24,6 +24,7 @@ public class PlayerPosesGuide : MonoBehaviour
             {
                 playerPosDots[i].Add(Instantiate(playerPosDotPrefab, transform));
                 playerPosDotsRend[i].Add(playerPosDots[i][j].GetComponent<SpriteRenderer>());
+                playerPosDotsRend[i][j].sortingOrder = handy.GetMaxPlayerIndex() - i;
                 playerPosDots[i][j].transform.position = handy.GetWorldInfo(GM.curWorldInfoIndex).centerInfo.pos;
                 playerPosDots[i][j].SetActive(false);
             }
@@ -35,7 +36,7 @@ public class PlayerPosesGuide : MonoBehaviour
         // handy.RepeatCode((i) => worldInfo = handy.GetWorldInfo(i), handy.GetTotalMaxPlayerIndex() + 1);
         // float playerCenterRadius = handy.GetScaleAverage(handy.GetPlayerCenter().transform.localScale.x * handy.GetPlayerCenterRend().sprite.texture.width, handy.GetPlayerCenter().transform.localScale.y * handy.GetPlayerCenterRend().sprite.texture.height) * 0.005f;
 
-        for (int i = 0; i < handy.GetPlayerCount(); i++)
+        for (int i = 0; i < handy.GetMaxPlayerCount(); i++)
         {
             if (handy.GetPlayer(i).activeSelf)
             {

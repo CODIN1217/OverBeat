@@ -25,60 +25,63 @@ public class Player : MonoBehaviour
     Sequence radiusTweener;
     Handy handy;
     GameManager GM;
-    void Awake()
+    void OnEnable()
     {
         GM = GameManager.Property;
         handy = Handy.Property;
         playerSideRenderer = playerSide.GetComponent<SpriteRenderer>();
         playerCenterRenderer = playerCenter.GetComponent<SpriteRenderer>();
-        curRadius = handy.GetWorldInfo(GameManager.Property.closestNoteIndex[myPlayerIndex] - 1).playerInfo[myPlayerIndex].tarRadius;
+        curRadius = handy.GetWorldInfo(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex] - 1).playerInfo[myPlayerIndex].tarRadius;
     }
     void Update()
     {
         // if (handy.GetWorldInfo().PlayerInfo.Index == myPlayerIndex)
-        worldInfo = handy.GetWorldInfo(GameManager.Property.closestNoteIndex[myPlayerIndex]);
+        worldInfo = handy.GetWorldInfo(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex]);
         // tarDeg = handy.GetNextDeg(myPlayerIndex, worldInfo);
         SetPlayerRenderer();
-        stdRadius = handy.GetWorldInfo(GameManager.Property.closestNoteIndex[myPlayerIndex] - 1).playerInfo[myPlayerIndex].tarRadius;
+        stdRadius = handy.GetWorldInfo(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex] - 1).playerInfo[myPlayerIndex].tarRadius;
         tarRadius = worldInfo.playerInfo[myPlayerIndex].tarRadius;
         UpdateDegs();
         // curRadius = stdRadius;
         curDeg = handy.GetCorrectDegMaxIs0(curDeg);
         // if(curDeg == 0f)
-        // handy.WriteLog(GameManager.Property.worldInfoIndex);
+        // handy.WriteLog(GM.worldInfoIndex);
         SetPlayerTransform();
-        if (GameManager.Property.GetIsKeyDown(myPlayerIndex) && !GameManager.Property.isPause)
+        if (GM.GetIsKeyDown(myPlayerIndex) && !GM.isPause)
         {
             SetSideScaleTweener(worldInfo.playerInfo[myPlayerIndex].scale * 0.8f, 0.15f);
         }
-        else if (!GameManager.Property.GetIsKeyPress(myPlayerIndex) && GameManager.Property.GetIsKeyUp(myPlayerIndex))
+        else if (!GM.GetIsKeyPress(myPlayerIndex) && GM.GetIsKeyUp(myPlayerIndex))
         {
             SideScaleToOrig();
         }
+        GM.SetUpdateSequence(moveTweener);
+        GM.SetUpdateSequence(radiusTweener);
+        GM.SetUpdateSequence(sideScaleTweener);
         if (handy.GetJudgmentValue(myPlayerIndex) >= 1f)
             isInputted = false;
 
-        if (GameManager.Property.isPause)
+        if (GM.isPause)
             return;
         if (!isInputted)
         {
-            if (GameManager.Property.GetIsProperKeyDown(myPlayerIndex) && handy.GetJudgmentValue(myPlayerIndex) <= handy.judgmentRange[myPlayerIndex])
+            if (GM.GetIsProperKeyDown(myPlayerIndex) && handy.GetJudgmentValue(myPlayerIndex) <= handy.judgmentRange[myPlayerIndex])
             {
                 tarDeg += worldInfo.playerInfo[myPlayerIndex].moveDir * tarDeg < worldInfo.playerInfo[myPlayerIndex].moveDir * curDeg ? worldInfo.playerInfo[myPlayerIndex].moveDir * 360f : 0f;
                 handy.closestNoteScripts[myPlayerIndex].TryKillFadeTweener(true);
                 handy.closestNoteScripts[myPlayerIndex].TryKillRadiusTweener(true);
                 if (!handy.closestNoteScripts[myPlayerIndex].needInput)
                 {
-                    handy.closestNoteScripts[myPlayerIndex].ActToNeedInput();
+                    handy.closestNoteScripts[myPlayerIndex].ActNeedInput();
                 }
-                StartCoroutine(CheckInputtingKeys(GameManager.Property.closestNoteIndex[myPlayerIndex]));
+                StartCoroutine(CheckInputtingKeys(GM.closestNoteIndex[myPlayerIndex]));
                 TryKillMoveTweener();
                 moveTweener = DOTween.Sequence()
                 .AppendInterval(handy.GetNoteWaitTime(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex]) * Mathf.Clamp(-handy.GetSign0IsMin(handy.closestNoteScripts[myPlayerIndex].elapsedTimeWhenNeedInput) * handy.GetJudgmentValue(myPlayerIndex), 0f, handy.judgmentRange[myPlayerIndex]))
                 .Append(DOTween.To(() => stdDeg, (d) => curDeg = d, tarDeg,
                 handy.GetNoteLengthTime(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex]) * (1f - Mathf.Clamp(handy.GetSign0IsMin(handy.closestNoteScripts[myPlayerIndex].elapsedTimeWhenNeedInput) * handy.GetJudgmentValue(myPlayerIndex), 0f, handy.judgmentRange[myPlayerIndex])))
                 .SetEase(worldInfo.playerInfo[myPlayerIndex].degEase))
-                .SetUpdate(true);
+                /* .SetUpdate(true) */;
                 isInputted = true;
             }
             else
@@ -86,11 +89,11 @@ public class Player : MonoBehaviour
                 curDeg = stdDeg;
             }
         }
-        /* else if (GameManager.Property.GetIsKeyDown(myPlayerIndex))
+        /* else if (GM.GetIsKeyDown(myPlayerIndex))
         {
-            GameManager.Property.SetMissJudgment(myPlayerIndex);
+            GM.SetMissJudgment(myPlayerIndex);
         } */
-        /* if(!GameManager.Property.isEnd && GameManager.Property.isPause){
+        /* if(!GM.isEnd && GM.isPause){
             sideScaleTweener.Pause();
             moveTweener.Pause();
             radiusTweener.Pause();
@@ -115,7 +118,7 @@ public class Player : MonoBehaviour
     }
     void SetPlayerRenderer()
     {
-        playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo[myPlayerIndex].sideImageName);
+        playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
         playerSideRenderer.sprite = playerSideSprite;
         playerSideRenderer.color = handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].sideColor);
         playerCenterRenderer.color = handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].centerColor);
@@ -131,7 +134,7 @@ public class Player : MonoBehaviour
     public void SetRadiusTweener(float tarRadius, float duration, AnimationCurve easeType)
     {
         TryKillRadiusTweener();
-        radiusTweener = DOTween.Sequence().Append(DOTween.To(() => curRadius, r => curRadius = r, tarRadius, duration).SetEase(easeType)).SetUpdate(true);
+        radiusTweener = DOTween.Sequence().Append(DOTween.To(() => curRadius, r => curRadius = r, tarRadius, duration).SetEase(easeType))/* .SetUpdate(true) */;
     }
     public void SetSideScaleTweener(Vector3 tarScale, float duration, float prependInterval = 0f)
     {
@@ -146,7 +149,7 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(prependInterval);
         TryKillSideScaleTweener();
-        sideScaleTweener = DOTween.Sequence().Append(playerSide.transform.DOScale(tarScale, duration)).SetUpdate(true);
+        sideScaleTweener = DOTween.Sequence().Append(playerSide.transform.DOScale(tarScale, duration))/* .SetUpdate(true) */;
     }
     void TryKillRadiusTweener(bool isComplete = true)
     {
@@ -164,24 +167,15 @@ public class Player : MonoBehaviour
             sideScaleTweener = null;
         }
     }
-    IEnumerator CheckInputtingKeys(int worldInfoIndex)
+    IEnumerator CheckInputtingKeys(int eachNoteIndex)
     {
-        while (GameManager.Property.GetIsProperKeyPress(myPlayerIndex, handy.GetWorldInfo(worldInfoIndex).noteInfo[myPlayerIndex].startDegIndex) && handy.GetNoteScript(myPlayerIndex, worldInfoIndex).noteLengthTime != 0f/*  && handy.GetElapsedTimeWhenNeedInput01(myPlayerIndex) < 1f */)
+        while (GM.GetIsProperKeyPress(myPlayerIndex, handy.GetNoteScript(eachNoteIndex, myPlayerIndex).worldInfo.noteInfo.startDegIndex) && handy.GetNoteScript(myPlayerIndex, eachNoteIndex).noteLengthTime != 0f)
         {
             yield return null;
         }
-        // if (/* handy.GetElapsedTimeWhenNeedInput01(myPlayerIndex) < 1f &&  */handy.GetNoteScript(myPlayerIndex, worldInfoIndex).noteLengthTime != 0f)
-        // {
-        if (handy.GetNote(myPlayerIndex, worldInfoIndex).activeSelf)
+        if (handy.GetNote(myPlayerIndex, eachNoteIndex).activeSelf)
         {
-            handy.GetNoteScript(myPlayerIndex, worldInfoIndex).ActiveNextNote();
-            // handy.judgmentGenScript.SetJudgmentText(myPlayerIndex, GameManager.Property.GetJudgment(myPlayerIndex, 1f - handy.GetElapsedTimeWhenNeedInput01(myPlayerIndex, worldInfoIndex)));
-            handy.GetNoteScript(myPlayerIndex, worldInfoIndex).StopNote();
+            handy.GetNoteScript(myPlayerIndex, eachNoteIndex).StopNote();
         }
-        // }
-        /* else if (handy.closestNoteScripts[myPlayerIndex].noteLengthTime != 0f)
-        {
-            handy.judgmentGenScript.SetJudgmentText(myPlayerIndex, JudgmentType.Perfect);
-        } */
     }
 }

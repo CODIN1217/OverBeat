@@ -9,12 +9,16 @@ public class ProgressBar : MonoBehaviour
     public GameObject ProgressBarBG;
     public GameObject ProgressBarOutline;
     Image ProgressBarBGImage;
+    Handy handy;
+    GameManager GM;
     void Awake() {
+        handy = Handy.Property;
+        GM = GameManager.Property;
         ProgressBarBGImage = ProgressBarBG.GetComponent<Image>();
     }
     void Update()
     {
-        progress01 = GameManager.Property.progress01;
+        progress01 = GM.progress01;
         ProgressBarBGImage.fillAmount = Mathf.Lerp(ProgressBarBGImage.fillAmount, progress01, Time.unscaledDeltaTime * 4f);
     }
 }
