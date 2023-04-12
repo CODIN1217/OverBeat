@@ -7,8 +7,8 @@ public class NoteGenerator : MonoBehaviour
     public GameObject notePrefab;
     public GameObject[] closestNotes;
     public NotePrefab[] closestNoteScripts;
-    public List<float>[] noteWaitTimes;
-    public List<float>[] noteLengthTimes;
+    public List<float>[] notesWaitSecs;
+    public List<float>[] notesLengthSecs;
     public List<GameObject>[] notes;
     public List<NotePrefab>[] noteScripts;
     public int[] eachNoteCount;
@@ -21,14 +21,14 @@ public class NoteGenerator : MonoBehaviour
     {
         handy = Handy.Property;
         GM = GameManager.Property;
-        noteWaitTimes = new List<float>[handy.GetMaxPlayerCount()];
-        noteLengthTimes = new List<float>[handy.GetMaxPlayerCount()];
+        notesWaitSecs = new List<float>[handy.GetMaxPlayerCount()];
+        notesLengthSecs = new List<float>[handy.GetMaxPlayerCount()];
         notes = new List<GameObject>[handy.GetMaxPlayerCount()];
         noteScripts = new List<NotePrefab>[handy.GetMaxPlayerCount()];
         for (int i = 0; i < handy.GetMaxPlayerCount(); i++)
         {
-            noteWaitTimes[i] = new List<float>();
-            noteLengthTimes[i] = new List<float>();
+            notesWaitSecs[i] = new List<float>();
+            notesLengthSecs[i] = new List<float>();
             notes[i] = new List<GameObject>();
             noteScripts[i] = new List<NotePrefab>();
         }
@@ -86,13 +86,13 @@ public class NoteGenerator : MonoBehaviour
         WorldInfo worldInfo = handy.GetWorldInfo(worldInfoIndex);
         int eachNoteIndex = worldInfo.noteInfo.eachNoteIndex;
 
-        newNoteScript.noteWaitTime = Mathf.Abs(worldInfo.noteInfo.startRadius - worldInfo.playerInfo[worldInfo.noteInfo.tarPlayerIndex].tarRadius) / 3.5f / worldInfo.noteInfo.speed;
-        newNoteScript.noteWaitTime *= Mathf.Clamp01(eachNoteIndex);
-        noteWaitTimes[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript.noteWaitTime);
+        newNoteScript.noteWaitSecs = Mathf.Abs(worldInfo.noteInfo.startRadius - worldInfo.playerInfo[worldInfo.noteInfo.tarPlayerIndex].tarRadius) / 3.5f / worldInfo.noteInfo.speed;
+        newNoteScript.noteWaitSecs *= Mathf.Clamp01(eachNoteIndex);
+        notesWaitSecs[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript.noteWaitSecs);
 
-        newNoteScript.noteLengthTime = worldInfo.noteInfo.length / worldInfo.noteInfo.speed;
-        newNoteScript.noteLengthTime *= Mathf.Clamp01(eachNoteIndex);
-        noteLengthTimes[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript.noteLengthTime);
+        newNoteScript.noteLengthSecs = worldInfo.noteInfo.length / worldInfo.noteInfo.speed;
+        newNoteScript.noteLengthSecs *= Mathf.Clamp01(eachNoteIndex);
+        notesLengthSecs[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript.noteLengthSecs);
 
         notes[worldInfo.noteInfo.tarPlayerIndex].Add(newNote);
         noteScripts[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript);

@@ -21,9 +21,11 @@ public class Center : MonoBehaviour
     }
     void Update()
     {
+        if (GM.isBreakUpdate())
+            return;
         worldInfo = handy.GetWorldInfo(GM.curWorldInfoIndex);
         HP01 = GM.HP01;
-        centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, HP01, Time.unscaledDeltaTime * 4f);
+        centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, HP01, Time.deltaTime * 4f);
         transform.localScale = worldInfo.centerInfo.scale;
         transform.position = worldInfo.centerInfo.pos;
         centerColor = handy.GetColor01(worldInfo.centerInfo.color);

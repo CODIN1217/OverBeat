@@ -5,11 +5,11 @@ using DG.Tweening;
 using System;
 
 [Serializable]
-[ExecuteInEditMode]
+// [ExecuteInEditMode]
 public class WorldInfo : MonoBehaviour
 {
     [Serializable]
-    [ExecuteInEditMode]
+    // [ExecuteInEditMode]
     public class CameraInfo
     {
         [SerializeField] float _rotation;
@@ -26,7 +26,7 @@ public class WorldInfo : MonoBehaviour
         public Color BGColor { get { return _BGColor; } set { _BGColor = Handy.Property.GetCorrectRGBA(value); } }
     }
     [Serializable]
-    [ExecuteInEditMode]
+    // [ExecuteInEditMode]
     public class CountDownInfo
     {
         [SerializeField] int _numberOfTick;
@@ -40,7 +40,7 @@ public class WorldInfo : MonoBehaviour
         public float intervalOfTick { get { return _intervalOfTick; } set { _intervalOfTick = Mathf.Clamp(value, 0.01f, 100f); } }
     }
     /* [Serializable]
-    [ExecuteInEditMode]
+    // [ExecuteInEditMode]
     public class VariousModeInfo
     {
         [SerializeField] int _variousModeCount;
@@ -51,7 +51,7 @@ public class WorldInfo : MonoBehaviour
         public int variousModeCount { get { return _variousModeCount; } set { _variousModeCount = (int)Mathf.Clamp(value, 1, 2); } }
     } */
     [Serializable]
-    [ExecuteInEditMode]
+    // [ExecuteInEditMode]
     public class PlayerInfo
     {
         // int Index;
@@ -94,14 +94,14 @@ public class WorldInfo : MonoBehaviour
         public AnimationCurve tarRadiusEase { get { return _tarRadiusEase; } set { _tarRadiusEase = value; } }
     }
     [Serializable]
-    [ExecuteInEditMode]
+    // [ExecuteInEditMode]
     public class NoteInfo
     {
         [SerializeField] int _eachNoteIndex;
         [SerializeField] int _tarPlayerIndex;
         [SerializeField] int _startDegIndex;
         [SerializeField] int _endDegIndex;
-        [SerializeField] float _awakeTimeSec;
+        [SerializeField] float _awakeSecs;
         [SerializeField] float _speed;
         [SerializeField] float _startRadius;
         [SerializeField] float _length;
@@ -119,7 +119,7 @@ public class WorldInfo : MonoBehaviour
             _tarPlayerIndex = 0;
             _startDegIndex = 0;
             _endDegIndex = 0;
-            _awakeTimeSec = 0f;
+            _awakeSecs = 0f;
             _speed = 1f;
             _startRadius = 5f;
             _length = 0f;
@@ -136,7 +136,7 @@ public class WorldInfo : MonoBehaviour
         public int tarPlayerIndex { get { return _tarPlayerIndex; } set { _tarPlayerIndex = value; } }
         public int startDegIndex { get { return _startDegIndex; } set { _startDegIndex = value; } }
         public int endDegIndex { get { return _endDegIndex; } set { _endDegIndex = value; } }
-        public float awakeTimeSec { get { return _awakeTimeSec; } set { _awakeTimeSec = Mathf.Clamp(value, 0f, 1f); } }
+        public float awakeSecs { get { return _awakeSecs; } set { _awakeSecs = Mathf.Clamp(value, 0f, 1f); } }
         public float speed { get { return _speed; } set { _speed = Mathf.Clamp(value, 0.01f, 100f); } }
         public float startRadius { get { return _startRadius; } set { _startRadius = Mathf.Clamp(value, 0f, 500f); } }
         public float length { get { return _length; } set { _length = Mathf.Clamp(value, 0f, 500f); } }
@@ -150,7 +150,7 @@ public class WorldInfo : MonoBehaviour
         public AnimationCurve appearEase { get { return _appearEase; } set { _appearEase = value; } }
     }
     [Serializable]
-    [ExecuteInEditMode]
+    // [ExecuteInEditMode]
     public class CenterInfo
     {
         [SerializeField] Color _color;
@@ -167,7 +167,7 @@ public class WorldInfo : MonoBehaviour
         public Vector2 scale { get { return _scale; } set { _scale = Handy.Property.GetCorrectXY(value, -100f, 100f); } }
     }
     [Serializable]
-    [ExecuteInEditMode]
+    // [ExecuteInEditMode]
     public class BoundaryInfo
     {
         [SerializeField] Color _lineColor;
@@ -184,7 +184,7 @@ public class WorldInfo : MonoBehaviour
         public Vector2 scale { get { return _scale; } set { _scale = Handy.Property.GetCorrectXY(value, -100f, 100f); } }
     }
     [Serializable]
-    [ExecuteInEditMode]
+    // [ExecuteInEditMode]
     public class JudgmentInfo
     {
         [SerializeField] float _range;
@@ -195,7 +195,7 @@ public class WorldInfo : MonoBehaviour
         public float range { get { return _range; } set { _range = Mathf.Clamp(value, 0.05f, 0.5f); } }
     }
     [Serializable]
-    [ExecuteInEditMode]
+    // [ExecuteInEditMode]
     public class CreditInfo
     {
         [SerializeField] string _worldName;

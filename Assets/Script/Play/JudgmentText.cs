@@ -36,8 +36,7 @@ public class JudgmentText : MonoBehaviour
             .Append(judgmentText_TMP.DOFade(1f, 0.05f))
             .AppendInterval(0.2f)
             .Append(judgmentText_TMP.DOFade(0f, 0.05f))
-            .OnComplete(() => gameObject.SetActive(false))
-            .SetUpdate(true);
+            .OnComplete(() => gameObject.SetActive(false));
             judgmentText_rect.localPosition = 100f * (stdPlayerPos + new Vector2(0, 0.61f * handy.GetScaleAbsAverage(stdPlayerScale) + judgmentText_rect.sizeDelta.y * 0.005f));
             isAwake = false;
         }

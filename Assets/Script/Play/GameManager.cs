@@ -15,10 +15,10 @@ public class GameManager : MonoBehaviour
     public List<List<bool>> isKeyDowns;
     public List<List<bool>> isKeyPresses;
     public List<List<bool>> isKeyUps;
-    public int lastHitedNoteIndex;
+    // public int lastHitedNoteIndex;
     public bool isPause;
     public bool isGameOver;
-    public bool isEnd;
+    public bool isClearWorld;
     public bool isAutoPlay;
     bool isAwake;
     bool isInputted;
@@ -28,20 +28,21 @@ public class GameManager : MonoBehaviour
     // public float elapsedTimeWhenNeedlessInput01;
     // public float elapsedTimeWhenNeedInput01;
     public float sumNoteAccuracy01;
-    public float noteWaitTime;
+    public float noteWaitSecs;
     public float progress01;
     public float accuracy01;
     public float HP01;
     public int MaxMissCount;
     public readonly int MaxHPCount;
-    public float toleranceTimeWhenNeedInput;
+    public float toleranceSecsWhenNeedInput;
     public Handy handy;
     public Vector3 curNotePos;
     public int[] closestNoteIndex;
     public int curWorldInfoIndex;
     public int totalNoteCount;
     Stopwatch totalElapsedTime;
-    float totalElapsedSeconds;
+    float totalElapsedSecs;
+    float totalGamePlaySecs;
     void Awake()
     {
         instance = this;
@@ -62,7 +63,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
 
-        Time.timeScale = isPause ? 0f : 1f;
+        // Time.timeScale = isPause ? 0f : 1f;
         isKeyDowns.Clear();
         for (int i = 0; i < canInputKeys.Count; i++)
         {
@@ -96,9 +97,12 @@ public class GameManager : MonoBehaviour
             {
                 totalNoteCount += handy.GetNoteCountWithOutStartNote(i);
             }
+            WorldInfo lastWorldInfo = handy.GetWorldInfo(handy.GetMaxWorldInfoIndex());
+            NotePrefab lastNoteScript = handy.GetNoteScript(lastWorldInfo.noteInfo.tarPlayerIndex, lastWorldInfo.noteInfo.eachNoteIndex);
+            totalGamePlaySecs = lastWorldInfo.noteInfo.awakeSecs + lastNoteScript.noteWaitSecs + lastNoteScript.noteLengthSecs;
             isAwake = false;
         }
-        progress01 = (float)lastHitedNoteIndex / (float)totalNoteCount;
+        progress01 = Mathf.Clamp01(totalElapsedSecs / totalGamePlaySecs);
         // InfoViewer.Property.SetInfo(this.name, nameof(totalNoteCount), () => totalNoteCount);
         MaxMissCount = (int)Mathf.Clamp(Mathf.Floor((float)totalNoteCount * 0.4f), 1f, (float)MaxHPCount);
         HP01 = 1f - (float)missCount / MaxMissCount;
@@ -108,7 +112,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         totalElapsedTime.Start();
-        totalElapsedSeconds = totalElapsedTime.ElapsedMilliseconds * 0.001f;
+        totalElapsedSecs = totalElapsedTime.ElapsedMilliseconds * 0.001f;
         for (int i = 0; i < handy.GetWorldInfoCount(); i++)
         {
             GameObject curNote = handy.GetNote(handy.GetWorldInfo(i).noteInfo.tarPlayerIndex, handy.GetWorldInfo(i).noteInfo.eachNoteIndex);
@@ -117,10 +121,10 @@ public class GameManager : MonoBehaviour
             {
                 if (!curNote.activeSelf)
                 {
-                    if (handy.GetWorldInfo(i).noteInfo.awakeTimeSec <= totalElapsedSeconds)
+                    if (handy.GetWorldInfo(i).noteInfo.awakeSecs <= totalElapsedSecs)
                     {
                         curNote.SetActive(true);
-                        curNoteScript.toleranceTimeWhenAwake = totalElapsedSeconds - handy.GetWorldInfo(i).noteInfo.awakeTimeSec;
+                        curNoteScript.toleranceSecsWhenAwake = totalElapsedSecs - handy.GetWorldInfo(i).noteInfo.awakeSecs;
                     }
                 }
             }
@@ -206,7 +210,7 @@ public class GameManager : MonoBehaviour
         }
         if (progress01 >= 1f)
         {
-            isEnd = true;
+            isClearWorld = true;
             isPause = true;
         }
     }
@@ -380,19 +384,28 @@ public class GameManager : MonoBehaviour
         }
         return false;
     }
-    public void SetUpdateSequence(Sequence tweener)
+    // public void SetUpdateSequence(Sequence tweener)
+    // {
+    //     if (tweener != null)
+    //     {
+    //         if (isPause)
+    //         {
+    //             tweener.SetUpdate(false);
+    //             if (isClearWorld || isGameOver)
+    //             {
+    //                 tweener.SetUpdate(true);
+    //             }
+    //         }
+    //     }
+    // }
+    public bool isBreakUpdate()
     {
-        if (tweener != null)
+        if (isPause)
         {
-            if (isPause)
-            {
-                tweener.SetUpdate(false);
-                if (isEnd || isGameOver)
-                {
-                    tweener.SetUpdate(true);
-                }
-            }
+            if (!isClearWorld && !isGameOver)
+                return true;
         }
+        return false;
     }
     GameManager()
     {

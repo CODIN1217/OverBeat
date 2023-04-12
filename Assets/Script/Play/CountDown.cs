@@ -2,66 +2,81 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
+using System;
 
 public class CountDown : MonoBehaviour
 {
     int numberOfCountDownTick;
     float intervalOfCountDownTick;
-    float totalCountDownTime;
+    float totalCountDownSecs;
     public bool isCountDown;
-    bool isAwake;
-    float startTime;
+    bool isEnable;
+    float countDownSecs;
     TextMeshProUGUI countDownTMP;
     WorldInfo worldInfo;
     Handy handy;
     GameManager GM;
+    Stopwatch countDowner;
     void Awake()
     {
         GM = GameManager.Property;
         handy = Handy.Property;
         countDownTMP = GetComponent<TextMeshProUGUI>();
+        countDowner = new Stopwatch();
     }
-    void OnEnable() {
+    void OnEnable()
+    {
         PlayCountDown();
     }
     void Update()
     {
-        if (isCountDown)
+        if (GM.isBreakUpdate() && !isCountDown)
+            return;
+        if (isEnable)
         {
-            if (isAwake)
-            {
-                startTime = Time.unscaledTime;
-                isAwake = false;
-            }
-            if (Time.unscaledTime - startTime < totalCountDownTime - intervalOfCountDownTick)
-            {
-                countDownTMP.text = ((float)numberOfCountDownTick - Mathf.Floor((Time.unscaledTime - startTime) / intervalOfCountDownTick) - 1).ToString();
-            }
-            else if(Time.unscaledTime - startTime < totalCountDownTime)
-            {
-                countDownTMP.text = "START";
-            }
-            else{
-                countDownTMP.text = "";
-                isCountDown = false;
-                GM.isPause = false;
-            }
+            isEnable = false;
         }
+        countDowner.Start();
+        countDownSecs = countDowner.ElapsedMilliseconds * 0.001f;
+        if (countDownSecs < totalCountDownSecs - intervalOfCountDownTick)
+        {
+            countDownTMP.text = ((float)numberOfCountDownTick - Mathf.Floor(countDownSecs / intervalOfCountDownTick) - 1).ToString();
+        }
+        else if (countDownSecs < totalCountDownSecs)
+        {
+            countDownTMP.text = "START";
+        }
+        else
+        {
+            countDownTMP.text = "";
+            isCountDown = false;
+            GM.isPause = false;
+            gameObject.SetActive(false);
+        }
+        /* if (isCountDown)
+        {
+        } */
     }
 
-    public void PlayCountDown(){
-        worldInfo = handy.GetWorldInfo(GM.curWorldInfoIndex);
-        numberOfCountDownTick = worldInfo.countDownInfo.numberOfTick;
-        intervalOfCountDownTick = worldInfo.countDownInfo.intervalOfTick;
-        totalCountDownTime = (float)numberOfCountDownTick * intervalOfCountDownTick;
+    public void PlayCountDown(int? numberOfCountDownTick = null, float? intervalOfCountDownTick = null, int? worldInfoIndex = null)
+    {
+        if (worldInfoIndex == null)
+            worldInfoIndex = GM.curWorldInfoIndex;
+        worldInfo = handy.GetWorldInfo((int)worldInfoIndex);
+        if (numberOfCountDownTick == null)
+            this.numberOfCountDownTick = worldInfo.countDownInfo.numberOfTick;
+        else
+            this.numberOfCountDownTick = (int)numberOfCountDownTick;
+        if (intervalOfCountDownTick == null)
+            this.intervalOfCountDownTick = worldInfo.countDownInfo.intervalOfTick;
+        else
+            this.intervalOfCountDownTick = (float)intervalOfCountDownTick;
+        totalCountDownSecs = this.numberOfCountDownTick * this.intervalOfCountDownTick;
         isCountDown = true;
-        isAwake = true;
-    }
-    public void PlayCountDown(int numberOfCountDownTick, float intervalOfCountDownTick){
-        this.numberOfCountDownTick = numberOfCountDownTick;
-        this.intervalOfCountDownTick = intervalOfCountDownTick;
-        totalCountDownTime = (float)this.numberOfCountDownTick * this.intervalOfCountDownTick;
-        isCountDown = true;
-        isAwake = true;
+        isEnable = true;
+        countDowner.Reset();
+        countDowner.Stop();
     }
 }

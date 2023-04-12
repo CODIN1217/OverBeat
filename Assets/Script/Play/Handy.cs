@@ -171,19 +171,19 @@ public class Handy : MonoBehaviour
         playerIndex = GetCorrectIndex(playerIndex, GetWorldInfo(worldInfoIndex - 1).variousModeInfo.variousModeCount - 1);
         return GetWorldInfo(worldInfoIndex - 1).playerInfo[playerIndex].stdDegs[GetWorldInfo(worldInfoIndex - 1).noteInfo.startDegIndex];
     } */
-    public float GetNoteWaitTime(int playerIndex, int eachNoteIndex)
+    public float GetNoteWaitSecs(int playerIndex, int eachNoteIndex)
     {
         playerIndex = GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
         // if (worldInfoIndex == null)
         //     worldInfoIndex = GM.curWorldInfoIndex;
-        return (float)noteGeneratorScript.noteWaitTimes[playerIndex][GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
+        return (float)noteGeneratorScript.notesWaitSecs[playerIndex][GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
     }
-    public float GetNoteLengthTime(int playerIndex, int eachNoteIndex)
+    public float GetNoteLengthSecs(int playerIndex, int eachNoteIndex)
     {
         playerIndex = GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
         // if (worldInfoIndex == null)
         //     worldInfoIndex = GM.curWorldInfoIndex;
-        return (float)noteGeneratorScript.noteLengthTimes[playerIndex][GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
+        return (float)noteGeneratorScript.notesLengthSecs[playerIndex][GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
     }
     public GameObject GetNote(int playerIndex, int eachNoteIndex)
     {
@@ -239,17 +239,17 @@ public class Handy : MonoBehaviour
     {
         return Mathf.Abs(x) > Mathf.Abs(y) ? x : y;
     }
-    public float GetJudgmentValue(int playerIndex, float? elapsedTimeWhenNeedlessInput01 = null, float? elapsedTimeWhenNeedInput01 = null)
+    public float GetJudgmentValue(int playerIndex, float? elapsedSecsWhenNeedlessInput01 = null, float? elapsedSecsWhenNeedInput01 = null)
     {
-        if (elapsedTimeWhenNeedlessInput01 == null)
-            elapsedTimeWhenNeedlessInput01 = GetElapsedTimeWhenNeedlessInput01(playerIndex, GM.closestNoteIndex[playerIndex]);
-        if (elapsedTimeWhenNeedInput01 == null)
-            elapsedTimeWhenNeedInput01 = GetElapsedTimeWhenNeedInput01(playerIndex, GM.closestNoteIndex[playerIndex]);
+        if (elapsedSecsWhenNeedlessInput01 == null)
+            elapsedSecsWhenNeedlessInput01 = GetElapsedSecsWhenNeedlessInput01(playerIndex, GM.closestNoteIndex[playerIndex]);
+        if (elapsedSecsWhenNeedInput01 == null)
+            elapsedSecsWhenNeedInput01 = GetElapsedSecsWhenNeedInput01(playerIndex, GM.closestNoteIndex[playerIndex]);
         float judgmentValue = 1f;
-        if (elapsedTimeWhenNeedInput01 > 0f)
-            judgmentValue = (float)elapsedTimeWhenNeedInput01;
-        else if (elapsedTimeWhenNeedlessInput01 >= 1f - judgmentRange[playerIndex])
-            judgmentValue = 1f - (float)elapsedTimeWhenNeedlessInput01;
+        if (elapsedSecsWhenNeedInput01 > 0f)
+            judgmentValue = (float)elapsedSecsWhenNeedInput01;
+        else if (elapsedSecsWhenNeedlessInput01 >= 1f - judgmentRange[playerIndex])
+            judgmentValue = 1f - (float)elapsedSecsWhenNeedlessInput01;
         return judgmentValue;
     }
     public void WaitCodeUntilUpdateEnd(Action PlayCode)
@@ -470,6 +470,17 @@ public class Handy : MonoBehaviour
     {
         return color / 255f;
     }
+    public Color GetColor01WithPlayerIndex(Color color01, int playerIndex)
+    {
+        Color color01_temp = color01;
+        for (int i = 0; i < playerIndex; i++)
+        {
+            color01_temp = Color.white - color01_temp;
+        }
+        color01_temp /= Mathf.Floor(playerIndex * 0.5f) + 1;
+        color01_temp.a = color01.a;
+        return color01_temp;
+    }
     /* public GameObject GetNextNoteToSamePlayer(int noteIndex)
     {
         for (int i = noteIndex + 1; i <= GetNoteCount(); i++)
@@ -543,22 +554,22 @@ public class Handy : MonoBehaviour
             code(i);
         }
     }
-    public float GetElapsedTimeWhenNeedlessInput01(int playerIndex, int eachNoteIndex)
+    public float GetElapsedSecsWhenNeedlessInput01(int playerIndex, int eachNoteIndex)
     {
         playerIndex = GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
         // if (worldInfoIndex == null)
         //     worldInfoIndex = GM.curWorldInfoIndex;
         if (GetNoteScript(playerIndex, eachNoteIndex) != null)
-            return GetNoteScript(playerIndex, eachNoteIndex).elapsedTimeWhenNeedlessInput01;
+            return GetNoteScript(playerIndex, eachNoteIndex).elapsedSecsWhenNeedlessInput01;
         return 0f;
     }
-    public float GetElapsedTimeWhenNeedInput01(int playerIndex, int eachNoteIndex)
+    public float GetElapsedSecsWhenNeedInput01(int playerIndex, int eachNoteIndex)
     {
         playerIndex = GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
         // if (worldInfoIndex == null)
         //     worldInfoIndex = GM.curWorldInfoIndex;
         if (GetNoteScript(playerIndex, eachNoteIndex) != null)
-            return GetNoteScript(playerIndex, eachNoteIndex).elapsedTimeWhenNeedInput01;
+            return GetNoteScript(playerIndex, eachNoteIndex).elapsedSecsWhenNeedInput01;
         return 0f;
     }
     public float[] GetCorrectStdDegs(float[] stdDegs)

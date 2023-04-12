@@ -28,8 +28,8 @@ public class PlayerController : MonoBehaviour
             playerSideRends.Add(playerSides[i].GetComponent<SpriteRenderer>());
             playerCenters.Add(playerScripts[i].playerCenter);
             playerCenterRends.Add(playerCenters[i].GetComponent<SpriteRenderer>());
-            playerSideRends[i].sortingOrder =  (handy.GetMaxPlayerIndex() - i) * 2 + 2;
-            playerCenterRends[i].sortingOrder = (handy.GetMaxPlayerIndex() - i) * 2 + 1;
+            playerSideRends[i].sortingOrder =  (handy.GetMaxPlayerIndex() - i) * 2 + 1 + handy.GetMaxPlayerCount();
+            playerCenterRends[i].sortingOrder = (handy.GetMaxPlayerIndex() - i) * 2 + handy.GetMaxPlayerCount();
             playerScripts[i].myPlayerIndex = i;
         }
     }

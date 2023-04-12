@@ -17,6 +17,8 @@ public class BaseCamera : MonoBehaviour
     }
     void Update()
     {
+        if (GM.isBreakUpdate())
+            return;
         worldInfo = handy.GetWorldInfo(GM.curWorldInfoIndex);
         baseCamera.orthographicSize = stdSize * worldInfo.cameraInfo.size;
         baseCamera.backgroundColor = handy.GetColor01(worldInfo.cameraInfo.BGColor);

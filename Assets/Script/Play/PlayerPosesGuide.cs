@@ -38,20 +38,19 @@ public class PlayerPosesGuide : MonoBehaviour
 
         for (int i = 0; i < handy.GetMaxPlayerCount(); i++)
         {
-            if (handy.GetPlayer(i).activeSelf)
+            for (int j = 0; j < handy.GetWorldInfo(GM.curWorldInfoIndex).playerInfo[i].stdDegs.Length; j++)
             {
-                for (int j = 0; j < handy.GetWorldInfo(GM.curWorldInfoIndex).playerInfo[i].stdDegs.Length; j++)
+                playerPosDots[i][j].SetActive(false);
+                if (handy.GetPlayer(i).activeSelf)
                 {
-                    playerPosDots[i][j].SetActive(false);
-                    playerPosDotsRend[i][j].color = handy.GetColor01(handy.GetWorldInfo(GM.curWorldInfoIndex).playerInfo[i].posesGuideColor);
-                    playerPosDots[i][j].transform.position = handy.GetCircularPos(handy.GetWorldInfo(GM.curWorldInfoIndex).playerInfo[i].stdDegs[j], /* Mathf.Clamp( */handy.GetPlayerScript(i).curRadius/*  - playerCenterRadius, 0f, handy.GetPlayerScript().curRadius) */, handy.GetWorldInfo(GM.curWorldInfoIndex).centerInfo.pos);
-                    Vector2 playerPos = handy.GetCircularPos(handy.GetPlayerScript(i).curDeg, handy.GetPlayerScript(i).curRadius, handy.GetWorldInfo(GM.curWorldInfoIndex).centerInfo.pos);
+                    playerPosDots[i][j].SetActive(true);
+                    playerPosDotsRend[i][j].color = handy.GetColor01WithPlayerIndex(handy.GetColor01(handy.GetWorldInfo(GM.curWorldInfoIndex).playerInfo[i].posesGuideColor), i);
+                    playerPosDots[i][j].transform.position = handy.GetCircularPos(handy.GetWorldInfo(GM.curWorldInfoIndex).playerInfo[i].stdDegs[j], handy.GetPlayerScript(i).curRadius, handy.GetWorldInfo(GM.curWorldInfoIndex).centerInfo.pos);
+                    /* Vector2 playerPos = handy.GetCircularPos(handy.GetPlayerScript(i).curDeg, handy.GetPlayerScript(i).curRadius, handy.GetWorldInfo(GM.curWorldInfoIndex).centerInfo.pos);
                     if (!handy.CheckObjInOtherObj(playerPosDots[i][j], playerPos, handy.GetPlayerCenter(i).transform.localScale, handy.GetSpritePixels(playerPosDotsRend[i][j].sprite), handy.GetSpritePixels(handy.GetPlayerCenterRend(i).sprite)))
                     {
-                        playerPosDots[i][j].SetActive(true);
-                    }
+                    } */
                 }
-
             }
         }
     }

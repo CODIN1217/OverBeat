@@ -21,6 +21,8 @@ public class Boundary : MonoBehaviour
     }
     void Update()
     {
+        if (GM.isBreakUpdate())
+            return;
         worldInfo = handy.GetWorldInfo(GM.curWorldInfoIndex);
         boundaryCoverImage.color = worldInfo.boundaryInfo.coverColor == null ? handy.GetColor01(worldInfo.cameraInfo.BGColor) : handy.GetColor01((Color)worldInfo.boundaryInfo.coverColor);
         boundaryLineImage.color = handy.GetColor01(worldInfo.boundaryInfo.lineColor);
