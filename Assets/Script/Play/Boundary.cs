@@ -13,17 +13,17 @@ public class Boundary : MonoBehaviour
     public Image boundaryLineImage;
     public Image boundaryCoverImage;
     public Image boundaryMaskImage;
-    GameManager GM;
+    PlayGameManager playGM;
     void Awake()
     {
-        GM = GameManager.Property;
+        playGM = PlayGameManager.Property;
         handy = Handy.Property;
     }
     void Update()
     {
-        if (GM.isBreakUpdate())
+        if (playGM.isBreakUpdate())
             return;
-        worldInfo = handy.GetWorldInfo(GM.curWorldInfoIndex);
+        worldInfo = playGM.GetWorldInfo(playGM.curWorldInfoIndex);
         boundaryCoverImage.color = worldInfo.boundaryInfo.coverColor == null ? handy.GetColor01(worldInfo.cameraInfo.BGColor) : handy.GetColor01((Color)worldInfo.boundaryInfo.coverColor);
         boundaryLineImage.color = handy.GetColor01(worldInfo.boundaryInfo.lineColor);
         transform.localScale = (/* worldInfo.boundaryScale == null ? Vector2.one * (worldInfo.noteStartRadius > worldInfo.playerRadius  ? worldInfo.noteStartRadius * 0.2f : worldInfo.playerRadius / 1.5f) :  */worldInfo.boundaryInfo.scale) / worldInfo.cameraInfo.size;

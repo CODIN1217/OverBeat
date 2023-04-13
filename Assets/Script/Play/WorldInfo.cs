@@ -5,28 +5,40 @@ using DG.Tweening;
 using System;
 
 [Serializable]
-// [ExecuteInEditMode]
 public class WorldInfo : MonoBehaviour
 {
     [Serializable]
-    // [ExecuteInEditMode]
     public class CameraInfo
     {
         [SerializeField] float _rotation;
         [SerializeField] float _size;
+        [SerializeField] Vector2 _pos;
         [SerializeField] Color _BGColor;
+        [SerializeField] Tweener _rotationTween;
+        [SerializeField] Tweener _sizeTween;
+        [SerializeField] Tweener _posTween;
+        [SerializeField] Tweener _BGColorTween;
         public CameraInfo()
         {
+            _pos = Vector2.zero;
             _rotation = 0f;
             _size = 1f;
             _BGColor = new Color(39, 29, 35, 255);
+            _rotationTween = new Tweener();
+            _sizeTween = new Tweener();
+            _posTween = new Tweener();
+            _BGColorTween = new Tweener();
         }
+        public Vector2 pos { get { return _pos; } set { _pos = value; } }
         public float rotation { get { return _rotation; } set { _rotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
         public float size { get { return _size; } set { _size = Mathf.Clamp(value, -100f, 100f); } }
         public Color BGColor { get { return _BGColor; } set { _BGColor = Handy.Property.GetCorrectRGBA(value); } }
+        public Tweener rotationTween { get { return _rotationTween; } set { _rotationTween = value; } }
+        public Tweener sizeTween { get { return _sizeTween; } set { _sizeTween = value; } }
+        public Tweener posTween { get { return _posTween; } set { _posTween = value; } }
+        public Tweener BGColorTween { get { return _BGColorTween; } set { _BGColorTween = value; } }
     }
     [Serializable]
-    // [ExecuteInEditMode]
     public class CountDownInfo
     {
         [SerializeField] int _numberOfTick;
@@ -39,24 +51,10 @@ public class WorldInfo : MonoBehaviour
         public int numberOfTick { get { return _numberOfTick; } set { _numberOfTick = (int)Mathf.Clamp(value, 1, 400); } }
         public float intervalOfTick { get { return _intervalOfTick; } set { _intervalOfTick = Mathf.Clamp(value, 0.01f, 100f); } }
     }
-    /* [Serializable]
-    // [ExecuteInEditMode]
-    public class VariousModeInfo
-    {
-        [SerializeField] int _variousModeCount;
-        public VariousModeInfo()
-        {
-            _variousModeCount = 1;
-        }
-        public int variousModeCount { get { return _variousModeCount; } set { _variousModeCount = (int)Mathf.Clamp(value, 1, 2); } }
-    } */
     [Serializable]
-    // [ExecuteInEditMode]
     public class PlayerInfo
     {
-        // int Index;
         [SerializeField] int _moveDir;
-        // [SerializeField] int _noteCount;
         [SerializeField] float _tarRadius;
         [SerializeField] float _rotation;
         [SerializeField] float[] _stdDegs;
@@ -64,13 +62,16 @@ public class WorldInfo : MonoBehaviour
         [SerializeField] Color _sideColor;
         [SerializeField] Color _centerColor;
         [SerializeField] Vector2 _scale;
-        [SerializeField] AnimationCurve _degEase;
-        [SerializeField] AnimationCurve _tarRadiusEase;
+        [SerializeField] Tweener _degTween;
+        [SerializeField] Tweener _tarRadiusTween;
+        [SerializeField] Tweener _rotationTween;
+        [SerializeField] Tweener _posesGuideColorTween;
+        [SerializeField] Tweener _sideColorTween;
+        [SerializeField] Tweener _centerColorTween;
+        [SerializeField] Tweener _scaleTween;
         public PlayerInfo()
         {
-            // Index = 0;
             _moveDir = 1;
-            // _noteCount = 1;
             _tarRadius = 1.5f;
             _rotation = 0f;
             _stdDegs = new float[] { 0f, 90f, 180f, 270f };
@@ -78,23 +79,31 @@ public class WorldInfo : MonoBehaviour
             _sideColor = new Color(100, 45, 250, 255);
             _centerColor = new Color(65, 20, 185, 255);
             _scale = Vector2.one;
-            _degEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-            _tarRadiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+            _degTween = new Tweener();
+            _tarRadiusTween = new Tweener();
+            _rotationTween = new Tweener();
+            _posesGuideColorTween = new Tweener();
+            _sideColorTween = new Tweener();
+            _centerColorTween = new Tweener();
+            _scaleTween = new Tweener();
         }
         public int moveDir { get { return _moveDir; } set { _moveDir = (int)Handy.Property.GetSign0Is0(value); } }
-        // public int noteCount { get { return _noteCount; } set { _noteCount = (int)Mathf.Clamp(value, 1, int.MaxValue); } }
         public float tarRadius { get { return _tarRadius; } set { _tarRadius = Mathf.Clamp(value, 0f, 500f); } }
         public float rotation { get { return _rotation; } set { _rotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
-        public float[] stdDegs { get { return _stdDegs; } set { _stdDegs = Handy.Property.GetCorrectStdDegs(value); } }
+        public float[] stdDegs { get { return _stdDegs; } set { _stdDegs = PlayGameManager.Property.GetCorrectStdDegs(value); } }
         public Color posesGuideColor { get { return _posesGuideColor; } set { _posesGuideColor = Handy.Property.GetCorrectRGBA(value); } }
         public Color sideColor { get { return _sideColor; } set { _sideColor = Handy.Property.GetCorrectRGBA(value); } }
         public Color centerColor { get { return _centerColor; } set { _centerColor = Handy.Property.GetCorrectRGBA(value); } }
         public Vector2 scale { get { return _scale; } set { _scale = Handy.Property.GetCorrectXY(value, -100f, 100f); } }
-        public AnimationCurve degEase { get { return _degEase; } set { _degEase = value; } }
-        public AnimationCurve tarRadiusEase { get { return _tarRadiusEase; } set { _tarRadiusEase = value; } }
+        public Tweener degTween { get { return _degTween; } set { _degTween = value; } }
+        public Tweener tarRadiusTween { get { return _tarRadiusTween; } set { _tarRadiusTween = value; } }
+        public Tweener rotationTween { get { return _rotationTween; } set { _rotationTween = value; } }
+        public Tweener posesGuideColorTween { get { return _posesGuideColorTween; } set { _posesGuideColorTween = value; } }
+        public Tweener sideColorTween { get { return _sideColorTween; } set { _sideColorTween = value; } }
+        public Tweener centerColorTween { get { return _centerColorTween; } set { _centerColorTween = value; } }
+        public Tweener scaleTween { get { return _scaleTween; } set { _scaleTween = value; } }
     }
     [Serializable]
-    // [ExecuteInEditMode]
     public class NoteInfo
     {
         [SerializeField] int _eachNoteIndex;
@@ -105,14 +114,23 @@ public class WorldInfo : MonoBehaviour
         [SerializeField] float _speed;
         [SerializeField] float _startRadius;
         [SerializeField] float _length;
-        [SerializeField] float _rotation;
+        [SerializeField] float _totalRotation;
+        [SerializeField] float _startRotation;
+        [SerializeField] float _endRotation;
         [SerializeField] string _sideImageName;
         [SerializeField] Color _startColor;
         [SerializeField] Color _processColor;
         [SerializeField] Color _endColor;
-        [SerializeField] AnimationCurve _radiusEase;
-        [SerializeField] AnimationCurve _holdRadiusEase;
-        [SerializeField] AnimationCurve _appearEase;
+        [SerializeField] Tweener _radiusTween;
+        [SerializeField] Tweener _holdRadiusTween;
+        [SerializeField] Tweener _appearTween;
+        [SerializeField] Tweener _totalRotationTween;
+        // 여기까지 수정함
+        [SerializeField] Tweener _startRotationTween;
+        [SerializeField] Tweener _endRotationTween;
+        [SerializeField] Tweener _startColorTween;
+        [SerializeField] Tweener _processColorTween;
+        [SerializeField] Tweener _endColorTween;
         public NoteInfo()
         {
             _eachNoteIndex = 0;
@@ -123,68 +141,99 @@ public class WorldInfo : MonoBehaviour
             _speed = 1f;
             _startRadius = 5f;
             _length = 0f;
-            _rotation = 0f;
+            _totalRotation = 0f;
+            _startRotation = 0f;
+            _endRotation = 0f;
             _sideImageName = "Basic";
             _startColor = new Color(100, 45, 250, 255);
             _processColor = new Color(130, 80, 255, 255);
             _endColor = new Color(100, 45, 250, 255);
-            _radiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-            _holdRadiusEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-            _appearEase = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+            _radiusTween = new Tweener();
+            _holdRadiusTween = new Tweener();
+            _appearTween = new Tweener();
+            _totalRotationTween = new Tweener();
+            _startRotationTween = new Tweener();
+            _endRotationTween = new Tweener();
+            _startColorTween = new Tweener();
+            _processColorTween = new Tweener();
+            _endColorTween = new Tweener();
         }
-        public int eachNoteIndex { get { return _eachNoteIndex; } set { _eachNoteIndex = value; } }
-        public int tarPlayerIndex { get { return _tarPlayerIndex; } set { _tarPlayerIndex = value; } }
-        public int startDegIndex { get { return _startDegIndex; } set { _startDegIndex = value; } }
-        public int endDegIndex { get { return _endDegIndex; } set { _endDegIndex = value; } }
-        public float awakeSecs { get { return _awakeSecs; } set { _awakeSecs = Mathf.Clamp(value, 0f, 1f); } }
+        public int eachNoteIndex { get { return _eachNoteIndex; } set { _eachNoteIndex = Handy.Property.GetCorrectIndex(value); } }
+        public int tarPlayerIndex { get { return _tarPlayerIndex; } set { _tarPlayerIndex = Handy.Property.GetCorrectIndex(value); } }
+        public int startDegIndex { get { return _startDegIndex; } set { _startDegIndex = Handy.Property.GetCorrectIndex(value); } }
+        public int endDegIndex { get { return _endDegIndex; } set { _endDegIndex = Handy.Property.GetCorrectIndex(value); } }
+        public float awakeSecs { get { return _awakeSecs; } set { _awakeSecs = Mathf.Clamp(value, 0f, float.MaxValue); } }
         public float speed { get { return _speed; } set { _speed = Mathf.Clamp(value, 0.01f, 100f); } }
         public float startRadius { get { return _startRadius; } set { _startRadius = Mathf.Clamp(value, 0f, 500f); } }
         public float length { get { return _length; } set { _length = Mathf.Clamp(value, 0f, 500f); } }
-        public float rotation { get { return _rotation; } set { _rotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
+        public float totalRotation { get { return _totalRotation; } set { _totalRotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
+        public float startRotation { get { return _startRotation; } set { _startRotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
+        public float endRotation { get { return _endRotation; } set { _endRotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
         public string sideImageName { get { return _sideImageName; } set { _sideImageName = value; } }
         public Color startColor { get { return _startColor; } set { _startColor = Handy.Property.GetCorrectRGBA(value); } }
         public Color processColor { get { return _processColor; } set { _processColor = Handy.Property.GetCorrectRGBA(value); } }
         public Color endColor { get { return _endColor; } set { _endColor = Handy.Property.GetCorrectRGBA(value); } }
-        public AnimationCurve radiusEase { get { return _radiusEase; } set { _radiusEase = value; } }
-        public AnimationCurve holdRadiusEase { get { return _holdRadiusEase; } set { _holdRadiusEase = value; } }
-        public AnimationCurve appearEase { get { return _appearEase; } set { _appearEase = value; } }
+        public Tweener radiusTween { get { return _radiusTween; } set { _radiusTween = value; } }
+        public Tweener holdRadiusTween { get { return _holdRadiusTween; } set { _holdRadiusTween = value; } }
+        public Tweener appearTween { get { return _appearTween; } set { _appearTween = value; } }
+        public Tweener totalRotationTween { get { return _totalRotationTween; } set { _totalRotationTween = value; } }
+        public Tweener startRotationTween { get { return _startRotationTween; } set { _startRotationTween = value; } }
+        public Tweener endRotationTween { get { return _endRotationTween; } set { _endRotationTween = value; } }
+        public Tweener startColorTween { get { return _startColorTween; } set { _startColorTween = value; } }
+        public Tweener processColorTween { get { return _processColorTween; } set { _processColorTween = value; } }
+        public Tweener endColorTween { get { return _endColorTween; } set { _endColorTween = value; } }
     }
     [Serializable]
-    // [ExecuteInEditMode]
     public class CenterInfo
     {
         [SerializeField] Color _color;
         [SerializeField] Vector2 _pos;
         [SerializeField] Vector2 _scale;
+        [SerializeField] Tweener _colorTween;
+        [SerializeField] Tweener _posTween;
+        [SerializeField] Tweener _scaleTween;
         public CenterInfo()
         {
             _color = new Color(0, 255, 160, 255);
             _pos = Vector2.zero;
             _scale = Vector2.one;
+            _colorTween = new Tweener();
+            _posTween = new Tweener();
+            _scaleTween = new Tweener();
         }
         public Color color { get { return _color; } set { _color = Handy.Property.GetCorrectRGBA(value); } }
         public Vector2 pos { get { return _pos; } set { _pos = value; } }
         public Vector2 scale { get { return _scale; } set { _scale = Handy.Property.GetCorrectXY(value, -100f, 100f); } }
+        public Tweener colorTween { get { return _colorTween; } set { _colorTween = value; } }
+        public Tweener posTween { get { return _posTween; } set { _posTween = value; } }
+        public Tweener scaleTween { get { return _scaleTween; } set { _scaleTween = value; } }
     }
     [Serializable]
-    // [ExecuteInEditMode]
     public class BoundaryInfo
     {
         [SerializeField] Color _lineColor;
         [SerializeField] Color? _coverColor;
         [SerializeField] Vector2 _scale;
+        [SerializeField] Tweener _lineColorTween;
+        [SerializeField] Tweener _coverColorTween;
+        [SerializeField] Tweener _scaleTween;
         public BoundaryInfo()
         {
             _lineColor = new Color(0, 255, 160, 255);
             _coverColor = null/* new Color(39, 29, 35, 255) */;
             _scale = Vector2.one;
+            _lineColorTween = new Tweener();
+            _coverColorTween = new Tweener();
+            _scaleTween = new Tweener();
         }
         public Color lineColor { get { return _lineColor; } set { _lineColor = Handy.Property.GetCorrectRGBA(value); } }
         public Color? coverColor { get { return _coverColor; } set { _coverColor = Handy.Property.GetCorrectRGBA(value); } }
         public Vector2 scale { get { return _scale; } set { _scale = Handy.Property.GetCorrectXY(value, -100f, 100f); } }
+        public Tweener lineColorTween { get { return _lineColorTween; } set { _lineColorTween = value; } }
+        public Tweener coverColorTween { get { return _coverColorTween; } set { _coverColorTween = value; } }
+        public Tweener scaleTween { get { return _scaleTween; } set { _scaleTween = value; } }
     }
     [Serializable]
-    // [ExecuteInEditMode]
     public class JudgmentInfo
     {
         [SerializeField] float _range;
@@ -195,7 +244,6 @@ public class WorldInfo : MonoBehaviour
         public float range { get { return _range; } set { _range = Mathf.Clamp(value, 0.05f, 0.5f); } }
     }
     [Serializable]
-    // [ExecuteInEditMode]
     public class CreditInfo
     {
         [SerializeField] string _worldName;
@@ -214,10 +262,8 @@ public class WorldInfo : MonoBehaviour
         public string songName { get { return _songName; } set { _songName = value; } }
         public string songWriter { get { return _songWriter; } set { _songWriter = value; } }
     }
-    // [SerializeField] float _waitTime;
     public CameraInfo cameraInfo;
     public CountDownInfo countDownInfo;
-    // public VariousModeInfo variousModeInfo;
     public PlayerInfo[] playerInfo;
     public NoteInfo noteInfo;
     public CenterInfo centerInfo;
@@ -227,10 +273,8 @@ public class WorldInfo : MonoBehaviour
 
     public WorldInfo()
     {
-        // _waitTime = 1f;
         cameraInfo = new CameraInfo();
         countDownInfo = new CountDownInfo();
-        // variousModeInfo = new VariousModeInfo();
         playerInfo = new PlayerInfo[2];
         noteInfo = new NoteInfo();
         centerInfo = new CenterInfo();
@@ -238,5 +282,4 @@ public class WorldInfo : MonoBehaviour
         judgmentInfo = new JudgmentInfo();
         creditInfo = new CreditInfo();
     }
-    // public float waitTime { get { return _waitTime; } set { _waitTime = value; } }
 }

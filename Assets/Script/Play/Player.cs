@@ -25,25 +25,23 @@ public class Player : MonoBehaviour
     Sequence moveTweener;
     Sequence radiusTweener;
     Handy handy;
-    GameManager GM;
+    PlayGameManager playGM;
     void OnEnable()
     {
-        GM = GameManager.Property;
+        playGM = PlayGameManager.Property;
         handy = Handy.Property;
         playerSideRenderer = playerSide.GetComponent<SpriteRenderer>();
         playerCenterRenderer = playerCenter.GetComponent<SpriteRenderer>();
-        curRadius = handy.GetWorldInfo(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex] - 1).playerInfo[myPlayerIndex].tarRadius;
+        curRadius = playGM.GetWorldInfo(myPlayerIndex, playGM.closestNoteIndex[myPlayerIndex] - 1).playerInfo[myPlayerIndex].tarRadius;
         isEnable = true;
     }
     void Update()
     {
-        // if (handy.GetWorldInfo().PlayerInfo.Index == myPlayerIndex)
-        if (GM.isBreakUpdate())
+        if (playGM.isBreakUpdate())
             return;
-        worldInfo = handy.GetWorldInfo(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex]);
-        // tarDeg = handy.GetNextDeg(myPlayerIndex, worldInfo);
+        worldInfo = playGM.GetWorldInfo(myPlayerIndex, playGM.closestNoteIndex[myPlayerIndex]);
         SetPlayerRenderer();
-        stdRadius = handy.GetWorldInfo(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex] - 1).playerInfo[myPlayerIndex].tarRadius;
+        stdRadius = playGM.GetWorldInfo(myPlayerIndex, playGM.closestNoteIndex[myPlayerIndex] - 1).playerInfo[myPlayerIndex].tarRadius;
         tarRadius = worldInfo.playerInfo[myPlayerIndex].tarRadius;
         UpdateDegs();
         if (isEnable)
@@ -52,42 +50,36 @@ public class Player : MonoBehaviour
             isEnable = false;
         }
         curDeg = handy.GetCorrectDegMaxIs0(curDeg);
-        // if(curDeg == 0f)
-        // handy.WriteLog(GM.worldInfoIndex);
         SetPlayerTransform();
-        if (GM.GetIsKeyDown(myPlayerIndex))
+        if (playGM.GetIsKeyDown(myPlayerIndex))
         {
             SetSideScaleTweener(worldInfo.playerInfo[myPlayerIndex].scale * 0.8f, 0.15f);
         }
-        else if (!GM.GetIsKeyPress(myPlayerIndex) && GM.GetIsKeyUp(myPlayerIndex))
+        else if (!playGM.GetIsKeyPress(myPlayerIndex) && playGM.GetIsKeyUp(myPlayerIndex))
         {
             SideScaleToOrig();
         }
-        // GM.SetUpdateSequence(moveTweener);
-        // GM.SetUpdateSequence(radiusTweener);
-        // GM.SetUpdateSequence(sideScaleTweener);
-        if (handy.GetJudgmentValue(myPlayerIndex) >= 1f)
+        if (playGM.GetJudgmentValue(myPlayerIndex) >= 1f)
             isInputted = false;
 
         if (!isInputted)
         {
-            if (GM.GetIsProperKeyDown(myPlayerIndex) && handy.GetJudgmentValue(myPlayerIndex) <= handy.judgmentRange[myPlayerIndex])
+            if (playGM.GetIsProperKeyDown(myPlayerIndex) && playGM.GetJudgmentValue(myPlayerIndex) <= playGM.judgmentRange[myPlayerIndex])
             {
                 tarDeg += worldInfo.playerInfo[myPlayerIndex].moveDir * tarDeg < worldInfo.playerInfo[myPlayerIndex].moveDir * curDeg ? worldInfo.playerInfo[myPlayerIndex].moveDir * 360f : 0f;
-                handy.closestNoteScripts[myPlayerIndex].TryKillFadeTweener(true);
-                handy.closestNoteScripts[myPlayerIndex].TryKillRadiusTweener(true);
-                if (!handy.closestNoteScripts[myPlayerIndex].needInput)
+                playGM.closestNoteScripts[myPlayerIndex].TryKillFadeTweener(true);
+                playGM.closestNoteScripts[myPlayerIndex].TryKillRadiusTweener(true);
+                if (!playGM.closestNoteScripts[myPlayerIndex].needInput)
                 {
-                    handy.closestNoteScripts[myPlayerIndex].ActNeedInput();
+                    playGM.closestNoteScripts[myPlayerIndex].ActNeedInput();
                 }
-                StartCoroutine(CheckInputtingKeys(GM.closestNoteIndex[myPlayerIndex]));
+                StartCoroutine(CheckInputtingKeys(playGM.closestNoteIndex[myPlayerIndex]));
                 TryKillMoveTweener();
                 moveTweener = DOTween.Sequence()
-                .AppendInterval(handy.GetNoteWaitSecs(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex]) * Mathf.Clamp(-handy.GetSign0IsMin(handy.closestNoteScripts[myPlayerIndex].elapsedSecsWhenNeedInput) * handy.GetJudgmentValue(myPlayerIndex), 0f, handy.judgmentRange[myPlayerIndex]))
+                .AppendInterval(playGM.GetNoteWaitSecs(myPlayerIndex, playGM.closestNoteIndex[myPlayerIndex]) * Mathf.Clamp(-handy.GetSign0IsMin(playGM.closestNoteScripts[myPlayerIndex].elapsedSecsWhenNeedInput) * playGM.GetJudgmentValue(myPlayerIndex), 0f, playGM.judgmentRange[myPlayerIndex]))
                 .Append(DOTween.To(() => stdDeg, (d) => curDeg = d, tarDeg,
-                handy.GetNoteLengthSecs(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex]) * (1f - Mathf.Clamp(handy.GetSign0IsMin(handy.closestNoteScripts[myPlayerIndex].elapsedSecsWhenNeedInput) * handy.GetJudgmentValue(myPlayerIndex), 0f, handy.judgmentRange[myPlayerIndex])))
-                .SetEase(worldInfo.playerInfo[myPlayerIndex].degEase))
-                /* .SetUpdate(true) */;
+                playGM.GetNoteLengthSecs(myPlayerIndex, playGM.closestNoteIndex[myPlayerIndex]) * (1f - Mathf.Clamp(handy.GetSign0IsMin(playGM.closestNoteScripts[myPlayerIndex].elapsedSecsWhenNeedInput) * playGM.GetJudgmentValue(myPlayerIndex), 0f, playGM.judgmentRange[myPlayerIndex])))
+                .SetEase(worldInfo.playerInfo[myPlayerIndex].degTween.ease));
                 isInputted = true;
             }
             else
@@ -95,39 +87,40 @@ public class Player : MonoBehaviour
                 curDeg = stdDeg;
             }
         }
-        /* else if (GM.GetIsKeyDown(myPlayerIndex))
-        {
-            GM.SetMissJudgment(myPlayerIndex);
-        } */
-        /* if(!GM.isEnd && GM.isPause){
-            sideScaleTweener.Pause();
-            moveTweener.Pause();
-            radiusTweener.Pause();
-        }
-        else{
-            sideScaleTweener.Play();
-            moveTweener.Play();
-            radiusTweener.Play();
-        } */
-
     }
     public void UpdateDegs()
     {
-        stdDeg = handy.GetStartDeg(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex]);
-        tarDeg = handy.GetEndDeg(myPlayerIndex, GM.closestNoteIndex[myPlayerIndex]);
+        stdDeg = playGM.GetStartDeg(myPlayerIndex, playGM.closestNoteIndex[myPlayerIndex]);
+        tarDeg = playGM.GetEndDeg(myPlayerIndex, playGM.closestNoteIndex[myPlayerIndex]);
     }
     void SetPlayerTransform()
     {
         transform.position = handy.GetCircularPos(curDeg, curRadius, worldInfo.centerInfo.pos);
-        transform.localScale = worldInfo.playerInfo[myPlayerIndex].scale;
-        transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(worldInfo.playerInfo[myPlayerIndex].rotation + curDeg)));
+        if (!handy.CompareWithBeforeValue(this.name, nameof(SetPlayerTransform), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
+        {
+            transform.DOScale(worldInfo.playerInfo[myPlayerIndex].scale, worldInfo.playerInfo[myPlayerIndex].scaleTween.duration)
+            .SetEase(worldInfo.playerInfo[myPlayerIndex].scaleTween.ease);
+            transform.DORotate(Vector3.forward * worldInfo.playerInfo[myPlayerIndex].rotation, worldInfo.playerInfo[myPlayerIndex].rotationTween.duration)
+            .SetEase(worldInfo.playerInfo[myPlayerIndex].rotationTween.ease);
+            // transform.localScale = worldInfo.playerInfo[myPlayerIndex].scale;
+            // transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(worldInfo.playerInfo[myPlayerIndex].rotation + curDeg)));
+            handy.SetValueForCompare(this.name, nameof(SetPlayerTransform), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
+        }
     }
     void SetPlayerRenderer()
     {
         playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
         playerSideRenderer.sprite = playerSideSprite;
-        playerSideRenderer.color = handy.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].sideColor), myPlayerIndex);
-        playerCenterRenderer.color = handy.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].centerColor), myPlayerIndex);
+        if (!handy.CompareWithBeforeValue(this.name, nameof(SetPlayerRenderer), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
+        {
+            playerSideRenderer.DOColor(playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].sideColor), myPlayerIndex), worldInfo.playerInfo[myPlayerIndex].sideColorTween.duration)
+            .SetEase(worldInfo.playerInfo[myPlayerIndex].sideColorTween.ease);
+            playerCenterRenderer.DOColor(playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].centerColor), myPlayerIndex), worldInfo.playerInfo[myPlayerIndex].centerColorTween.duration)
+            .SetEase(worldInfo.playerInfo[myPlayerIndex].centerColorTween.ease);
+            // playerSideRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].sideColor), myPlayerIndex);
+            // playerCenterRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].centerColor), myPlayerIndex);
+            handy.SetValueForCompare(this.name, nameof(SetPlayerRenderer), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
+        }
     }
     public void TryKillMoveTweener(bool isComplete = true)
     {
@@ -175,13 +168,13 @@ public class Player : MonoBehaviour
     }
     IEnumerator CheckInputtingKeys(int eachNoteIndex)
     {
-        while (GM.GetIsProperKeyPress(myPlayerIndex, handy.GetWorldInfo(myPlayerIndex, eachNoteIndex).noteInfo.startDegIndex) && handy.GetNoteScript(myPlayerIndex, eachNoteIndex).noteLengthSecs != 0f)
+        while (playGM.GetIsProperKeyPress(myPlayerIndex, playGM.GetWorldInfo(myPlayerIndex, eachNoteIndex).noteInfo.startDegIndex) && playGM.GetNoteScript(myPlayerIndex, eachNoteIndex).noteLengthSecs != 0f)
         {
             yield return null;
         }
-        if (handy.GetNote(myPlayerIndex, eachNoteIndex).activeSelf)
+        if (playGM.GetNote(myPlayerIndex, eachNoteIndex).activeSelf)
         {
-            handy.GetNoteScript(myPlayerIndex, eachNoteIndex).StopNote();
+            playGM.GetNoteScript(myPlayerIndex, eachNoteIndex).StopNote();
         }
     }
 }

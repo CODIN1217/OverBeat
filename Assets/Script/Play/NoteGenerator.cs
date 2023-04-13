@@ -12,37 +12,35 @@ public class NoteGenerator : MonoBehaviour
     public List<GameObject>[] notes;
     public List<NotePrefab>[] noteScripts;
     public int[] eachNoteCount;
-    // public GameObject worldReader;
-    // public WorldReader worldReaderScript;
     bool isAwake;
     Handy handy;
-    GameManager GM;
+    PlayGameManager playGM;
     void Awake()
     {
         handy = Handy.Property;
-        GM = GameManager.Property;
-        notesWaitSecs = new List<float>[handy.GetMaxPlayerCount()];
-        notesLengthSecs = new List<float>[handy.GetMaxPlayerCount()];
-        notes = new List<GameObject>[handy.GetMaxPlayerCount()];
-        noteScripts = new List<NotePrefab>[handy.GetMaxPlayerCount()];
-        for (int i = 0; i < handy.GetMaxPlayerCount(); i++)
+        playGM = PlayGameManager.Property;
+        notesWaitSecs = new List<float>[playGM.GetMaxPlayerCount()];
+        notesLengthSecs = new List<float>[playGM.GetMaxPlayerCount()];
+        notes = new List<GameObject>[playGM.GetMaxPlayerCount()];
+        noteScripts = new List<NotePrefab>[playGM.GetMaxPlayerCount()];
+        for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
         {
             notesWaitSecs[i] = new List<float>();
             notesLengthSecs[i] = new List<float>();
             notes[i] = new List<GameObject>();
             noteScripts[i] = new List<NotePrefab>();
         }
-        eachNoteCount = new int[handy.GetMaxPlayerCount()];
-        closestNotes = new GameObject[handy.GetMaxPlayerCount()];
-        closestNoteScripts = new NotePrefab[handy.GetMaxPlayerCount()];
-        for (int j = 0; j < handy.GetWorldInfoCount(); j++)
+        eachNoteCount = new int[playGM.GetMaxPlayerCount()];
+        closestNotes = new GameObject[playGM.GetMaxPlayerCount()];
+        closestNoteScripts = new NotePrefab[playGM.GetMaxPlayerCount()];
+        for (int j = 0; j < playGM.GetWorldInfoCount(); j++)
         {
             SetNotePrefab(j);
         }
-        for (int j = 0; j < handy.GetWorldInfoCount(); j++)
+        for (int j = 0; j < playGM.GetWorldInfoCount(); j++)
         {
-            GameObject curNote = handy.GetNote(handy.GetWorldInfo(j).noteInfo.tarPlayerIndex, handy.GetWorldInfo(j).noteInfo.eachNoteIndex);
-            NotePrefab curNoteScript = handy.GetNoteScript(handy.GetWorldInfo(j).noteInfo.tarPlayerIndex, handy.GetWorldInfo(j).noteInfo.eachNoteIndex);
+            GameObject curNote = playGM.GetNote(playGM.GetWorldInfo(j).noteInfo.tarPlayerIndex, playGM.GetWorldInfo(j).noteInfo.eachNoteIndex);
+            NotePrefab curNoteScript = playGM.GetNoteScript(playGM.GetWorldInfo(j).noteInfo.tarPlayerIndex, playGM.GetWorldInfo(j).noteInfo.eachNoteIndex);
             curNoteScript.InitNote();
             if (curNoteScript.myEachNoteIndex == 0)
             {
@@ -56,20 +54,6 @@ public class NoteGenerator : MonoBehaviour
             CN.SetActive(true);
         }
         isAwake = true;
-        /* for (int i = 0; i < transform.childCount; i++)
-        {
-            int curNoteIndex = transform.GetChild(i).GetComponent<NotePrefab>().myNoteIndex;
-            for (int j = 0; j < handy.GetMaxPlayerCount(); j++)
-            {
-                if (curNoteIndex == 0 && handy.GetWorldInfo().SeveralModeInfo.Count == j)
-                {
-                    closestNotes.Add(transform.GetChild(i).gameObject);
-                    closestNoteScripts.Add(closestNotes[j].GetComponent<NotePrefab>());
-                }
-            }
-            handy.GetNoteScripts(0, i).InitNote();
-            handy.GetNote(0, i).SetActive(false);
-        } */
     }
     void Update()
     {
@@ -83,7 +67,7 @@ public class NoteGenerator : MonoBehaviour
         GameObject newNote = Instantiate(notePrefab, transform);
         NotePrefab newNoteScript = newNote.GetComponent<NotePrefab>();
 
-        WorldInfo worldInfo = handy.GetWorldInfo(worldInfoIndex);
+        WorldInfo worldInfo = playGM.GetWorldInfo(worldInfoIndex);
         int eachNoteIndex = worldInfo.noteInfo.eachNoteIndex;
 
         newNoteScript.noteWaitSecs = Mathf.Abs(worldInfo.noteInfo.startRadius - worldInfo.playerInfo[worldInfo.noteInfo.tarPlayerIndex].tarRadius) / 3.5f / worldInfo.noteInfo.speed;
@@ -100,16 +84,5 @@ public class NoteGenerator : MonoBehaviour
         newNoteScript.myEachNoteIndex = eachNoteIndex;
         newNoteScript.tarPlayerIndex = worldInfo.noteInfo.tarPlayerIndex;
         eachNoteCount[worldInfo.noteInfo.tarPlayerIndex]++;
-        // GM.notesActivedSeconds[playerIndex, noteIndex] = newNoteScript.noteWaitTime + (newNoteScript.noteLengthTime == 0f ? handy.judgmentRange[playerIndex] : newNoteScript.noteLengthTime);
-        // GM.notesActivedSeconds[playerIndex, noteIndex] *= Mathf.Clamp01(noteIndex);
-        // lastNoteActivedTotalSeconds[playerIndex] += GM.notesActivedSeconds[playerIndex, noteIndex];
-        // GM.notesActivedTotalSeconds[playerIndex, noteIndex] = lastNoteActivedTotalSeconds[playerIndex];
-        /* newNoteScript.InitNote();
-        if (noteIndex == 0)
-        {
-            closestNotes[playerIndex] = newNote;
-            closestNoteScripts[playerIndex] = newNoteScript;
-        }
-        newNote.SetActive(false); */
     }
 }

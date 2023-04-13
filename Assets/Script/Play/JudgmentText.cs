@@ -14,7 +14,7 @@ public class JudgmentText : MonoBehaviour
     Vector2 stdPlayerPos;
     Vector2 stdPlayerScale;
     Handy handy;
-    GameManager GM;
+    PlayGameManager playGM;
     Sequence FadeTweener;
     bool isAwake;
     void Awake()
@@ -28,10 +28,10 @@ public class JudgmentText : MonoBehaviour
             judgmentText_TMP = GetComponent<TextMeshProUGUI>();
             judgmentText_rect = GetComponent<RectTransform>();
             handy = Handy.Property;
-            GM = GameManager.Property;
+            playGM = PlayGameManager.Property;
             judgmentText_TMP.text = judgmentType.ToString();
-            stdPlayerPos = handy.GetPlayer(playerIndex).transform.position;
-            stdPlayerScale = handy.GetPlayer(playerIndex).transform.localScale;
+            stdPlayerPos = playGM.GetPlayer(playerIndex).transform.position;
+            stdPlayerScale = playGM.GetPlayer(playerIndex).transform.localScale;
             FadeTweener = DOTween.Sequence()
             .Append(judgmentText_TMP.DOFade(1f, 0.05f))
             .AppendInterval(0.2f)

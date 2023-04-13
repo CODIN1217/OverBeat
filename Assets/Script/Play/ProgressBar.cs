@@ -5,28 +5,30 @@ using UnityEngine.UI;
 
 public class ProgressBar : MonoBehaviour
 {
-    public GameObject ProgressBarBGImage;
-    public GameObject ProgressBarBGVertex;
-    public GameObject ProgressBarVertex0;
-    public GameObject ProgressBarVertex1;
-    public Image ProgressBarBGImageRend;
-    public Image ProgressBarBGVertexRend;
-    public Image ProgressBarVertexRend0;
-    public Image ProgressBarVertexRend1;
+    public GameObject PBBGImage;
+    public GameObject PBVertex0;
+    public GameObject PBVertex1;
+    public Image PBBGImageRend;
+    public Image PBVertexRend0;
+    public Image PBVertexRend1;
+    public RectTransform PBBGImageRect;
     Handy handy;
-    GameManager GM;
+    PlayGameManager playGM;
     void Awake() {
         handy = Handy.Property;
-        GM = GameManager.Property;
+        playGM = PlayGameManager.Property;
     }
     void Update()
     {
-        Vector2 ProgressBarBGImagePixels = handy.GetSpritePixels(ProgressBarBGImageRend.sprite);
-        Vector2 ProgressBarBGVertexPixels = handy.GetSpritePixels(ProgressBarBGVertexRend.sprite);
-        float halfRatio = ProgressBarBGVertexPixels.x / ProgressBarBGImagePixels.x * 0.5f;
-        ProgressBarBGImageRend.fillAmount = GM.progress01 + halfRatio;
-        ProgressBarBGVertex.transform.localPosition = new Vector2(ProgressBarBGImagePixels.x * (GM.progress01 - 0.5f) + (GM.progress01 + halfRatio >= 1f ? 1f - GM.progress01 - halfRatio : ProgressBarBGVertexPixels.x * 0.5f), 0f);
-        ProgressBarVertexRend0.transform.localPosition = new Vector2((ProgressBarBGVertexPixels.x - ProgressBarBGImagePixels.x) * 0.5f, 0f);
-        ProgressBarVertexRend1.transform.localPosition = new Vector2((ProgressBarBGImagePixels.x - ProgressBarBGVertexPixels.x) * 0.5f, 0f);
+        Vector2 PBBGImagePixels = handy.GetSpritePixels(PBBGImageRend.sprite);
+        Vector2 PBBGVertex0Pixels = handy.GetSpritePixels(PBVertexRend0.sprite);
+        Vector2 PBBGVertex1Pixels = handy.GetSpritePixels(PBVertexRend1.sprite);
+        PBBGImageRect.sizeDelta = new Vector2(PBBGImagePixels.x * playGM.progress01, PBBGImagePixels.y);
+        PBBGImageRect.localPosition = new Vector2((PBBGImageRect.sizeDelta.x - PBBGImagePixels.x) * 0.5f, 0f);
+        PBVertexRend0.transform.localPosition = new Vector2((PBBGVertex0Pixels.x - PBBGImagePixels.x) * 0.5f, 0f);
+        PBVertexRend1.transform.localPosition = new Vector2((PBBGImagePixels.x - PBBGVertex1Pixels.x) * 0.5f, 0f);
+        PBBGImageRend.color = handy.GetColor01(playGM.GetWorldInfo(0, playGM.closestNoteIndex[0]).playerInfo[0].centerColor);
+        PBVertexRend0.color = handy.GetColor01(playGM.GetWorldInfo(0, playGM.closestNoteIndex[0]).playerInfo[0].sideColor);
+        PBVertexRend1.color = handy.GetColor01(playGM.GetWorldInfo(0, playGM.closestNoteIndex[0]).playerInfo[0].sideColor);
     }
 }
