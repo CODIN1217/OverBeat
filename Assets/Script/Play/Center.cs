@@ -6,7 +6,6 @@ using DG.Tweening;
 
 public class Center : MonoBehaviour
 {
-    float HP01;
     Image centerImage;
     Color centerColor;
     Sequence colorTweener;
@@ -24,11 +23,16 @@ public class Center : MonoBehaviour
         if (playGM.isBreakUpdate())
             return;
         worldInfo = playGM.GetWorldInfo(playGM.curWorldInfoIndex);
-        HP01 = playGM.HP01;
-        centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, HP01, Time.deltaTime * 4f);
-        transform.localScale = worldInfo.centerInfo.scale;
-        transform.position = worldInfo.centerInfo.pos;
-        centerColor = handy.GetColor01(worldInfo.centerInfo.color);
-        centerImage.color = centerColor;
+        centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, playGM.HP01, Time.deltaTime * 4f);
+        if (!handy.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
+        {
+            transform.DOScale(worldInfo.centerInfo.scale, worldInfo.centerInfo.scaleTween.duration).SetEase(worldInfo.centerInfo.scaleTween.ease);
+            transform.DOMove(worldInfo.centerInfo.pos, worldInfo.centerInfo.posTween.duration).SetEase(worldInfo.centerInfo.posTween.ease);
+            centerImage.DOColor(handy.GetColor01(worldInfo.centerInfo.color), worldInfo.centerInfo.colorTween.duration).SetEase(worldInfo.centerInfo.colorTween.ease);
+            handy.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
+        }
+        // transform.position = worldInfo.centerInfo.pos;
+        // centerColor = handy.GetColor01(worldInfo.centerInfo.color);
+        // centerImage.color = centerColor;
     }
 }

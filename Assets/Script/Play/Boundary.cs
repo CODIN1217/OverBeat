@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Boundary : MonoBehaviour
 {
@@ -24,8 +25,18 @@ public class Boundary : MonoBehaviour
         if (playGM.isBreakUpdate())
             return;
         worldInfo = playGM.GetWorldInfo(playGM.curWorldInfoIndex);
-        boundaryCoverImage.color = worldInfo.boundaryInfo.coverColor == null ? handy.GetColor01(worldInfo.cameraInfo.BGColor) : handy.GetColor01((Color)worldInfo.boundaryInfo.coverColor);
-        boundaryLineImage.color = handy.GetColor01(worldInfo.boundaryInfo.lineColor);
-        transform.localScale = (/* worldInfo.boundaryScale == null ? Vector2.one * (worldInfo.noteStartRadius > worldInfo.playerRadius  ? worldInfo.noteStartRadius * 0.2f : worldInfo.playerRadius / 1.5f) :  */worldInfo.boundaryInfo.scale) / worldInfo.cameraInfo.size;
+        if (!handy.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
+        {
+            boundaryCoverImage.DOColor(worldInfo.boundaryInfo.coverColor == null ? handy.GetColor01(worldInfo.cameraInfo.BGColor) : handy.GetColor01((Color)worldInfo.boundaryInfo.coverColor),
+            worldInfo.boundaryInfo.coverColorTween.duration)
+            .SetEase(worldInfo.boundaryInfo.coverColorTween.ease);
+            boundaryLineImage.DOColor(handy.GetColor01(worldInfo.boundaryInfo.lineColor), worldInfo.boundaryInfo.lineColorTween.duration)
+            .SetEase(worldInfo.boundaryInfo.lineColorTween.ease);
+            transform.DOScale(worldInfo.boundaryInfo.scale / worldInfo.cameraInfo.size, worldInfo.boundaryInfo.scaleTween.duration)
+            .SetEase(worldInfo.boundaryInfo.scaleTween.ease);
+            transform.DOMove(null == worldInfo.boundaryInfo.pos ? worldInfo.centerInfo.pos : (Vector3)worldInfo.boundaryInfo.pos, worldInfo.boundaryInfo.posTween.duration)
+            .SetEase(worldInfo.boundaryInfo.posTween.ease);
+            handy.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
+        }
     }
 }

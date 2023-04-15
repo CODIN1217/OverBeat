@@ -35,6 +35,7 @@ public class PlayerPosesGuide : MonoBehaviour
     {
         if (!handy.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
         {
+            // handy.WriteLog(playGM.curWorldInfoIndex);
             for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
             {
                 for (int j = 0; j < playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].stdDegs.Length; j++)
@@ -43,7 +44,8 @@ public class PlayerPosesGuide : MonoBehaviour
                     if (playGM.GetPlayer(i).activeSelf)
                     {
                         playerPosDots[i][j].SetActive(true);
-                        playerPosDotsRend[i][j].DOColor(playGM.GetColor01WithPlayerIndex(handy.GetColor01(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColor), i), playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColorTween.duration).SetEase(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColorTween.ease);
+                        playerPosDotsRend[i][j].DOColor(playGM.GetColor01WithPlayerIndex(handy.GetColor01(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColor), i), playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColorTween.duration)
+                        .SetEase(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColorTween.ease);
                         // playerPosDotsRend[i][j].color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColor), i);
                         playerPosDots[i][j].transform.position = handy.GetCircularPos(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].stdDegs[j], playGM.GetPlayerScript(i).curRadius, playGM.GetWorldInfo(playGM.curWorldInfoIndex).centerInfo.pos);
                     }

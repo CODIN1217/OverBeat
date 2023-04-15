@@ -183,8 +183,23 @@ public class NotePrefab : MonoBehaviour
         , () =>
         {
             playGM.curWorldInfoIndex += (int)Mathf.Clamp01(myEachNoteIndex);
+
             transform.DORotate(Vector3.forward * handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.totalRotation + stdDeg)), worldInfo.noteInfo.totalRotationTween.duration)
             .SetEase(worldInfo.noteInfo.totalRotationTween.ease);
+            startNote.transform.DORotate(Vector3.forward * handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.startRotation + curDeg)), worldInfo.noteInfo.startRotationTween.duration)
+            .SetEase(worldInfo.noteInfo.startRotationTween.ease);
+            endNote.transform.DORotate(Vector3.forward * handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.endRotation + tarDeg)), worldInfo.noteInfo.endRotationTween.duration)
+            .SetEase(worldInfo.noteInfo.endRotationTween.ease);
+
+            startNoteRenderer.DOColor(playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.startColor), tarPlayerIndex), worldInfo.noteInfo.startColorTween.duration)
+            .SetEase(worldInfo.noteInfo.startColorTween.ease);
+            processNoteRenderer.DOColor(
+            playGM.GetColor201WithPlayerIndex(handy.GetColor201(worldInfo.noteInfo.processStartColor), tarPlayerIndex),
+            playGM.GetColor201WithPlayerIndex(handy.GetColor201(worldInfo.noteInfo.processEndColor), tarPlayerIndex),
+            worldInfo.noteInfo.processColorTween.duration)
+            .SetEase(worldInfo.noteInfo.processColorTween.ease);
+            startNoteRenderer.DOColor(playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.endColor), tarPlayerIndex), worldInfo.noteInfo.endColorTween.duration)
+            .SetEase(worldInfo.noteInfo.endColorTween.ease);
         });
         // playGM.SetCurWorldInfoIndex(Mathf.Clamp(-toleranceSecsWhenNeedlessInput, 0f, noteWaitSecs), myEachNoteIndex);
         elapsedSecsWhenNeedlessInput = noteWaitSecs;
@@ -233,17 +248,17 @@ public class NotePrefab : MonoBehaviour
             processNoteDottedLine.poses = myProcessPathPoses;
             processNoteDottedLine.SetRepeatCount(dottedLineLength * 2.444f);
         }
-        startNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.startRotation + curDeg)));
-        endNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.endRotation + tarDeg)));
+        // startNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.startRotation + curDeg)));
+        // endNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.endRotation + tarDeg)));
     }
     public void SetNoteRenderer()
     {
         startNoteRenderer.sprite = startNoteSprite;
         endNoteRenderer.sprite = endNoteSprite;
-        startNoteRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.startColor), tarPlayerIndex);
-        processNoteRenderer.startColor = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.processColor), tarPlayerIndex);
-        processNoteRenderer.endColor = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.processColor), tarPlayerIndex);
-        endNoteRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.endColor), tarPlayerIndex);
+        // startNoteRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.startColor), tarPlayerIndex);
+        // processNoteRenderer.startColor = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.processStartColor), tarPlayerIndex);
+        // processNoteRenderer.endColor = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.processStartColor), tarPlayerIndex);
+        // endNoteRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.endColor), tarPlayerIndex);
         ChangeNoteAlpha(colorAlpha);
     }
     public void StopNote()

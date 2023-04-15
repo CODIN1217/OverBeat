@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System;
 using TMPro;
 using System.Text;
+using DG.Tweening;
 
 public class Handy : MonoBehaviour
 {
@@ -16,9 +17,6 @@ public class Handy : MonoBehaviour
         instance = this;
         playGM = PlayGameManager.Property;
         beforeValuesWithNames = new Dictionary<string, object>();
-    }
-    void Update()
-    {
     }
     public static Handy Property
     {
@@ -44,6 +42,7 @@ public class Handy : MonoBehaviour
         string fullName = $"{parentsName} / {methodName} / {varName}";
         if (beforeValuesWithNames.ContainsKey(fullName))
         {
+            // WriteLog(fullName);
             beforeValuesWithNames[fullName] = value;
         }
         else
@@ -66,8 +65,11 @@ public class Handy : MonoBehaviour
         string fullName = $"{parentsName} / {methodName} / {varName}";
         if (beforeValuesWithNames.ContainsKey(fullName))
         {
-            if (beforeValuesWithNames[fullName] == curValue)
+                // WriteLog(beforeValuesWithNames[fullName], curValue);
+            if ((int)beforeValuesWithNames[fullName] == (int)curValue)
+            {
                 return true;
+            }
         }
         return false;
     }
@@ -208,6 +210,10 @@ public class Handy : MonoBehaviour
     {
         return color / 255f;
     }
+    public Color2 GetColor201(Color2 color2)
+    {
+        return new Color2(color2.ca / 255f, color2.cb / 255f);
+    }
     public void RepeatCode(Action<int> code, int count)
     {
         for (int i = 0; i < count; i++)
@@ -233,7 +239,18 @@ public class Handy : MonoBehaviour
     {
         if (RGBA == null)
             return null;
-        return new Color(Mathf.Clamp(((Color)RGBA).r, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).g, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).b, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).a, minRGBA, maxRGBA));
+        return GetCorrectRGBA((Color)RGBA, minRGBA, maxRGBA);
+        // return new Color(Mathf.Clamp(((Color)RGBA).r, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).g, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).b, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).a, minRGBA, maxRGBA));
+    }
+    public Color2 GetCorrectRGBA2(Color2 RGBA2, float minRGBA = 0f, float maxRGBA = 255f)
+    {
+        return new Color2(GetCorrectRGBA(RGBA2.ca, minRGBA, maxRGBA), GetCorrectRGBA(RGBA2.cb, minRGBA, maxRGBA));
+    }
+    public Color2? GetCorrectRGBA2(Color2? RGBA2, float minRGBA = 0f, float maxRGBA = 255f)
+    {
+        if (RGBA2 == null)
+            return null;
+        return new Color2(GetCorrectRGBA(((Color2)RGBA2).ca, minRGBA, maxRGBA), GetCorrectRGBA(((Color2)RGBA2).cb, minRGBA, maxRGBA));
     }
     public void PlayEachCodesWithBoolens(List<bool> boolen, List<Action> codes)
     {
@@ -247,10 +264,12 @@ public class Handy : MonoBehaviour
             }
         }
     }
-    public void PlayCodeWaitForSecs(float waitSecs, Action code){
+    public void PlayCodeWaitForSecs(float waitSecs, Action code)
+    {
         StartCoroutine(PlayCodeWaitForSecs_co(waitSecs, code));
     }
-    IEnumerator PlayCodeWaitForSecs_co(float waitSecs, Action code){
+    IEnumerator PlayCodeWaitForSecs_co(float waitSecs, Action code)
+    {
         yield return new WaitForSeconds(waitSecs);
         code();
     }

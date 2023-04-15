@@ -24,6 +24,8 @@ public class PlayGameManager : MonoBehaviour
     public Boundary boundaryScript;
     public GameObject baseCamera;
     public BaseCamera baseCameraScript;
+    public GameObject center;
+    public Center centerScript;
     public GameObject[] closestNotes;
     public NotePrefab[] closestNoteScripts;
     public float[] judgmentRange;
@@ -560,6 +562,21 @@ public class PlayGameManager : MonoBehaviour
         color01_temp /= Mathf.Floor(playerIndex * 0.5f) + 1;
         color01_temp.a = color01.a;
         return color01_temp;
+    }
+    public Color2 GetColor201WithPlayerIndex(Color2 color201, int playerIndex)
+    {
+        Color color01_temp1 = color201.ca;
+        Color color01_temp2 = color201.cb;
+        for (int i = 0; i < playerIndex; i++)
+        {
+            color01_temp1 = Color.white - color01_temp1;
+            color01_temp2 = Color.white - color01_temp2;
+        }
+        color01_temp1 /= Mathf.Floor(playerIndex * 0.5f) + 1;
+        color01_temp2 /= Mathf.Floor(playerIndex * 0.5f) + 1;
+        color01_temp1.a = color201.ca.a;
+        color01_temp2.a = color201.cb.a;
+        return new Color2(color01_temp1, color01_temp2);
     }
     public float GetElapsedSecsWhenNeedlessInput01(int playerIndex, int eachNoteIndex)
     {

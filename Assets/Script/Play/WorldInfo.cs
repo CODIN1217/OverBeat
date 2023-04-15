@@ -119,13 +119,13 @@ public class WorldInfo : MonoBehaviour
         [SerializeField] float _endRotation;
         [SerializeField] string _sideImageName;
         [SerializeField] Color _startColor;
-        [SerializeField] Color _processColor;
+        [SerializeField] Color2 _processStartColor;
+        [SerializeField] Color2 _processEndColor;
         [SerializeField] Color _endColor;
         [SerializeField] Tweener _radiusTween;
         [SerializeField] Tweener _holdRadiusTween;
         [SerializeField] Tweener _appearTween;
         [SerializeField] Tweener _totalRotationTween;
-        // 여기까지 수정함
         [SerializeField] Tweener _startRotationTween;
         [SerializeField] Tweener _endRotationTween;
         [SerializeField] Tweener _startColorTween;
@@ -146,7 +146,8 @@ public class WorldInfo : MonoBehaviour
             _endRotation = 0f;
             _sideImageName = "Basic";
             _startColor = new Color(100, 45, 250, 255);
-            _processColor = new Color(130, 80, 255, 255);
+            _processStartColor = new Color2(new Color(130, 80, 255, 255), new Color(130, 80, 255, 255));
+            _processEndColor = new Color2(new Color(130, 80, 255, 255), new Color(130, 80, 255, 255));
             _endColor = new Color(100, 45, 250, 255);
             _radiusTween = new Tweener();
             _holdRadiusTween = new Tweener();
@@ -171,7 +172,8 @@ public class WorldInfo : MonoBehaviour
         public float endRotation { get { return _endRotation; } set { _endRotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
         public string sideImageName { get { return _sideImageName; } set { _sideImageName = value; } }
         public Color startColor { get { return _startColor; } set { _startColor = Handy.Property.GetCorrectRGBA(value); } }
-        public Color processColor { get { return _processColor; } set { _processColor = Handy.Property.GetCorrectRGBA(value); } }
+        public Color2 processStartColor { get { return _processStartColor; } set { _processStartColor = Handy.Property.GetCorrectRGBA2(value); } }
+        public Color2 processEndColor { get { return processEndColor; } set { processEndColor = Handy.Property.GetCorrectRGBA2(value); } }
         public Color endColor { get { return _endColor; } set { _endColor = Handy.Property.GetCorrectRGBA(value); } }
         public Tweener radiusTween { get { return _radiusTween; } set { _radiusTween = value; } }
         public Tweener holdRadiusTween { get { return _holdRadiusTween; } set { _holdRadiusTween = value; } }
@@ -214,24 +216,30 @@ public class WorldInfo : MonoBehaviour
         [SerializeField] Color _lineColor;
         [SerializeField] Color? _coverColor;
         [SerializeField] Vector2 _scale;
+        [SerializeField] Vector2? _pos;
         [SerializeField] Tweener _lineColorTween;
         [SerializeField] Tweener _coverColorTween;
         [SerializeField] Tweener _scaleTween;
+        [SerializeField] Tweener _posTween;
         public BoundaryInfo()
         {
             _lineColor = new Color(0, 255, 160, 255);
             _coverColor = null/* new Color(39, 29, 35, 255) */;
             _scale = Vector2.one;
+            _pos = null/* Vector2.zero */;
             _lineColorTween = new Tweener();
             _coverColorTween = new Tweener();
             _scaleTween = new Tweener();
+            _posTween = new Tweener();
         }
         public Color lineColor { get { return _lineColor; } set { _lineColor = Handy.Property.GetCorrectRGBA(value); } }
         public Color? coverColor { get { return _coverColor; } set { _coverColor = Handy.Property.GetCorrectRGBA(value); } }
+        public Vector2? pos { get { return _pos; } set { _pos = value; } }
         public Vector2 scale { get { return _scale; } set { _scale = Handy.Property.GetCorrectXY(value, -100f, 100f); } }
         public Tweener lineColorTween { get { return _lineColorTween; } set { _lineColorTween = value; } }
         public Tweener coverColorTween { get { return _coverColorTween; } set { _coverColorTween = value; } }
         public Tweener scaleTween { get { return _scaleTween; } set { _scaleTween = value; } }
+        public Tweener posTween { get { return _posTween; } set { _posTween = value; } }
     }
     [Serializable]
     public class JudgmentInfo
