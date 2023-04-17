@@ -75,10 +75,12 @@ public class NotePrefab : MonoBehaviour
         {
             isBeforeAwake = false;
         }
-        SetElapsedSecs01();
         SetNoteTransform();
         SetNotePartsTransform();
         SetNoteRenderer();
+        if (playGM.countDownScript.isCountDown)
+            return;
+        SetElapsedSecs01();
         if (isAfterAwake)
         {
             float fadeDuration = Mathf.Clamp(noteWaitSecs * 0.3f - toleranceSecsWhenAwake, 0f, float.MaxValue);

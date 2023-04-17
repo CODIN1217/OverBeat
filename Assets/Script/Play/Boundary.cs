@@ -34,7 +34,7 @@ public class Boundary : MonoBehaviour
             .SetEase(worldInfo.boundaryInfo.lineColorTween.ease);
             transform.DOScale(worldInfo.boundaryInfo.scale / worldInfo.cameraInfo.size, worldInfo.boundaryInfo.scaleTween.duration)
             .SetEase(worldInfo.boundaryInfo.scaleTween.ease);
-            transform.DOMove(null == worldInfo.boundaryInfo.pos ? worldInfo.centerInfo.pos : (Vector3)worldInfo.boundaryInfo.pos, worldInfo.boundaryInfo.posTween.duration)
+            transform.DOLocalMove(null == worldInfo.boundaryInfo.pos ? worldInfo.centerInfo.pos : (Vector3)worldInfo.boundaryInfo.pos, worldInfo.boundaryInfo.posTween.duration)
             .SetEase(worldInfo.boundaryInfo.posTween.ease);
             handy.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
         }

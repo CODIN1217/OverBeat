@@ -27,7 +27,7 @@ public class Center : MonoBehaviour
         if (!handy.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
         {
             transform.DOScale(worldInfo.centerInfo.scale, worldInfo.centerInfo.scaleTween.duration).SetEase(worldInfo.centerInfo.scaleTween.ease);
-            transform.DOMove(worldInfo.centerInfo.pos, worldInfo.centerInfo.posTween.duration).SetEase(worldInfo.centerInfo.posTween.ease);
+            transform.DOLocalMove(worldInfo.centerInfo.pos, worldInfo.centerInfo.posTween.duration).SetEase(worldInfo.centerInfo.posTween.ease);
             centerImage.DOColor(handy.GetColor01(worldInfo.centerInfo.color), worldInfo.centerInfo.colorTween.duration).SetEase(worldInfo.centerInfo.colorTween.ease);
             handy.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
         }

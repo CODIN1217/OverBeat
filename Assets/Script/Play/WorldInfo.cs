@@ -173,7 +173,7 @@ public class WorldInfo : MonoBehaviour
         public string sideImageName { get { return _sideImageName; } set { _sideImageName = value; } }
         public Color startColor { get { return _startColor; } set { _startColor = Handy.Property.GetCorrectRGBA(value); } }
         public Color2 processStartColor { get { return _processStartColor; } set { _processStartColor = Handy.Property.GetCorrectRGBA2(value); } }
-        public Color2 processEndColor { get { return processEndColor; } set { processEndColor = Handy.Property.GetCorrectRGBA2(value); } }
+        public Color2 processEndColor { get { return _processEndColor; } set { _processEndColor = Handy.Property.GetCorrectRGBA2(value); } }
         public Color endColor { get { return _endColor; } set { _endColor = Handy.Property.GetCorrectRGBA(value); } }
         public Tweener radiusTween { get { return _radiusTween; } set { _radiusTween = value; } }
         public Tweener holdRadiusTween { get { return _holdRadiusTween; } set { _holdRadiusTween = value; } }

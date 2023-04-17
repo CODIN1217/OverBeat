@@ -1048,7 +1048,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._endDegIndex
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startRadius
@@ -1080,7 +1080,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startDegIndex
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._processColor.a
@@ -1974,7 +1974,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._endDegIndex
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: playerInfo.Array.size
@@ -2006,7 +2006,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startDegIndex
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._processColor.a
@@ -3802,7 +3802,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._endDegIndex
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startRadius
@@ -3834,7 +3834,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startDegIndex
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._processColor.b
@@ -4728,7 +4728,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._endDegIndex
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startRadius
@@ -4760,7 +4760,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startDegIndex
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._processColor.b
@@ -6572,7 +6572,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._endDegIndex
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: playerInfo.Array.size
@@ -6604,7 +6604,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startDegIndex
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._processColor.a
@@ -8388,7 +8388,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._endDegIndex
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startRadius
@@ -8420,7 +8420,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startDegIndex
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._processColor.b

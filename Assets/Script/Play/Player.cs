@@ -59,9 +59,10 @@ public class Player : MonoBehaviour
         {
             SideScaleToOrig();
         }
+        if (playGM.countDownScript.isCountDown)
+            return;
         if (playGM.GetJudgmentValue(myPlayerIndex) >= 1f)
             isInputted = false;
-
         if (!isInputted)
         {
             if (playGM.GetIsProperKeyDown(myPlayerIndex) && playGM.GetJudgmentValue(myPlayerIndex) <= playGM.judgmentRange[myPlayerIndex])
@@ -100,7 +101,7 @@ public class Player : MonoBehaviour
         {
             transform.DOScale(worldInfo.playerInfo[myPlayerIndex].scale, worldInfo.playerInfo[myPlayerIndex].scaleTween.duration)
             .SetEase(worldInfo.playerInfo[myPlayerIndex].scaleTween.ease);
-            transform.DORotate(Vector3.forward * worldInfo.playerInfo[myPlayerIndex].rotation, worldInfo.playerInfo[myPlayerIndex].rotationTween.duration)
+            transform.DORotate(Vector3.forward * handy.GetCorrectDegMaxIs0(-(worldInfo.playerInfo[myPlayerIndex].rotation + curDeg)), worldInfo.playerInfo[myPlayerIndex].rotationTween.duration)
             .SetEase(worldInfo.playerInfo[myPlayerIndex].rotationTween.ease);
             // transform.localScale = worldInfo.playerInfo[myPlayerIndex].scale;
             // transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(worldInfo.playerInfo[myPlayerIndex].rotation + curDeg)));
