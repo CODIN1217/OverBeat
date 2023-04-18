@@ -33,7 +33,7 @@ public class PlayerPosesGuide : MonoBehaviour
     }
     void Update()
     {
-        if (!handy.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
+        if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
         {
             // handy.WriteLog(playGM.curWorldInfoIndex);
             for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
@@ -50,7 +50,7 @@ public class PlayerPosesGuide : MonoBehaviour
                     }
                 }
             }
-            handy.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
+            handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
         }
         /* for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
         {

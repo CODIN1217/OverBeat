@@ -16,6 +16,9 @@ public class NotePrefab : MonoBehaviour
     public float curDeg;
     float stdDeg;
     float tarDeg;
+    float tweenTotalRotation;
+    float tweenStartRotation;
+    float tweenEndRotation;
     public float stdRadius;
     public float curRadius;
     public float tarRadius;
@@ -46,8 +49,14 @@ public class NotePrefab : MonoBehaviour
     List<Vector3> myPathPoses;
     List<Vector3> myLocalPathPoses;
     List<Vector3> myProcessPathPoses;
-    Sequence myRadiusTweener;
-    Sequence myFadeTweener;
+    Color tweenStartColor;
+    Color tweenProcessStartColor;
+    Color tweenProcessEndColor;
+    Color tweenEndColor;
+    Sequence radiusTweener;
+    Sequence fadeTweener;
+    Sequence colorTweener;
+    Sequence rotationTweener;
     SpriteRenderer startNoteRenderer;
     LineRenderer processNoteRenderer;
     DottedLine processNoteDottedLine;
@@ -83,10 +92,39 @@ public class NotePrefab : MonoBehaviour
         SetElapsedSecs01();
         if (isAfterAwake)
         {
-            float fadeDuration = Mathf.Clamp(noteWaitSecs * 0.3f - toleranceSecsWhenAwake, 0f, float.MaxValue);
-            SetFadeTweener(colorAlpha, 1f, fadeDuration, worldInfo.noteInfo.appearTween.ease);
-            float radiusDuration = Mathf.Clamp(noteWaitSecs - toleranceSecsWhenAwake, 0f, float.MaxValue);
-            SetRadiusTweener(curRadius, tarRadius, radiusDuration, worldInfo.noteInfo.radiusTween.ease);
+            handy.TryKillSequence(rotationTweener);
+            rotationTweener = DOTween.Sequence()
+            .Append(DOTween.To(() => tweenTotalRotation, (r) => tweenTotalRotation = r, handy.GetCorrectDegMaxIs0(worldInfo.noteInfo.totalRotation), worldInfo.noteInfo.totalRotationTween.duration)
+            .SetEase(worldInfo.noteInfo.totalRotationTween.ease))
+
+            .Join(DOTween.To(() => tweenStartRotation, (r) => tweenStartRotation = r, handy.GetCorrectDegMaxIs0(worldInfo.noteInfo.startRotation), worldInfo.noteInfo.startRotationTween.duration)
+            .SetEase(worldInfo.noteInfo.startRotationTween.ease))
+
+            .Join(DOTween.To(() => tweenEndRotation, (r) => tweenEndRotation = r, handy.GetCorrectDegMaxIs0(worldInfo.noteInfo.endRotation), worldInfo.noteInfo.endRotationTween.duration)
+            .SetEase(worldInfo.noteInfo.endRotationTween.ease));
+
+            SetFadeTweener(colorAlpha, 1f, Mathf.Clamp(noteWaitSecs * 0.3f - toleranceSecsWhenAwake, 0f, float.MaxValue), worldInfo.noteInfo.appearTween.ease);
+            
+            handy.TryKillSequence(colorTweener);
+            colorTweener = DOTween.Sequence()
+            .Append(DOTween.To(() => tweenStartColor, (c) => tweenStartColor = c, worldInfo.noteInfo.startColor, worldInfo.noteInfo.startColorTween.duration)
+            .SetEase(worldInfo.noteInfo.startColorTween.ease))
+            
+            .Join(DOTween.To(() => tweenProcessStartColor, (c) => tweenProcessStartColor = c, 
+            worldInfo.noteInfo.processStartColor,
+            worldInfo.noteInfo.processStartColorTween.duration)
+            .SetEase(worldInfo.noteInfo.processStartColorTween.ease))
+
+            .Join(DOTween.To(() => tweenProcessEndColor, (c) => tweenProcessEndColor = c, 
+            worldInfo.noteInfo.processEndColor,
+            worldInfo.noteInfo.processEndColorTween.duration)
+            .SetEase(worldInfo.noteInfo.processEndColorTween.ease))
+
+            .Join(DOTween.To(() => tweenEndColor, (c) => tweenEndColor = c, worldInfo.noteInfo.endColor, worldInfo.noteInfo.endColorTween.duration)
+            .SetEase(worldInfo.noteInfo.endColorTween.ease))
+            /* .OnUpdate(() => ChangeNoteAlpha(colorAlpha)) */;
+
+            SetRadiusTweener(curRadius, tarRadius, Mathf.Clamp(noteWaitSecs - toleranceSecsWhenAwake, 0f, float.MaxValue), worldInfo.noteInfo.radiusTween.ease);
             stopwatch.Reset();
             stopwatch.Stop();
             isAfterAwake = false;
@@ -182,27 +220,7 @@ public class NotePrefab : MonoBehaviour
     {
         toleranceSecsWhenNeedlessInput = elapsedSecsWhenNeedlessInput - noteWaitSecs;
         handy.PlayCodeWaitForSecs(Mathf.Clamp(-toleranceSecsWhenNeedlessInput, 0f, noteWaitSecs)
-        , () =>
-        {
-            playGM.curWorldInfoIndex += (int)Mathf.Clamp01(myEachNoteIndex);
-
-            transform.DORotate(Vector3.forward * handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.totalRotation + stdDeg)), worldInfo.noteInfo.totalRotationTween.duration)
-            .SetEase(worldInfo.noteInfo.totalRotationTween.ease);
-            startNote.transform.DORotate(Vector3.forward * handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.startRotation + curDeg)), worldInfo.noteInfo.startRotationTween.duration)
-            .SetEase(worldInfo.noteInfo.startRotationTween.ease);
-            endNote.transform.DORotate(Vector3.forward * handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.endRotation + tarDeg)), worldInfo.noteInfo.endRotationTween.duration)
-            .SetEase(worldInfo.noteInfo.endRotationTween.ease);
-
-            startNoteRenderer.DOColor(playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.startColor), tarPlayerIndex), worldInfo.noteInfo.startColorTween.duration)
-            .SetEase(worldInfo.noteInfo.startColorTween.ease);
-            processNoteRenderer.DOColor(
-            playGM.GetColor201WithPlayerIndex(handy.GetColor201(worldInfo.noteInfo.processStartColor), tarPlayerIndex),
-            playGM.GetColor201WithPlayerIndex(handy.GetColor201(worldInfo.noteInfo.processEndColor), tarPlayerIndex),
-            worldInfo.noteInfo.processColorTween.duration)
-            .SetEase(worldInfo.noteInfo.processColorTween.ease);
-            startNoteRenderer.DOColor(playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.endColor), tarPlayerIndex), worldInfo.noteInfo.endColorTween.duration)
-            .SetEase(worldInfo.noteInfo.endColorTween.ease);
-        });
+        , () => { playGM.curWorldInfoIndex += (int)Mathf.Clamp01(myEachNoteIndex); });
         // playGM.SetCurWorldInfoIndex(Mathf.Clamp(-toleranceSecsWhenNeedlessInput, 0f, noteWaitSecs), myEachNoteIndex);
         elapsedSecsWhenNeedlessInput = noteWaitSecs;
         tarPlayerScript.SetRadiusTweener(worldInfo.playerInfo[tarPlayerIndex].tarRadius, Mathf.Clamp(noteLengthSecs - toleranceSecsWhenNeedlessInput, 0f, noteLengthSecs == 0f ? 0f : float.MaxValue), worldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.ease);
@@ -219,7 +237,7 @@ public class NotePrefab : MonoBehaviour
         transform.position = handy.GetCircularPos(needInput ? tarPlayerScript.curDeg : stdDeg, curRadius);
         startNote.transform.localScale = tarPlayerScript.playerSide.transform.localScale;
         endNote.transform.localScale = tarPlayerScript.playerSide.transform.localScale;
-        // transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.totalRotation + stdDeg)));
+        transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(tweenTotalRotation + stdDeg)));
     }
     void SetNotePartsTransform()
     {
@@ -250,17 +268,17 @@ public class NotePrefab : MonoBehaviour
             processNoteDottedLine.poses = myProcessPathPoses;
             processNoteDottedLine.SetRepeatCount(dottedLineLength * 2.444f);
         }
-        // startNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.startRotation + curDeg)));
-        // endNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(worldInfo.noteInfo.endRotation + tarDeg)));
+        startNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(tweenStartRotation + curDeg)));
+        endNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(tweenEndRotation + tarDeg)));
     }
     public void SetNoteRenderer()
     {
         startNoteRenderer.sprite = startNoteSprite;
         endNoteRenderer.sprite = endNoteSprite;
-        // startNoteRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.startColor), tarPlayerIndex);
-        // processNoteRenderer.startColor = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.processStartColor), tarPlayerIndex);
-        // processNoteRenderer.endColor = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.processStartColor), tarPlayerIndex);
-        // endNoteRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.noteInfo.endColor), tarPlayerIndex);
+        startNoteRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(tweenStartColor), tarPlayerIndex);
+        processNoteRenderer.startColor = playGM.GetColor01WithPlayerIndex(handy.GetColor01(tweenProcessStartColor), tarPlayerIndex);
+        processNoteRenderer.endColor = playGM.GetColor01WithPlayerIndex(handy.GetColor01(tweenProcessEndColor), tarPlayerIndex);
+        endNoteRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(tweenEndColor), tarPlayerIndex);
         ChangeNoteAlpha(colorAlpha);
     }
     public void StopNote()
@@ -295,27 +313,27 @@ public class NotePrefab : MonoBehaviour
     void SetRadiusTweener(float curRadius, float tarRadius, float duration, AnimationCurve easeType)
     {
         TryKillRadiusTweener(true);
-        myRadiusTweener = DOTween.Sequence().Append(DOTween.To(() => curRadius, r => curRadius = r, tarRadius, duration).SetEase(easeType).OnUpdate(() => { this.curRadius = curRadius; }).OnComplete(() => { this.curRadius = tarRadius; }));
+        radiusTweener = DOTween.Sequence().Append(DOTween.To(() => curRadius, r => curRadius = r, tarRadius, duration).SetEase(easeType).OnUpdate(() => { this.curRadius = curRadius; }).OnComplete(() => { this.curRadius = tarRadius; }));
     }
     void SetFadeTweener(float curValue, float tarValue, float duration, AnimationCurve easeType)
     {
         TryKillFadeTweener(true);
-        myFadeTweener = DOTween.Sequence().Append(DOTween.To(() => curValue, r => curValue = r, tarValue, duration).SetEase(easeType).OnUpdate(() => { colorAlpha = curValue; }).OnComplete(() => { colorAlpha = tarValue; }));
+        fadeTweener = DOTween.Sequence().Append(DOTween.To(() => curValue, r => curValue = r, tarValue, duration).SetEase(easeType).OnUpdate(() => { colorAlpha = curValue; }).OnComplete(() => { colorAlpha = tarValue; }));
     }
     public void TryKillRadiusTweener(bool isComplete = false)
     {
-        if (myRadiusTweener != null)
+        if (radiusTweener != null)
         {
-            myRadiusTweener.Kill(isComplete);
-            myRadiusTweener = null;
+            radiusTweener.Kill(isComplete);
+            radiusTweener = null;
         }
     }
     public void TryKillFadeTweener(bool isComplete = false)
     {
-        if (myFadeTweener != null)
+        if (fadeTweener != null)
         {
-            myFadeTweener.Kill(isComplete);
-            myFadeTweener = null;
+            fadeTweener.Kill(isComplete);
+            fadeTweener = null;
         }
     }
     void ChangeNoteAlpha(float alpha)

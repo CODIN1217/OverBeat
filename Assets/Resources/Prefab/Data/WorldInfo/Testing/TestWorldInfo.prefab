@@ -7494,7 +7494,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._endDegIndex
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startRadius
@@ -7518,7 +7518,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._startDegIndex
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 718398728308860595, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: noteInfo._processColor.b

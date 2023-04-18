@@ -119,8 +119,8 @@ public class WorldInfo : MonoBehaviour
         [SerializeField] float _endRotation;
         [SerializeField] string _sideImageName;
         [SerializeField] Color _startColor;
-        [SerializeField] Color2 _processStartColor;
-        [SerializeField] Color2 _processEndColor;
+        [SerializeField] Color _processStartColor;
+        [SerializeField] Color _processEndColor;
         [SerializeField] Color _endColor;
         [SerializeField] Tweener _radiusTween;
         [SerializeField] Tweener _holdRadiusTween;
@@ -129,7 +129,8 @@ public class WorldInfo : MonoBehaviour
         [SerializeField] Tweener _startRotationTween;
         [SerializeField] Tweener _endRotationTween;
         [SerializeField] Tweener _startColorTween;
-        [SerializeField] Tweener _processColorTween;
+        [SerializeField] Tweener _processStartColorTween;
+        [SerializeField] Tweener _processEndColorTween;
         [SerializeField] Tweener _endColorTween;
         public NoteInfo()
         {
@@ -146,8 +147,8 @@ public class WorldInfo : MonoBehaviour
             _endRotation = 0f;
             _sideImageName = "Basic";
             _startColor = new Color(100, 45, 250, 255);
-            _processStartColor = new Color2(new Color(130, 80, 255, 255), new Color(130, 80, 255, 255));
-            _processEndColor = new Color2(new Color(130, 80, 255, 255), new Color(130, 80, 255, 255));
+            _processStartColor = new Color(130, 80, 255, 255);
+            _processEndColor = new Color(130, 80, 255, 255);
             _endColor = new Color(100, 45, 250, 255);
             _radiusTween = new Tweener();
             _holdRadiusTween = new Tweener();
@@ -156,7 +157,8 @@ public class WorldInfo : MonoBehaviour
             _startRotationTween = new Tweener();
             _endRotationTween = new Tweener();
             _startColorTween = new Tweener();
-            _processColorTween = new Tweener();
+            _processStartColorTween = new Tweener();
+            _processEndColorTween = new Tweener();
             _endColorTween = new Tweener();
         }
         public int eachNoteIndex { get { return _eachNoteIndex; } set { _eachNoteIndex = Handy.Property.GetCorrectIndex(value); } }
@@ -172,8 +174,8 @@ public class WorldInfo : MonoBehaviour
         public float endRotation { get { return _endRotation; } set { _endRotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
         public string sideImageName { get { return _sideImageName; } set { _sideImageName = value; } }
         public Color startColor { get { return _startColor; } set { _startColor = Handy.Property.GetCorrectRGBA(value); } }
-        public Color2 processStartColor { get { return _processStartColor; } set { _processStartColor = Handy.Property.GetCorrectRGBA2(value); } }
-        public Color2 processEndColor { get { return _processEndColor; } set { _processEndColor = Handy.Property.GetCorrectRGBA2(value); } }
+        public Color processStartColor { get { return _processStartColor; } set { _processStartColor = Handy.Property.GetCorrectRGBA(value); } }
+        public Color processEndColor { get { return _processEndColor; } set { _processEndColor = Handy.Property.GetCorrectRGBA(value); } }
         public Color endColor { get { return _endColor; } set { _endColor = Handy.Property.GetCorrectRGBA(value); } }
         public Tweener radiusTween { get { return _radiusTween; } set { _radiusTween = value; } }
         public Tweener holdRadiusTween { get { return _holdRadiusTween; } set { _holdRadiusTween = value; } }
@@ -182,7 +184,8 @@ public class WorldInfo : MonoBehaviour
         public Tweener startRotationTween { get { return _startRotationTween; } set { _startRotationTween = value; } }
         public Tweener endRotationTween { get { return _endRotationTween; } set { _endRotationTween = value; } }
         public Tweener startColorTween { get { return _startColorTween; } set { _startColorTween = value; } }
-        public Tweener processColorTween { get { return _processColorTween; } set { _processColorTween = value; } }
+        public Tweener processStartColorTween { get { return _processStartColorTween; } set { _processStartColorTween = value; } }
+        public Tweener processEndColorTween { get { return _processEndColorTween; } set { _processEndColorTween = value; } }
         public Tweener endColorTween { get { return _endColorTween; } set { _endColorTween = value; } }
     }
     [Serializable]

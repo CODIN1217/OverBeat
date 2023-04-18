@@ -7,32 +7,59 @@ using DG.Tweening;
 public class Center : MonoBehaviour
 {
     Image centerImage;
-    Color centerColor;
-    Sequence colorTweener;
     WorldInfo worldInfo;
     Handy handy;
     PlayGameManager playGM;
+    Vector2 tweenScale;
+    Vector2 tweenPos;
+    Color tweenColor;
+    Sequence scaleTweener;
+    Sequence posTweener;
+    Sequence colorTweener;
+    WorldInfo beforeWorldInfo;
+    bool isAwake;
     void Awake()
     {
         playGM = PlayGameManager.Property;
         handy = Handy.Property;
         centerImage = GetComponent<Image>();
+        isAwake = true;
     }
     void Update()
     {
         if (playGM.isBreakUpdate())
             return;
+        beforeWorldInfo = playGM.GetWorldInfo(playGM.curWorldInfoIndex - 1);
         worldInfo = playGM.GetWorldInfo(playGM.curWorldInfoIndex);
-        centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, playGM.HP01, Time.deltaTime * 4f);
-        if (!handy.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
+        if (isAwake)
         {
-            transform.DOScale(worldInfo.centerInfo.scale, worldInfo.centerInfo.scaleTween.duration).SetEase(worldInfo.centerInfo.scaleTween.ease);
-            transform.DOLocalMove(worldInfo.centerInfo.pos, worldInfo.centerInfo.posTween.duration).SetEase(worldInfo.centerInfo.posTween.ease);
-            centerImage.DOColor(handy.GetColor01(worldInfo.centerInfo.color), worldInfo.centerInfo.colorTween.duration).SetEase(worldInfo.centerInfo.colorTween.ease);
-            handy.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
+            tweenScale = beforeWorldInfo.centerInfo.scale;
+            tweenPos = beforeWorldInfo.centerInfo.pos;
+            tweenColor = beforeWorldInfo.centerInfo.color;
+            isAwake = false;
         }
-        // transform.position = worldInfo.centerInfo.pos;
-        // centerColor = handy.GetColor01(worldInfo.centerInfo.color);
-        // centerImage.color = centerColor;
+        centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, playGM.HP01, Time.deltaTime * 4f);
+        if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
+        {
+            handy.TryKillSequence(scaleTweener);
+            scaleTweener = DOTween.Sequence()
+            .Append(DOTween.To(() => tweenScale, (s) => tweenScale = s, worldInfo.centerInfo.scale, worldInfo.centerInfo.scaleTween.duration))
+            .SetEase(worldInfo.centerInfo.scaleTween.ease);
+
+            handy.TryKillSequence(posTweener);
+            posTweener = DOTween.Sequence()
+            .Append(DOTween.To(() => tweenPos, (s) => tweenPos = s, worldInfo.centerInfo.pos, worldInfo.centerInfo.posTween.duration))
+            .SetEase(worldInfo.centerInfo.posTween.ease);
+
+            handy.TryKillSequence(colorTweener);
+            colorTweener = DOTween.Sequence()
+            .Append(DOTween.To(() => tweenColor, (s) => tweenColor = s, worldInfo.centerInfo.color, worldInfo.centerInfo.colorTween.duration))
+            .SetEase(worldInfo.centerInfo.colorTween.ease);
+
+            handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
+        }
+        transform.localScale = tweenScale;
+        transform.localPosition = tweenPos;
+        centerImage.color = handy.GetColor01(tweenColor);
     }
 }

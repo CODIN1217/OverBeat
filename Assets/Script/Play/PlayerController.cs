@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
             playerCenterRends.Add(playerCenters[i].GetComponent<SpriteRenderer>());
             playerSideRends[i].sortingOrder =  (playGM.GetMaxPlayerIndex() - i) * 2 + 1 + playGM.GetMaxPlayerCount();
             playerCenterRends[i].sortingOrder = (playGM.GetMaxPlayerIndex() - i) * 2 + playGM.GetMaxPlayerCount();
-            playerScripts[i].myPlayerIndex = i;
+            playerScripts[i].playerIndex = i;
         }
     }
     void Update()

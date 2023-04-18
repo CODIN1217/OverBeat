@@ -11,12 +11,21 @@ public class Handy : MonoBehaviour
 {
     private static Handy instance = null;
     PlayGameManager playGM;
-    Dictionary<string, object> beforeValuesWithNames;
+    // Dictionary<string, object> beforeValuesWithNames;
+    CompareValue<int> _compareValue_int;
+    public CompareValue<int> compareValue_int
+    {
+        get
+        {
+            return _compareValue_int;
+        }
+    }
     void Awake()
     {
         instance = this;
         playGM = PlayGameManager.Property;
-        beforeValuesWithNames = new Dictionary<string, object>();
+        // beforeValuesWithNames = new Dictionary<string, object>();
+        _compareValue_int = new CompareValue<int>();
     }
     public static Handy Property
     {
@@ -25,24 +34,43 @@ public class Handy : MonoBehaviour
             return instance;
         }
     }
-    /* public void SetValueForCompare(string parentsName, string varName, object value)
+    public class CompareValue<T>
     {
-        string fullName = $"{parentsName} / {varName}";
-        if (beforeValuesWithNames.ContainsKey(fullName))
+        public CompareValue()
         {
-            beforeValuesWithNames[fullName] = value;
+            beforeValuesWithNames = new Dictionary<string, T>();
         }
-        else
+        Dictionary<string, T> beforeValuesWithNames;
+        public void SetValueForCompare(string parentsName, string methodName, string varName, T value, int? index = null)
         {
-            beforeValuesWithNames.Add(fullName, value);
+            string fullName = $"{parentsName} / {methodName} / {varName}" + (index != null ? $" / {index}" : "");
+            if (beforeValuesWithNames.ContainsKey(fullName))
+            {
+                beforeValuesWithNames[fullName] = value;
+            }
+            else
+            {
+                beforeValuesWithNames.Add(fullName, value);
+            }
         }
-    } */
-    public void SetValueForCompare(string parentsName, string methodName, string varName, object value)
+        public bool CompareWithBeforeValue(string parentsName, string methodName, string varName, T curValue, int? index = null)
+        {
+            string fullName = $"{parentsName} / {methodName} / {varName}" + (index != null ? $" / {index}" : "");
+            if (beforeValuesWithNames.ContainsKey(fullName))
+            {
+                if (beforeValuesWithNames[fullName].Equals(curValue))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    /* public void SetValueForCompare(string parentsName, string methodName, string varName, object value)
     {
         string fullName = $"{parentsName} / {methodName} / {varName}";
         if (beforeValuesWithNames.ContainsKey(fullName))
         {
-            // WriteLog(fullName);
             beforeValuesWithNames[fullName] = value;
         }
         else
@@ -50,29 +78,18 @@ public class Handy : MonoBehaviour
             beforeValuesWithNames.Add(fullName, value);
         }
     }
-    /* public bool CompareWithBeforeValue(string parentsName, string varName, object curValue)
-    {
-        string fullName = $"{parentsName} / {varName}";
-        if (beforeValuesWithNames.ContainsKey(fullName))
-        {
-            if (beforeValuesWithNames[fullName] == curValue)
-                return true;
-        }
-        return false;
-    } */
     public bool CompareWithBeforeValue(string parentsName, string methodName, string varName, object curValue)
     {
         string fullName = $"{parentsName} / {methodName} / {varName}";
         if (beforeValuesWithNames.ContainsKey(fullName))
         {
-                // WriteLog(beforeValuesWithNames[fullName], curValue);
-            if ((int)beforeValuesWithNames[fullName] == (int)curValue)
+            if (beforeValuesWithNames[fullName] == curValue)
             {
                 return true;
             }
         }
         return false;
-    }
+    } */
     public float GetCorrectDegMaxIs0(float deg)
     {
         if (deg < 0f || deg >= 360f)
@@ -252,6 +269,10 @@ public class Handy : MonoBehaviour
             return null;
         return new Color2(GetCorrectRGBA(((Color2)RGBA2).ca, minRGBA, maxRGBA), GetCorrectRGBA(((Color2)RGBA2).cb, minRGBA, maxRGBA));
     }
+    public Color GetColorChangedA(Color color, float a)
+    {
+        return new Color(color.r, color.g, color.b, a);
+    }
     public void PlayEachCodesWithBoolens(List<bool> boolen, List<Action> codes)
     {
         if (boolen.Count < codes.Count)
@@ -272,5 +293,16 @@ public class Handy : MonoBehaviour
     {
         yield return new WaitForSeconds(waitSecs);
         code();
+    }
+    public void TryKillSequence(Sequence sequence, bool isComplete = true)
+    {
+        if (sequence != null)
+        {
+            sequence.Kill(isComplete);
+            sequence = null;
+        }
+    }
+    public Vector2 MultiplyXByX_YByY(Vector2 va, Vector2 vb){
+        return new Vector2(va.x * vb.x, va.y * vb.y);
     }
 }
