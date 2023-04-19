@@ -60,6 +60,6 @@ public class Center : MonoBehaviour
         }
         transform.localScale = tweenScale;
         transform.localPosition = tweenPos;
-        centerImage.color = handy.GetColor01(tweenColor);
+        centerImage.color = tweenColor;
     }
 }

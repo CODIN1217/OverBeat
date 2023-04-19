@@ -44,7 +44,7 @@ public class PlayerPosesGuide : MonoBehaviour
                     if (playGM.GetPlayer(i).activeSelf)
                     {
                         playerPosDots[i][j].SetActive(true);
-                        playerPosDotsRend[i][j].color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColor), i);
+                        playerPosDotsRend[i][j].color = playGM.GetColor01WithPlayerIndex(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColor, i);
                         // playerPosDotsRend[i][j].color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColor), i);
                         playerPosDots[i][j].transform.position = handy.GetCircularPos(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].stdDegs[j], playGM.GetPlayerScript(i).curRadius, playGM.GetWorldInfo(playGM.curWorldInfoIndex).centerInfo.pos);
                     }

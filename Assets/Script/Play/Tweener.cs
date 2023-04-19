@@ -10,7 +10,7 @@ public class Tweener
     [SerializeField] AnimationCurve _ease;
     public Tweener()
     {
-        _duration = 0f;
+        _duration = 0.5f;
         _ease = AnimationCurve.Linear(0f, 0f, 1f, 1f);
     }
     public Tweener(float duration)

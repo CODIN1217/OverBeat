@@ -51,9 +51,7 @@ public class PlayGameManager : MonoBehaviour
     public float HP01;
     public int MaxMissCount;
     public readonly int MaxHPCount;
-    public float toleranceSecsWhenNeedInput;
     public Handy handy;
-    public Vector3 curNotePos;
     public int[] closestNoteIndex;
     public int curWorldInfoIndex;
     public int totalNoteCount;
@@ -62,6 +60,7 @@ public class PlayGameManager : MonoBehaviour
     float totalGamePlaySecs;
     void Awake()
     {
+        // SetInfoForTest();
         instance = this;
         isPause = true;
         canInputKeys = new List<List<KeyCode>>() { new List<KeyCode>() { KeyCode.W, KeyCode.D, KeyCode.S, KeyCode.A }, new List<KeyCode>() { KeyCode.I, KeyCode.L, KeyCode.K, KeyCode.J } };
@@ -433,17 +432,17 @@ public class PlayGameManager : MonoBehaviour
         playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
         return noteGeneratorScript.noteScripts[playerIndex][handy.GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
     }
-    public float GetJudgmentValue(int playerIndex, float? elapsedSecsWhenNeedlessInput01 = null, float? elapsedSecsWhenNeedInput01 = null)
+    public float GetJudgmentValue(int playerIndex, float? waitElapsedSecs01 = null, float? holdElapsedSecs01 = null)
     {
-        if (elapsedSecsWhenNeedlessInput01 == null)
-            elapsedSecsWhenNeedlessInput01 = GetElapsedSecsWhenNeedlessInput01(playerIndex, closestNoteIndex[playerIndex]);
-        if (elapsedSecsWhenNeedInput01 == null)
-            elapsedSecsWhenNeedInput01 = GetElapsedSecsWhenNeedInput01(playerIndex, closestNoteIndex[playerIndex]);
+        if (waitElapsedSecs01 == null)
+            waitElapsedSecs01 = GetWaitElapsedSecs01(playerIndex, closestNoteIndex[playerIndex]);
+        if (holdElapsedSecs01 == null)
+            holdElapsedSecs01 = GetHoldElapsedSecs01(playerIndex, closestNoteIndex[playerIndex]);
         float judgmentValue = 1f;
-        if (elapsedSecsWhenNeedInput01 > 0f)
-            judgmentValue = (float)elapsedSecsWhenNeedInput01;
-        else if (elapsedSecsWhenNeedlessInput01 >= 1f - judgmentRange[playerIndex])
-            judgmentValue = 1f - (float)elapsedSecsWhenNeedlessInput01;
+        if (holdElapsedSecs01 > 0f)
+            judgmentValue = (float)holdElapsedSecs01;
+        else if (waitElapsedSecs01 >= 1f - judgmentRange[playerIndex])
+            judgmentValue = 1f - (float)waitElapsedSecs01;
         return judgmentValue;
     }
     public int GetMaxStdDegCount(int playerIndex)
@@ -578,18 +577,18 @@ public class PlayGameManager : MonoBehaviour
         color01_temp2.a = color201.cb.a;
         return new Color2(color01_temp1, color01_temp2);
     }
-    public float GetElapsedSecsWhenNeedlessInput01(int playerIndex, int eachNoteIndex)
+    public float GetWaitElapsedSecs01(int playerIndex, int eachNoteIndex)
     {
         playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
         if (GetNoteScript(playerIndex, eachNoteIndex) != null)
-            return GetNoteScript(playerIndex, eachNoteIndex).elapsedSecsWhenNeedlessInput01;
+            return GetNoteScript(playerIndex, eachNoteIndex).waitElapsedSecs01;
         return 0f;
     }
-    public float GetElapsedSecsWhenNeedInput01(int playerIndex, int eachNoteIndex)
+    public float GetHoldElapsedSecs01(int playerIndex, int eachNoteIndex)
     {
         playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
         if (GetNoteScript(playerIndex, eachNoteIndex) != null)
-            return GetNoteScript(playerIndex, eachNoteIndex).elapsedSecsWhenNeedInput01;
+            return GetNoteScript(playerIndex, eachNoteIndex).holdElapsedSecs01;
         return 0f;
     }
     public float[] GetCorrectStdDegs(float[] stdDegs)
@@ -601,6 +600,43 @@ public class PlayGameManager : MonoBehaviour
         }
         return stdDegs_temp;
     }
+    /* void SetInfoForTest()
+    {
+        for (int i = 0; i < GetWorldInfoCount(); i++)
+        {
+            WorldInfo curWorldInfo = GetWorldInfo(i);
+            if (curWorldInfo.noteInfo.tarPlayerIndex == 1)
+            {
+                curWorldInfo.cameraInfo.rotation = 90f;
+                curWorldInfo.cameraInfo.size = 2f;
+                curWorldInfo.cameraInfo.pos = new Vector2(-4.8f, -2.7f);
+                curWorldInfo.cameraInfo.BGColor = Color.blue;
+
+                curWorldInfo.playerInfo[1].rotation = 90f;
+                curWorldInfo.playerInfo[1].posesGuideColor = Color.cyan;
+                curWorldInfo.playerInfo[1].sideColor = Color.gray;
+                curWorldInfo.playerInfo[1].centerColor = Color.green;
+                curWorldInfo.playerInfo[1].scale = new Vector2(0.5f, 0.5f);
+
+                curWorldInfo.noteInfo.totalRotation = 45f;
+                curWorldInfo.noteInfo.startRotation = 45f;
+                curWorldInfo.noteInfo.endRotation = 45f;
+                curWorldInfo.noteInfo.startColor = Color.magenta;
+                curWorldInfo.noteInfo.processStartColor = Color.red;
+                curWorldInfo.noteInfo.processEndColor = Color.yellow;
+                curWorldInfo.noteInfo.endColor = Color.blue;
+
+                curWorldInfo.centerInfo.color = Color.cyan;
+                curWorldInfo.centerInfo.pos = new Vector2(4.8f, 2.7f);
+                curWorldInfo.centerInfo.scale = new Vector2(2f, 2f);
+
+                curWorldInfo.boundaryInfo.lineColor = Color.gray;
+                curWorldInfo.boundaryInfo.coverColor = Color.green;
+                curWorldInfo.boundaryInfo.scale = new Vector2(0.5f, 0.5f);
+                curWorldInfo.boundaryInfo.pos = new Vector2(480f, 270f);
+            }
+        }
+    } */
     PlayGameManager()
     {
         MaxHPCount = 15;

@@ -45,7 +45,7 @@ public class BaseCamera : MonoBehaviour
         {
             handy.TryKillSequence(sizeTweener);
             sizeTweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenSize, (s) => tweenSize = s, stdSize * worldInfo.cameraInfo.size, worldInfo.cameraInfo.sizeTween.duration))
+            .Append(DOTween.To(() => tweenSize, (s) => tweenSize = s, worldInfo.cameraInfo.size, worldInfo.cameraInfo.sizeTween.duration))
             .SetEase(worldInfo.cameraInfo.sizeTween.ease);
 
             handy.TryKillSequence(colorTweener);
@@ -65,8 +65,8 @@ public class BaseCamera : MonoBehaviour
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
         }
-        baseCamera.orthographicSize = tweenSize;
-        baseCamera.backgroundColor = handy.GetColor01(tweenColor);
+        baseCamera.orthographicSize = stdSize * tweenSize;
+        baseCamera.backgroundColor = tweenColor;
         transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(tweenRotation));
         transform.position = tweenPos;
     }

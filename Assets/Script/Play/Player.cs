@@ -46,8 +46,9 @@ public class Player : MonoBehaviour
     }
     void Update()
     {
-        // InfoViewer.Property.SetInfo(this.name, nameof(curDeg), () => curDeg, playerIndex);
-        if (playGM.isBreakUpdate())
+        InfoViewer.Property.SetInfo(this.name, nameof(curDeg), () => curDeg, playerIndex);
+        InfoViewer.Property.SetInfo(this.name, nameof(stdDeg), () => stdDeg, playerIndex);
+        if (playGM.isBreakUpdate() && !playGM.countDownScript.isCountDown)
             return;
         worldInfo = playGM.GetWorldInfo(playerIndex, playGM.closestNoteIndex[playerIndex]);
         beforeWorldInfo = playGM.GetWorldInfo(playerIndex, playGM.closestNoteIndex[playerIndex] - 1);
@@ -57,7 +58,6 @@ public class Player : MonoBehaviour
         UpdateDegs();
         if (isEnable)
         {
-            curDeg = stdDeg;
             tweenRotationZ = beforeWorldInfo.playerInfo[playerIndex].rotation;
             tweenScale = beforeWorldInfo.playerInfo[playerIndex].scale;
             tweenSideColor = beforeWorldInfo.playerInfo[playerIndex].sideColor;
@@ -82,8 +82,11 @@ public class Player : MonoBehaviour
         }
         if (playGM.countDownScript.isCountDown)
             return;
-        if (playGM.GetJudgmentValue(playerIndex) >= 1f)
+        if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex))
+        {
             isInputted = false;
+            handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex);
+        }
         if (!isInputted)
         {
             if (playGM.GetIsProperKeyDown(playerIndex) && playGM.GetJudgmentValue(playerIndex) <= playGM.judgmentRange[playerIndex])
@@ -98,9 +101,9 @@ public class Player : MonoBehaviour
                 StartCoroutine(CheckInputtingKeys(playGM.closestNoteIndex[playerIndex]));
                 TryKillMoveTweener();
                 moveTweener = DOTween.Sequence()
-                .AppendInterval(playGM.GetNoteWaitSecs(playerIndex, playGM.closestNoteIndex[playerIndex]) * Mathf.Clamp(-handy.GetSign0IsMin(playGM.closestNoteScripts[playerIndex].elapsedSecsWhenNeedInput) * playGM.GetJudgmentValue(playerIndex), 0f, playGM.judgmentRange[playerIndex]))
+                .AppendInterval(playGM.GetNoteWaitSecs(playerIndex, playGM.closestNoteIndex[playerIndex]) * Mathf.Clamp(-handy.GetSign0IsMin(playGM.closestNoteScripts[playerIndex].holdElapsedSecs) * playGM.GetJudgmentValue(playerIndex), 0f, playGM.judgmentRange[playerIndex]))
                 .Append(DOTween.To(() => stdDeg, (d) => curDeg = d, tarDeg,
-                playGM.GetNoteLengthSecs(playerIndex, playGM.closestNoteIndex[playerIndex]) * (1f - Mathf.Clamp(handy.GetSign0IsMin(playGM.closestNoteScripts[playerIndex].elapsedSecsWhenNeedInput) * playGM.GetJudgmentValue(playerIndex), 0f, playGM.judgmentRange[playerIndex])))
+                playGM.GetNoteLengthSecs(playerIndex, playGM.closestNoteIndex[playerIndex]) * (1f - Mathf.Clamp(handy.GetSign0IsMin(playGM.closestNoteScripts[playerIndex].holdElapsedSecs) * playGM.GetJudgmentValue(playerIndex), 0f, playGM.judgmentRange[playerIndex])))
                 .SetEase(worldInfo.playerInfo[playerIndex].degTween.ease));
                 isInputted = true;
             }
@@ -140,10 +143,10 @@ public class Player : MonoBehaviour
         {
             handy.TryKillSequence(colorTweener);
             colorTweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenSideColor, (c) => tweenSideColor = c, playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[playerIndex].sideColor), playerIndex), worldInfo.playerInfo[playerIndex].sideColorTween.duration)
+            .Append(DOTween.To(() => tweenSideColor, (c) => tweenSideColor = c, playGM.GetColor01WithPlayerIndex(worldInfo.playerInfo[playerIndex].sideColor, playerIndex), worldInfo.playerInfo[playerIndex].sideColorTween.duration)
             .SetEase(worldInfo.playerInfo[playerIndex].sideColorTween.ease))
 
-            .Join(DOTween.To(() => tweenCenterColor, (c) => tweenCenterColor = c, playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[playerIndex].centerColor), playerIndex), worldInfo.playerInfo[playerIndex].centerColorTween.duration)
+            .Join(DOTween.To(() => tweenCenterColor, (c) => tweenCenterColor = c, playGM.GetColor01WithPlayerIndex(worldInfo.playerInfo[playerIndex].centerColor, playerIndex), worldInfo.playerInfo[playerIndex].centerColorTween.duration)
             .SetEase(worldInfo.playerInfo[playerIndex].centerColorTween.ease));
             // playerSideRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].sideColor), myPlayerIndex);
             // playerCenterRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].centerColor), myPlayerIndex);
@@ -176,9 +179,9 @@ public class Player : MonoBehaviour
     }
     IEnumerator SetSideScaleTweener_delayed(Vector2 tarScale, float duration, float prependInterval)
     {
-        yield return new WaitForSecondsRealtime(prependInterval);
+        yield return new WaitForSeconds(prependInterval);
         TryKillSideScaleTweener();
-        sideScaleTweener = DOTween.Sequence().Append(DOTween.To(() => sideClickScale,(s) => sideClickScale = s, tarScale, duration))/* .SetUpdate(true) */;
+        sideScaleTweener = DOTween.Sequence().Append(DOTween.To(() => sideClickScale, (s) => sideClickScale = s, tarScale, duration))/* .SetUpdate(true) */;
     }
     void TryKillRadiusTweener(bool isComplete = true)
     {

@@ -71,8 +71,8 @@ public class Boundary : MonoBehaviour
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
         }
-        boundaryCoverImage.color = handy.GetColor01(tweenCoverColor);
-        boundaryLineImage.color = handy.GetColor01(tweenLineColor);
+        boundaryCoverImage.color = tweenCoverColor;
+        boundaryLineImage.color = tweenLineColor;
         transform.localScale = tweenScale;
         boundaryCover.transform.localScale = new Vector2(1f / tweenScale.x, 1f / tweenScale.y);
         transform.localPosition = tweenPos;

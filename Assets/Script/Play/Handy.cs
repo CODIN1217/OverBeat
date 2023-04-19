@@ -223,14 +223,14 @@ public class Handy : MonoBehaviour
     {
         return new Vector2(sprite.texture.width, sprite.texture.height);
     }
-    public Color GetColor01(Color color)
+    /* public Color GetColor01(Color color)
     {
         return color / 255f;
     }
     public Color2 GetColor201(Color2 color2)
     {
         return new Color2(color2.ca / 255f, color2.cb / 255f);
-    }
+    } */
     public void RepeatCode(Action<int> code, int count)
     {
         for (int i = 0; i < count; i++)
@@ -248,31 +248,30 @@ public class Handy : MonoBehaviour
             return null;
         return new Vector2(Mathf.Clamp(((Vector2)XY).x, minXY, maxXY), Mathf.Clamp(((Vector2)XY).y, minXY, maxXY));
     }
-    public Color GetCorrectRGBA(Color RGBA, float minRGBA = 0f, float maxRGBA = 255f)
+    public Color GetCorrectRGBA(Color RGBA, float minRGBA = 0f, float maxRGBA = 1f)
     {
         return new Color(Mathf.Clamp(RGBA.r, minRGBA, maxRGBA), Mathf.Clamp(RGBA.g, minRGBA, maxRGBA), Mathf.Clamp(RGBA.b, minRGBA, maxRGBA), Mathf.Clamp(RGBA.a, minRGBA, maxRGBA));
     }
-    public Color? GetCorrectRGBA(Color? RGBA, float minRGBA = 0f, float maxRGBA = 255f)
+    public Color? GetCorrectRGBA(Color? RGBA, float minRGBA = 0f, float maxRGBA = 1f)
     {
         if (RGBA == null)
             return null;
         return GetCorrectRGBA((Color)RGBA, minRGBA, maxRGBA);
-        // return new Color(Mathf.Clamp(((Color)RGBA).r, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).g, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).b, minRGBA, maxRGBA), Mathf.Clamp(((Color)RGBA).a, minRGBA, maxRGBA));
     }
-    public Color2 GetCorrectRGBA2(Color2 RGBA2, float minRGBA = 0f, float maxRGBA = 255f)
+    public Color2 GetCorrectRGBA2(Color2 RGBA2, float minRGBA = 0f, float maxRGBA = 1f)
     {
         return new Color2(GetCorrectRGBA(RGBA2.ca, minRGBA, maxRGBA), GetCorrectRGBA(RGBA2.cb, minRGBA, maxRGBA));
     }
-    public Color2? GetCorrectRGBA2(Color2? RGBA2, float minRGBA = 0f, float maxRGBA = 255f)
+    public Color2? GetCorrectRGBA2(Color2? RGBA2, float minRGBA = 0f, float maxRGBA = 1f)
     {
         if (RGBA2 == null)
             return null;
         return new Color2(GetCorrectRGBA(((Color2)RGBA2).ca, minRGBA, maxRGBA), GetCorrectRGBA(((Color2)RGBA2).cb, minRGBA, maxRGBA));
     }
-    public Color GetColorChangedA(Color color, float a)
+    /* public Color GetColorChangedA(Color color, float a)
     {
         return new Color(color.r, color.g, color.b, a);
-    }
+    } */
     public void PlayEachCodesWithBoolens(List<bool> boolen, List<Action> codes)
     {
         if (boolen.Count < codes.Count)
