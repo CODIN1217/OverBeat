@@ -70,11 +70,11 @@ public class NoteGenerator : MonoBehaviour
         WorldInfo worldInfo = playGM.GetWorldInfo(worldInfoIndex);
         int eachNoteIndex = worldInfo.noteInfo.eachNoteIndex;
 
-        newNoteScript.noteWaitSecs = Mathf.Abs(worldInfo.noteInfo.startRadius - worldInfo.playerInfo[worldInfo.noteInfo.tarPlayerIndex].tarRadius) / 3.5f / worldInfo.noteInfo.speed;
+        newNoteScript.noteWaitSecs = Mathf.Abs(worldInfo.noteInfo.waitRadiusTween.value - worldInfo.playerInfo[worldInfo.noteInfo.tarPlayerIndex].tarRadiusTween.value) / 3.5f / worldInfo.noteInfo.speed;
         newNoteScript.noteWaitSecs *= Mathf.Clamp01(eachNoteIndex);
         notesWaitSecs[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript.noteWaitSecs);
 
-        newNoteScript.noteLengthSecs = worldInfo.noteInfo.length / worldInfo.noteInfo.speed;
+        newNoteScript.noteLengthSecs = worldInfo.noteInfo.holdRadiusTween.value / worldInfo.noteInfo.speed;
         newNoteScript.noteLengthSecs *= Mathf.Clamp01(eachNoteIndex);
         notesLengthSecs[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript.noteLengthSecs);
 

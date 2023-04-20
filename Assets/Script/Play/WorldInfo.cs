@@ -10,24 +10,24 @@ public class WorldInfo : MonoBehaviour
     [Serializable]
     public class CameraInfo
     {
-        /* [SerializeField] */ public float rotation;
-        /* [SerializeField] */ public float size;
-        /* [SerializeField] */ public Vector2 pos;
-        /* [SerializeField] */ public Color BGColor;
-        /* [SerializeField] */ public Tweener rotationTween;
-        /* [SerializeField] */ public Tweener sizeTween;
-        /* [SerializeField] */ public Tweener posTween;
-        /* [SerializeField] */ public Tweener BGColorTween;
+        // /* [SerializeField] */ public float rotation;
+        // /* [SerializeField] */ public float size;
+        // /* [SerializeField] */ public Vector2 pos;
+        // /* [SerializeField] */ public Color BGColor;
+        /* [SerializeField] */ public TweenInfo<float> rotationTween;
+        /* [SerializeField] */ public TweenInfo<float> sizeTween;
+        /* [SerializeField] */ public TweenInfo<Vector2> posTween;
+        /* [SerializeField] */ public TweenInfo<Color> BGColorTween;
         public CameraInfo()
         {
-            pos = Vector2.zero;
-            rotation = 0f;
-            size = 1f;
-            BGColor = new Color(39, 29, 35, 255) / 255f;
-            rotationTween = new Tweener();
-            sizeTween = new Tweener();
-            posTween = new Tweener();
-            BGColorTween = new Tweener();
+            // pos = Vector2.zero;
+            // rotation = 0f;
+            // size = 1f;
+            // BGColor = new Color(39, 29, 35, 255) / 255f;
+            rotationTween = new TweenInfo<float>(0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            sizeTween = new TweenInfo<float>(1f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            posTween = new TweenInfo<Vector2>(Vector2.zero, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            BGColorTween = new TweenInfo<Color>(new Color(39, 29, 35, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         }/* 
         public Vector2 _pos { get { return _pos; } set { _pos = value; } }
         public float _rotation { get { return _rotation; } set { _rotation = Handy.Property.GetCorrectDegMaxIs0(value); } }
@@ -55,37 +55,37 @@ public class WorldInfo : MonoBehaviour
     public class PlayerInfo
     {
         /* [SerializeField] */ public int moveDir;
-        /* [SerializeField] */ public float tarRadius;
-        /* [SerializeField] */ public float rotation;
+        // /* [SerializeField] */ public float tarRadius;
+        // /* [SerializeField] */ public float rotation;
         /* [SerializeField] */ public float[] stdDegs;
-        /* [SerializeField] */ public Color posesGuideColor;
-        /* [SerializeField] */ public Color sideColor;
-        /* [SerializeField] */ public Color centerColor;
-        /* [SerializeField] */ public Vector2 scale;
-        /* [SerializeField] */ public Tweener degTween;
-        /* [SerializeField] */ public Tweener tarRadiusTween;
-        /* [SerializeField] */ public Tweener rotationTween;
-        /* [SerializeField] */ public Tweener posesGuideColorTween;
-        /* [SerializeField] */ public Tweener sideColorTween;
-        /* [SerializeField] */ public Tweener centerColorTween;
-        /* [SerializeField] */ public Tweener scaleTween;
+        // /* [SerializeField] */ public Color posesGuideColor;
+        // /* [SerializeField] */ public Color sideColor;
+        // /* [SerializeField] */ public Color centerColor;
+        // /* [SerializeField] */ public Vector2 scale;
+        /* [SerializeField] */ public TweenInfo<float> degTween;
+        /* [SerializeField] */ public TweenInfo<float> tarRadiusTween;
+        /* [SerializeField] */ public TweenInfo<float> rotationTween;
+        /* [SerializeField] */ public TweenInfo<Color> posesGuideColorTween;
+        /* [SerializeField] */ public TweenInfo<Color> sideColorTween;
+        /* [SerializeField] */ public TweenInfo<Color> centerColorTween;
+        /* [SerializeField] */ public TweenInfo<Vector2> scaleTween;
         public PlayerInfo()
         {
             moveDir = 1;
-            tarRadius = 1.5f;
-            rotation = 0f;
+            // tarRadius = 1.5f;
+            // rotation = 0f;
             stdDegs = new float[] { 0f, 90f, 180f, 270f };
-            posesGuideColor = new Color(115, 85, 200, 255) / 255f;
-            sideColor = new Color(100, 45, 250, 255) / 255f;
-            centerColor = new Color(65, 20, 185, 255) / 255f;
-            scale = Vector2.one;
-            degTween = new Tweener();
-            tarRadiusTween = new Tweener();
-            rotationTween = new Tweener();
-            posesGuideColorTween = new Tweener();
-            sideColorTween = new Tweener();
-            centerColorTween = new Tweener();
-            scaleTween = new Tweener();
+            // posesGuideColor = new Color(115, 85, 200, 255) / 255f;
+            // sideColor = new Color(100, 45, 250, 255) / 255f;
+            // centerColor = new Color(65, 20, 185, 255) / 255f;
+            // scale = Vector2.one;
+            degTween = new TweenInfo<float>(0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            tarRadiusTween = new TweenInfo<float>(1.5f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            rotationTween = new TweenInfo<float>(0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            posesGuideColorTween = new TweenInfo<Color>(new Color(115, 85, 200, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            sideColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            centerColorTween = new TweenInfo<Color>(new Color(65, 20, 185, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            scaleTween = new TweenInfo<Vector2>(Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         }/* 
         public int _moveDir { get { return _moveDir; } set { _moveDir = (int)Handy.Property.GetSign0Is0(value); } }
         public float _tarRadius { get { return _tarRadius; } set { _tarRadius = Mathf.Clamp(value, 0f, 500f); } }
@@ -110,28 +110,30 @@ public class WorldInfo : MonoBehaviour
         /* [SerializeField] */ public int tarPlayerIndex;
         /* [SerializeField] */ public int startDegIndex;
         /* [SerializeField] */ public int endDegIndex;
+        /* [SerializeField] */ public float startDeg;
+        /* [SerializeField] */ public float endDeg;
         /* [SerializeField] */ public float awakeSecs;
         /* [SerializeField] */ public float speed;
-        /* [SerializeField] */ public float startRadius;
-        /* [SerializeField] */ public float length;
-        /* [SerializeField] */ public float totalRotation;
-        /* [SerializeField] */ public float startRotation;
-        /* [SerializeField] */ public float endRotation;
+        // /* [SerializeField] */ public float startRadius;
+        // /* [SerializeField] */ public float length;
+        // /* [SerializeField] */ public float totalRotation;
+        // /* [SerializeField] */ public float startRotation;
+        // /* [SerializeField] */ public float endRotation;
         /* [SerializeField] */ public string sideImageName;
-        /* [SerializeField] */ public Color startColor;
-        /* [SerializeField] */ public Color processStartColor;
-        /* [SerializeField] */ public Color processEndColor;
-        /* [SerializeField] */ public Color endColor;
-        /* [SerializeField] */ public Tweener radiusTween;
-        /* [SerializeField] */ public Tweener holdRadiusTween;
-        /* [SerializeField] */ public Tweener appearTween;
-        /* [SerializeField] */ public Tweener totalRotationTween;
-        /* [SerializeField] */ public Tweener startRotationTween;
-        /* [SerializeField] */ public Tweener endRotationTween;
-        /* [SerializeField] */ public Tweener startColorTween;
-        /* [SerializeField] */ public Tweener processStartColorTween;
-        /* [SerializeField] */ public Tweener processEndColorTween;
-        /* [SerializeField] */ public Tweener endColorTween;
+        // /* [SerializeField] */ public Color startColor;
+        // /* [SerializeField] */ public Color processStartColor;
+        // /* [SerializeField] */ public Color processEndColor;
+        // /* [SerializeField] */ public Color endColor;
+        /* [SerializeField] */ public TweenInfo<float> waitRadiusTween;
+        /* [SerializeField] */ public TweenInfo<float> holdRadiusTween;
+        /* [SerializeField] */ public TweenInfo<float> appearTween;
+        /* [SerializeField] */ public TweenInfo<float> totalRotationTween;
+        /* [SerializeField] */ public TweenInfo<float> startRotationTween;
+        /* [SerializeField] */ public TweenInfo<float> endRotationTween;
+        /* [SerializeField] */ public TweenInfo<Color> startColorTween;
+        /* [SerializeField] */ public TweenInfo<Color> processStartColorTween;
+        /* [SerializeField] */ public TweenInfo<Color> processEndColorTween;
+        /* [SerializeField] */ public TweenInfo<Color> endColorTween;
         public NoteInfo()
         {
             eachNoteIndex = 0;
@@ -140,26 +142,26 @@ public class WorldInfo : MonoBehaviour
             endDegIndex = 0;
             awakeSecs = 0f;
             speed = 1f;
-            startRadius = 5f;
-            length = 0f;
-            totalRotation = 0f;
-            startRotation = 0f;
-            endRotation = 0f;
+            // startRadius = 5f;
+            // length = 0f;
+            // totalRotation = 0f;
+            // startRotation = 0f;
+            // endRotation = 0f;
             sideImageName = "Basic";
-            startColor = new Color(100, 45, 250, 255) / 255f;
-            processStartColor = new Color(130, 80, 255, 255) / 255f;
-            processEndColor = new Color(130, 80, 255, 255) / 255f;
-            endColor = new Color(100, 45, 250, 255) / 255f;
-            radiusTween = new Tweener();
-            holdRadiusTween = new Tweener();
-            appearTween = new Tweener();
-            totalRotationTween = new Tweener();
-            startRotationTween = new Tweener();
-            endRotationTween = new Tweener();
-            startColorTween = new Tweener();
-            processStartColorTween = new Tweener();
-            processEndColorTween = new Tweener();
-            endColorTween = new Tweener();
+            // startColor = new Color(100, 45, 250, 255) / 255f;
+            // processStartColor = new Color(130, 80, 255, 255) / 255f;
+            // processEndColor = new Color(130, 80, 255, 255) / 255f;
+            // endColor = new Color(100, 45, 250, 255) / 255f;
+            waitRadiusTween = new TweenInfo<float>(5f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            holdRadiusTween = new TweenInfo<float>(0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            appearTween = new TweenInfo<float>(1f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            totalRotationTween = new TweenInfo<float>(0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            startRotationTween = new TweenInfo<float>(0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            endRotationTween = new TweenInfo<float>(0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            startColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            processStartColorTween = new TweenInfo<Color>(new Color(130, 80, 255, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            processEndColorTween = new TweenInfo<Color>(new Color(130, 80, 255, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            endColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         }/* 
         public int _eachNoteIndex { get { return _eachNoteIndex; } set { _eachNoteIndex = Handy.Property.GetCorrectIndex(value); } }
         public int _tarPlayerIndex { get { return _tarPlayerIndex; } set { _tarPlayerIndex = Handy.Property.GetCorrectIndex(value); } }
@@ -191,20 +193,20 @@ public class WorldInfo : MonoBehaviour
     [Serializable]
     public class CenterInfo
     {
-        /* [SerializeField] */ public Color color;
-        /* [SerializeField] */ public Vector2 pos;
-        /* [SerializeField] */ public Vector2 scale;
-        /* [SerializeField] */ public Tweener colorTween;
-        /* [SerializeField] */ public Tweener posTween;
-        /* [SerializeField] */ public Tweener scaleTween;
+        // /* [SerializeField] */ public Color color;
+        // /* [SerializeField] */ public Vector2 pos;
+        // /* [SerializeField] */ public Vector2 scale;
+        /* [SerializeField] */ public TweenInfo<Color> colorTween;
+        /* [SerializeField] */ public TweenInfo<Vector2> posTween;
+        /* [SerializeField] */ public TweenInfo<Vector2> scaleTween;
         public CenterInfo()
         {
-            color = new Color(0, 255, 160, 255) / 255f;
-            pos = Vector2.zero;
-            scale = Vector2.one;
-            colorTween = new Tweener();
-            posTween = new Tweener();
-            scaleTween = new Tweener();
+            // color = new Color(0, 255, 160, 255) / 255f;
+            // pos = Vector2.zero;
+            // scale = Vector2.one;
+            colorTween = new TweenInfo<Color>(new Color(0, 255, 160, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            posTween = new TweenInfo<Vector2>(Vector2.zero, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            scaleTween = new TweenInfo<Vector2>(Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         }/* 
         public Color _color { get { return _color; } set { _color = Handy.Property.GetCorrectRGBA(value); } }
         public Vector2 _pos { get { return _pos; } set { _pos = value; } }
@@ -216,24 +218,24 @@ public class WorldInfo : MonoBehaviour
     [Serializable]
     public class BoundaryInfo
     {
-        /* [SerializeField] */ public Color lineColor;
-        /* [SerializeField] */ public Color? coverColor;
-        /* [SerializeField] */ public Vector2 scale;
-        /* [SerializeField] */ public Vector2? pos;
-        /* [SerializeField] */ public Tweener lineColorTween;
-        /* [SerializeField] */ public Tweener coverColorTween;
-        /* [SerializeField] */ public Tweener scaleTween;
-        /* [SerializeField] */ public Tweener posTween;
+        // /* [SerializeField] */ public Color lineColor;
+        // /* [SerializeField] */ public Color? coverColor;
+        // /* [SerializeField] */ public Vector2 scale;
+        // /* [SerializeField] */ public Vector2? pos;
+        /* [SerializeField] */ public TweenInfo<Color> lineColorTween;
+        /* [SerializeField] */ public TweenInfo<Color?> coverColorTween;
+        /* [SerializeField] */ public TweenInfo<Vector2> scaleTween;
+        /* [SerializeField] */ public TweenInfo<Vector2?> posTween;
         public BoundaryInfo()
         {
-            lineColor = new Color(0, 255, 160, 255) / 255f;
-            coverColor = null/* new Color(39, 29, 35, 255) */;
-            scale = Vector2.one;
-            pos = null/* Vector2.zero */;
-            lineColorTween = new Tweener();
-            coverColorTween = new Tweener();
-            scaleTween = new Tweener();
-            posTween = new Tweener();
+            // lineColor = new Color(0, 255, 160, 255) / 255f;
+            // coverColor = null/* new Color(39, 29, 35, 255) */;
+            // scale = Vector2.one;
+            // pos = null/* Vector2.zero */;
+            lineColorTween = new TweenInfo<Color>(new Color(0, 255, 160, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            coverColorTween = new TweenInfo<Color?>(null, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            scaleTween = new TweenInfo<Vector2>(Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            posTween = new TweenInfo<Vector2?>(null, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         }/* 
         public Color _lineColor { get { return _lineColor; } set { _lineColor = Handy.Property.GetCorrectRGBA(value); } }
         public Color? _coverColor { get { return _coverColor; } set { _coverColor = Handy.Property.GetCorrectRGBA(value); } }

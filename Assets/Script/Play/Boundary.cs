@@ -19,6 +19,10 @@ public class Boundary : MonoBehaviour
     Color tweenLineColor;
     Vector2 tweenScale;
     Vector2 tweenPos;
+    public Color coverColor;
+    public Color lineColor;
+    public Vector2 scale;
+    public Vector2 pos;
     Sequence coverColorTweener;
     Sequence lineColorTweener;
     Sequence scaleTweener;
@@ -35,47 +39,50 @@ public class Boundary : MonoBehaviour
     {
         if (playGM.isBreakUpdate())
             return;
-        beforeWorldInfo = playGM.GetWorldInfo(playGM.curWorldInfoIndex - 1);
-        worldInfo = playGM.GetWorldInfo(playGM.curWorldInfoIndex);
+        beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
+        worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
         if (isAwake)
         {
-            tweenCoverColor = worldInfo.boundaryInfo.coverColor == null ? worldInfo.cameraInfo.BGColor :(Color)worldInfo.boundaryInfo.coverColor;
-            tweenLineColor = beforeWorldInfo.boundaryInfo.lineColor;
-            tweenScale = beforeWorldInfo.boundaryInfo.scale;
-            tweenPos = null == worldInfo.boundaryInfo.pos ? worldInfo.centerInfo.pos : (Vector3)worldInfo.boundaryInfo.pos;
+            tweenCoverColor = worldInfo.boundaryInfo.coverColorTween.value == null ? worldInfo.cameraInfo.BGColorTween.value : (Color)worldInfo.boundaryInfo.coverColorTween.value;
+            tweenLineColor = beforeWorldInfo.boundaryInfo.lineColorTween.value;
+            tweenScale = beforeWorldInfo.boundaryInfo.scaleTween.value;
+            tweenPos = null == worldInfo.boundaryInfo.posTween.value ? worldInfo.centerInfo.posTween.value : (Vector3)worldInfo.boundaryInfo.posTween.value;
             isAwake = false;
         }
-        if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
+        if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
             handy.TryKillSequence(coverColorTweener);
             coverColorTweener = DOTween.Sequence()
             .Append(DOTween.To(() => tweenCoverColor, (c) => tweenCoverColor = c
-            , worldInfo.boundaryInfo.coverColor == null ? worldInfo.cameraInfo.BGColor :(Color)worldInfo.boundaryInfo.coverColor
+            , worldInfo.boundaryInfo.coverColorTween.value == null ? worldInfo.cameraInfo.BGColorTween.value : (Color)worldInfo.boundaryInfo.coverColorTween.value
             , worldInfo.boundaryInfo.coverColorTween.duration))
             .SetEase(worldInfo.boundaryInfo.coverColorTween.ease);
 
             handy.TryKillSequence(lineColorTweener);
             lineColorTweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenLineColor, (c) => tweenLineColor = c, worldInfo.boundaryInfo.lineColor, worldInfo.boundaryInfo.lineColorTween.duration))
+            .Append(DOTween.To(() => tweenLineColor, (c) => tweenLineColor = c, worldInfo.boundaryInfo.lineColorTween.value, worldInfo.boundaryInfo.lineColorTween.duration))
             .SetEase(worldInfo.boundaryInfo.lineColorTween.ease);
 
             handy.TryKillSequence(scaleTweener);
             scaleTweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenScale, (s) => tweenScale = s, worldInfo.boundaryInfo.scale / worldInfo.cameraInfo.size, worldInfo.boundaryInfo.scaleTween.duration))
+            .Append(DOTween.To(() => tweenScale, (s) => tweenScale = s, worldInfo.boundaryInfo.scaleTween.value / worldInfo.cameraInfo.sizeTween.value, worldInfo.boundaryInfo.scaleTween.duration))
             .SetEase(worldInfo.boundaryInfo.scaleTween.ease);
-            
+
             handy.TryKillSequence(posTweener);
             posTweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenPos, (p) => tweenPos = p, null == worldInfo.boundaryInfo.pos ? worldInfo.centerInfo.pos : (Vector3)worldInfo.boundaryInfo.pos, worldInfo.boundaryInfo.posTween.duration))
+            .Append(DOTween.To(() => tweenPos, (p) => tweenPos = p, null == worldInfo.boundaryInfo.posTween.value ? worldInfo.centerInfo.posTween.value : (Vector3)worldInfo.boundaryInfo.posTween.value, worldInfo.boundaryInfo.posTween.duration))
             .SetEase(worldInfo.boundaryInfo.posTween.ease);
 
-            handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
+            handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex);
         }
-        boundaryCoverImage.color = tweenCoverColor;
-        boundaryLineImage.color = tweenLineColor;
-        transform.localScale = tweenScale;
-        boundaryCover.transform.localScale = new Vector2(1f / tweenScale.x, 1f / tweenScale.y);
-        transform.localPosition = tweenPos;
-        boundaryCover.transform.localPosition = -tweenPos;
+        coverColor = tweenCoverColor;
+        lineColor = tweenLineColor;
+        scale = tweenScale;
+        pos = tweenPos;
+
+        boundaryCoverImage.color = coverColor;
+        boundaryLineImage.color = lineColor;
+        transform.localScale = scale; boundaryCover.transform.localScale = new Vector2(1f / scale.x, 1f / scale.y);
+        transform.localPosition = pos; boundaryCover.transform.localPosition = -pos;
     }
 }

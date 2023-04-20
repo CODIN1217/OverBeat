@@ -27,8 +27,8 @@ public class ProgressBar : MonoBehaviour
         PBBGImageRect.localPosition = new Vector2((PBBGImageRect.sizeDelta.x - PBBGImagePixels.x) * 0.5f, 0f);
         PBVertexRend0.transform.localPosition = new Vector2((PBBGVertex0Pixels.x - PBBGImagePixels.x) * 0.5f, 0f);
         PBVertexRend1.transform.localPosition = new Vector2((PBBGImagePixels.x - PBBGVertex1Pixels.x) * 0.5f, 0f);
-        PBBGImageRend.color = playGM.GetWorldInfo(0, playGM.closestNoteIndex[0]).playerInfo[0].centerColor;
-        PBVertexRend0.color = playGM.GetWorldInfo(0, playGM.closestNoteIndex[0]).playerInfo[0].sideColor;
-        PBVertexRend1.color = playGM.GetWorldInfo(0, playGM.closestNoteIndex[0]).playerInfo[0].sideColor;
+        PBBGImageRend.color = playGM.GetWorldInfo(0, playGM.closestNoteIndex[0]).playerInfo[0].centerColorTween.value;
+        PBVertexRend0.color = playGM.GetWorldInfo(0, playGM.closestNoteIndex[0]).playerInfo[0].sideColorTween.value;
+        PBVertexRend1.color = playGM.GetWorldInfo(0, playGM.closestNoteIndex[0]).playerInfo[0].sideColorTween.value;
     }
 }

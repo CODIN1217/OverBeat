@@ -60,7 +60,7 @@ public class CountDown : MonoBehaviour
     public void PlayCountDown(int? numberOfCountDownTick = null, float? intervalOfCountDownTick = null, int? worldInfoIndex = null)
     {
         if (worldInfoIndex == null)
-            worldInfoIndex = playGM.curWorldInfoIndex;
+            worldInfoIndex = playGM.worldInfoIndex;
         worldInfo = playGM.GetWorldInfo((int)worldInfoIndex);
         if (numberOfCountDownTick == null)
             this.numberOfCountDownTick = worldInfo.countDownInfo.numberOfTick;

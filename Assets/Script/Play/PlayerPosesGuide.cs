@@ -7,63 +7,30 @@ public class PlayerPosesGuide : MonoBehaviour
 {
     Handy handy;
     public GameObject playerPosDotPrefab;
-    List<List<GameObject>> playerPosDots;
-    List<List<SpriteRenderer>> playerPosDotsRend;
+    List<GameObject> playerPosDots;
+    List<SpriteRenderer> playerPosDotsRend;
     PlayGameManager playGM;
     void Awake()
     {
         playGM = PlayGameManager.Property;
         handy = Handy.Property;
-        playerPosDots = new List<List<GameObject>>();
-        playerPosDotsRend = new List<List<SpriteRenderer>>();
+        playerPosDots = new List<GameObject>();
+        playerPosDotsRend = new List<SpriteRenderer>();
         for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
         {
-            playerPosDots.Add(new List<GameObject>());
-            playerPosDotsRend.Add(new List<SpriteRenderer>());
-            for (int j = 0; j < playGM.GetMaxStdDegCount(i); j++)
-            {
-                playerPosDots[i].Add(Instantiate(playerPosDotPrefab, transform));
-                playerPosDotsRend[i].Add(playerPosDots[i][j].GetComponent<SpriteRenderer>());
-                playerPosDotsRend[i][j].sortingOrder = playGM.GetMaxPlayerIndex() - i;
-                playerPosDots[i][j].transform.position = playGM.GetWorldInfo(playGM.curWorldInfoIndex).centerInfo.pos;
-                playerPosDots[i][j].SetActive(false);
-            }
-
+            playerPosDots.Add(Instantiate(playerPosDotPrefab, transform));
+            playerPosDotsRend.Add(playerPosDots[i].GetComponent<SpriteRenderer>());
+            playerPosDotsRend[i].sortingOrder = playGM.GetMaxPlayerIndex() - i;
+            playerPosDots[i].SetActive(false);
         }
     }
     void Update()
     {
-        if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex))
+        for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
         {
-            // handy.WriteLog(playGM.curWorldInfoIndex);
-            for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
-            {
-                for (int j = 0; j < playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].stdDegs.Length; j++)
-                {
-                    playerPosDots[i][j].SetActive(false);
-                    if (playGM.GetPlayer(i).activeSelf)
-                    {
-                        playerPosDots[i][j].SetActive(true);
-                        playerPosDotsRend[i][j].color = playGM.GetColor01WithPlayerIndex(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColor, i);
-                        // playerPosDotsRend[i][j].color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColor), i);
-                        playerPosDots[i][j].transform.position = handy.GetCircularPos(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].stdDegs[j], playGM.GetPlayerScript(i).curRadius, playGM.GetWorldInfo(playGM.curWorldInfoIndex).centerInfo.pos);
-                    }
-                }
-            }
-            handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.curWorldInfoIndex), playGM.curWorldInfoIndex);
+            WorldInfo curWorldInfo = playGM.GetWorldInfo(i, playGM.closestNoteIndex[i]);
+            playerPosDots[i].transform.position = handy.GetCircularPos(playGM.closestNoteScripts[i].curDeg, playGM.GetPlayerScript(i).tweenRadius, playGM.centerScript.pos);
+            playerPosDots[i].SetActive(true);
         }
-        /* for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
-        {
-            for (int j = 0; j < playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].stdDegs.Length; j++)
-            {
-                playerPosDots[i][j].SetActive(false);
-                if (playGM.GetPlayer(i).activeSelf)
-                {
-                    playerPosDots[i][j].SetActive(true);
-                    playerPosDotsRend[i][j].color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].posesGuideColor), i);
-                    playerPosDots[i][j].transform.position = handy.GetCircularPos(playGM.GetWorldInfo(playGM.curWorldInfoIndex).playerInfo[i].stdDegs[j], playGM.GetPlayerScript(i).curRadius, playGM.GetWorldInfo(playGM.curWorldInfoIndex).centerInfo.pos);
-                }
-            }
-        } */
     }
 }

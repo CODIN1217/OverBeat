@@ -4,20 +4,23 @@ using UnityEngine;
 using System;
 
 [Serializable]
-public class Tweener
+public class TweenInfo<T>
 {
+    [SerializeField] T _value;
     [SerializeField] float _duration;
     [SerializeField] AnimationCurve _ease;
-    public Tweener()
+    /* public TweenInfo()
     {
         _duration = 0.5f;
         _ease = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-    }
-    public Tweener(float duration)
+    } */
+    public TweenInfo(T value, float duration, AnimationCurve ease)
     {
-        _duration = Mathf.Clamp(duration, 0f, float.MaxValue);
-        _ease = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+        _value = value;
+        _duration = duration;
+        _ease = ease;
     }
+    public T value { get { return _value; } set { _value = value; } }
     public float duration { get { return _duration; } set { _duration = value; } }
     public AnimationCurve ease { get { return _ease; } set { _ease = value; } }
 }
