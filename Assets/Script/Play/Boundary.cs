@@ -15,18 +15,22 @@ public class Boundary : MonoBehaviour
     public Image boundaryCoverImage;
     public Image boundaryMaskImage;
     PlayGameManager playGM;
+    
     Color tweenCoverColor;
     Color tweenLineColor;
     Vector2 tweenScale;
     Vector2 tweenPos;
+
     public Color coverColor;
     public Color lineColor;
     public Vector2 scale;
     public Vector2 pos;
+
     Sequence coverColorTweener;
     Sequence lineColorTweener;
     Sequence scaleTweener;
     Sequence posTweener;
+
     WorldInfo beforeWorldInfo;
     bool isAwake;
     void Awake()

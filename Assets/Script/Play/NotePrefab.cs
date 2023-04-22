@@ -92,8 +92,8 @@ public class NotePrefab : MonoBehaviour
     void Update()
     {
         myElapsedTime.Stop();
-        UpdateTween();
-        if (playGM.isBreakUpdate() && !playGM.countDownScript.isCountDown)
+        UpdateTweenValue();
+        if (playGM.isBreakUpdate() && playGM.countDownScript.isCountDown)
             return;
         if (isBeforeAwake)
         {
@@ -198,7 +198,6 @@ public class NotePrefab : MonoBehaviour
         tarPlayer = playGM.GetPlayer(tarPlayerIndex);
         tarPlayerScript = playGM.GetPlayerScript(tarPlayerIndex);
         stdRadius = beforeWorldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.value;
-        tweenRadius = worldInfo.noteInfo.waitRadiusTween.value;
         tarRadius = worldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.value;
         centerPos = worldInfo.centerInfo.posTween.value;
         stdDeg = playGM.GetStartDeg(tarPlayerIndex, myEachNoteIndex);
@@ -207,6 +206,7 @@ public class NotePrefab : MonoBehaviour
         nextNoteScript = playGM.GetNoteScript(tarPlayerIndex, myEachNoteIndex + 1);
         startNoteSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
         endNoteSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
+        InitTween();
         SetNoteTransform();
         if (noteLengthSecs != 0f)
         {
@@ -226,17 +226,28 @@ public class NotePrefab : MonoBehaviour
         SetNoteRenderer();
         SetElapsedSecs01();
     }
-    void UpdateTween()
+    void UpdateTweenValue()
     {
         curRadius = tweenRadius;
-        totalRotation = tweenTotalRotation;
-        startRotation = tweenStartRotation;
-        endRotation = tweenEndRotation;
+        totalRotation = handy.GetCorrectDegMaxIs0(tweenTotalRotation + stdDeg);
+        startRotation = handy.GetCorrectDegMaxIs0(tweenStartRotation + curDeg);
+        endRotation = handy.GetCorrectDegMaxIs0(tweenEndRotation + tarDeg);
         fadeValue = tweenFade;
-        startColor = tweenStartColor;
-        processStartColor = tweenProcessStartColor;
-        processEndColor = tweenProcessEndColor;
-        endColor = tweenEndColor;
+        startColor = playGM.GetColor01WithPlayerIndex(tweenStartColor, tarPlayerIndex);
+        processStartColor = playGM.GetColor01WithPlayerIndex(tweenProcessStartColor, tarPlayerIndex);
+        processEndColor = playGM.GetColor01WithPlayerIndex(tweenProcessEndColor, tarPlayerIndex);
+        endColor = playGM.GetColor01WithPlayerIndex(tweenEndColor, tarPlayerIndex);
+    }
+    void InitTween(){
+        tweenRadius = worldInfo.noteInfo.waitRadiusTween.value;
+        tweenTotalRotation = handy.GetCorrectDegMaxIs0(beforeWorldInfo.noteInfo.totalRotationTween.value);
+        tweenStartRotation = handy.GetCorrectDegMaxIs0(beforeWorldInfo.noteInfo.startRotationTween.value);
+        tweenEndRotation = handy.GetCorrectDegMaxIs0(beforeWorldInfo.noteInfo.endRotationTween.value);
+        tweenFade = 0f;
+        tweenStartColor = beforeWorldInfo.noteInfo.startColorTween.value;
+        tweenProcessStartColor = beforeWorldInfo.noteInfo.processStartColorTween.value;
+        tweenProcessEndColor = beforeWorldInfo.noteInfo.processEndColorTween.value;
+        tweenEndColor = beforeWorldInfo.noteInfo.endColorTween.value;
     }
     public void SetElapsedSecs01()
     {
@@ -255,11 +266,12 @@ public class NotePrefab : MonoBehaviour
         toleranceSecsEndWait = waitElapsedSecs - noteWaitSecs;
         handy.PlayCodeWaitForSecs(Mathf.Clamp(-toleranceSecsEndWait, 0f, noteWaitSecs), () => { playGM.worldInfoIndex += (int)Mathf.Clamp01(myEachNoteIndex); });
         waitElapsedSecs = noteWaitSecs;
-        handy.TryKillSequence(tarPlayerScript.radiusTweener);
 
-        tarPlayerScript.radiusTweener = DOTween.Sequence()
+        handy.TryKillSequence(tarPlayerScript.radiusTweener);
+        tarPlayerScript.SetRadiusTweener(worldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.value, Mathf.Clamp(noteLengthSecs - toleranceSecsEndWait, 0f, (noteLengthSecs == 0f ? 0f : float.MaxValue)), worldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.ease);
+        /* tarPlayerScript.radiusTweener = DOTween.Sequence()
         .Append(DOTween.To(() => tarPlayerScript.tweenRadius, r => tarPlayerScript.tweenRadius = r, worldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.value, Mathf.Clamp(noteLengthSecs - toleranceSecsEndWait, 0f, noteLengthSecs == 0f ? 0f : float.MaxValue))
-        .SetEase(worldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.ease));
+        .SetEase(worldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.ease)); */
 
         // tarPlayerScript.SetRadiusTweener(worldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.value, Mathf.Clamp(noteLengthSecs - toleranceSecsEndWait, 0f, noteLengthSecs == 0f ? 0f : float.MaxValue), worldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.ease);
         myElapsedTime.Reset();
@@ -272,10 +284,10 @@ public class NotePrefab : MonoBehaviour
             curDeg = GetCurDeg(worldInfo.playerInfo[tarPlayerIndex].degTween.ease.Evaluate(Mathf.Clamp(holdElapsedSecs, 0f, float.MaxValue) / playGM.GetNoteLengthSecs(tarPlayerIndex, myEachNoteIndex)));
         else
             curDeg = stdDeg;
-        transform.position = handy.GetCircularPos(needInput ? tarPlayerScript.tweenDeg : stdDeg, tweenRadius);
+        transform.position = handy.GetCircularPos(needInput ? tarPlayerScript.curDeg : stdDeg, curRadius);
         startNote.transform.localScale = tarPlayerScript.playerSide.transform.localScale;
         endNote.transform.localScale = tarPlayerScript.playerSide.transform.localScale;
-        transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(tweenTotalRotation + stdDeg)));
+        transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-totalRotation));
     }
     void SetNotePartsTransform()
     {
@@ -285,7 +297,7 @@ public class NotePrefab : MonoBehaviour
         dottedLineLength = 0f;
         for (int i = curPathIndex; i < myPathPoses.Count; i++)
         {
-            Vector3 curPathPos = myPathPoses[i] + transform.position - (Vector3)handy.GetCircularPos(needInput ? tarPlayerScript.tweenDeg : stdDeg, beforeWorldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.value) - (Vector3)handy.GetCircularPos(GetCurDeg((float)i / (float)myPathPoses.Count), GetLongNoteCurRadius((float)curPathIndex / (float)myPathPoses.Count)) + (Vector3)centerPos;
+            Vector3 curPathPos = myPathPoses[i] + transform.position - (Vector3)handy.GetCircularPos(needInput ? tarPlayerScript.curDeg : stdDeg, beforeWorldInfo.playerInfo[tarPlayerIndex].tarRadiusTween.value) - (Vector3)handy.GetCircularPos(GetCurDeg((float)i / (float)myPathPoses.Count), GetLongNoteCurRadius((float)curPathIndex / (float)myPathPoses.Count)) + (Vector3)centerPos;
             myLocalPathPoses.Add(curPathPos);
             myProcessPathPoses.Add(curPathPos);
             Sprite playerSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
@@ -306,18 +318,18 @@ public class NotePrefab : MonoBehaviour
             processNoteDottedLine.poses = myProcessPathPoses;
             processNoteDottedLine.SetRepeatCount(dottedLineLength * 2.444f);
         }
-        startNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(tweenStartRotation + curDeg)));
-        endNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-(tweenEndRotation + tarDeg)));
+        startNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-startRotation));
+        endNote.transform.rotation = Quaternion.Euler(0f, 0f, handy.GetCorrectDegMaxIs0(-endRotation));
     }
     public void SetNoteRenderer()
     {
         startNoteRenderer.sprite = startNoteSprite;
         endNoteRenderer.sprite = endNoteSprite;
-        startNoteRenderer.color = playGM.GetColor01WithPlayerIndex(tweenStartColor, tarPlayerIndex);
-        processNoteRenderer.startColor = playGM.GetColor01WithPlayerIndex(tweenProcessStartColor, tarPlayerIndex);
-        processNoteRenderer.endColor = playGM.GetColor01WithPlayerIndex(tweenProcessEndColor, tarPlayerIndex);
-        endNoteRenderer.color = playGM.GetColor01WithPlayerIndex(tweenEndColor, tarPlayerIndex);
-        ChangeNoteAlpha(tweenFade);
+        startNoteRenderer.color = startColor;
+        processNoteRenderer.startColor = processStartColor;
+        processNoteRenderer.endColor = processEndColor;
+        endNoteRenderer.color = endColor;
+        ChangeNoteAlpha(fadeValue);
     }
     public void StopNote()
     {
@@ -344,8 +356,8 @@ public class NotePrefab : MonoBehaviour
             playGM.SetAccuracy01();
         }
         handy.TryKillSequence(tarPlayerScript.moveTweener);
-        // tarPlayerScript.TryKillMoveTweener();
-        StartCoroutine(tarPlayerScript.SetSideScaleTweenerDelayed(tarPlayerScript.worldInfo.playerInfo[tarPlayerIndex].scaleTween.value, 0.15f, 0.15f - tarPlayerScript.sideScaleTweener.Elapsed()));
+        if (tarPlayerScript.sideScaleTweener != null)
+            handy.StartCoroutine(tarPlayerScript.SetSideClickScaleTweenerDelayed(Vector2.one, 0.15f, 0.15f - tarPlayerScript.sideScaleTweener.Elapsed()));
         myElapsedTime.Stop();
         DisableMe();
         holdElapsedSecs = noteLengthSecs;

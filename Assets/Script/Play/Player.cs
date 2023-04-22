@@ -18,29 +18,29 @@ public class Player : MonoBehaviour
     SpriteRenderer playerSideRenderer;
     SpriteRenderer playerCenterRenderer;
     public Sprite playerSideSprite;
-    Vector2 sideClickScale;
     WorldInfo beforeWorldInfo;
     public WorldInfo worldInfo;
 
-    public float tweenDeg;
-    public float tweenRadius;
-    float tweenRotationZ;
-    Vector2 tweenScale;
+    float tweenDeg;
+    float tweenRadius;
+    float tweenRotation;
+    Vector2 tweenTotalScale;
+    Vector2 tweenSideClickScale;
     Color tweenSideColor;
     Color tweenCenterColor;
 
     public float curDeg;
     public float curRadius;
-    float rotation;
-    Vector2 scale;
-    Color sideColor;
-    Color centerColor;
+    public float rotation;
+    public Vector2 totalScale;
+    public Color sideColor;
+    public Color centerColor;
 
     public Sequence sideScaleTweener;
     public Sequence moveTweener;
     public Sequence radiusTweener;
-    public Sequence scaleTweener;
-    public Sequence rotationZTweener;
+    public Sequence totalScaleTweener;
+    public Sequence rotationTweener;
     public Sequence colorTweener;
 
     Handy handy;
@@ -56,56 +56,52 @@ public class Player : MonoBehaviour
     }
     void Update()
     {
-        InfoViewer.Property.SetInfo(this.name, nameof(tweenDeg), () => tweenDeg, playerIndex);
-        InfoViewer.Property.SetInfo(this.name, nameof(stdDeg), () => stdDeg, playerIndex);
-        if (playGM.isBreakUpdate() && !playGM.countDownScript.isCountDown)
-            return;
+        // InfoViewer.Property.SetInfo(this.name, nameof(sideColor.a), () => sideColor.a, playerIndex);
+        // InfoViewer.Property.SetInfo(this.name, nameof(scale), () => scale, playerIndex);
         worldInfo = playGM.GetWorldInfo(playerIndex, playGM.closestNoteIndex[playerIndex]);
         beforeWorldInfo = playGM.GetWorldInfo(playerIndex, playGM.closestNoteIndex[playerIndex] - 1);
-        SetPlayerRenderer();
-        stdRadius = playGM.GetWorldInfo(playerIndex, playGM.closestNoteIndex[playerIndex] - 1).playerInfo[playerIndex].tarRadiusTween.value;
-        tarRadius = worldInfo.playerInfo[playerIndex].tarRadiusTween.value;
-        UpdateDegs();
         if (isEnable)
         {
-            tweenRotationZ = beforeWorldInfo.playerInfo[playerIndex].rotationTween.value;
-            tweenScale = beforeWorldInfo.playerInfo[playerIndex].scaleTween.value;
-            tweenSideColor = beforeWorldInfo.playerInfo[playerIndex].sideColorTween.value;
-            tweenCenterColor = beforeWorldInfo.playerInfo[playerIndex].centerColorTween.value;
-            sideClickScale = Vector2.one;
             isEnable = false;
         }
+        UpdateDegs();
+        stdRadius = beforeWorldInfo.playerInfo[playerIndex].tarRadiusTween.value;
+        tarRadius = worldInfo.playerInfo[playerIndex].tarRadiusTween.value;
+        if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex))
+        {
+            InitTween();
+            isInputted = false;
+            handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex);
+        }
+        UpdateTweenValue();
+        if (playGM.isBreakUpdate() && playGM.countDownScript.isCountDown)
+            return;
+        SetPlayerRenderer();
         if (!isInputted)
         {
             if (!playGM.GetIsKeyDown(playerIndex) && !playGM.GetIsKeyPress(playerIndex) && playGM.GetJudgmentValue(playerIndex) > playGM.judgmentRange[playerIndex])
-                tweenDeg = stdDeg;
+                curDeg = stdDeg;
         }
-        tweenDeg = handy.GetCorrectDegMaxIs0(tweenDeg);
         SetPlayerTransform();
 
         if (playGM.GetIsKeyDown(playerIndex))
         {
-            StartCoroutine(SetSideScaleTweenerDelayed(worldInfo.playerInfo[playerIndex].scaleTween.value * 0.8f, 0.15f, 0f));
-            // SetSideScaleTweener(worldInfo.playerInfo[playerIndex].scaleTween.value * 0.8f, 0.15f);
+            handy.StartCoroutine(SetSideClickScaleTweenerDelayed(Vector2.one * 0.8f, 0.15f, 0f));
         }
         else if (!playGM.GetIsKeyPress(playerIndex) && playGM.GetIsKeyUp(playerIndex))
         {
-            StartCoroutine(SetSideScaleTweenerDelayed(worldInfo.playerInfo[playerIndex].scaleTween.value, 0.15f, 0.15f - sideScaleTweener.Elapsed()));
-            // SideScaleToOrig();
+            if (sideScaleTweener != null)
+                handy.StartCoroutine(SetSideClickScaleTweenerDelayed(Vector2.one, 0.15f, 0.15f - sideScaleTweener.Elapsed()));
         }
 
         if (playGM.countDownScript.isCountDown)
             return;
-        if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex))
-        {
-            isInputted = false;
-            handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex);
-        }
         if (!isInputted)
         {
             if (playGM.GetIsKeyDown(playerIndex) && playGM.GetJudgmentValue(playerIndex) <= playGM.judgmentRange[playerIndex])
             {
-                tarDeg += worldInfo.playerInfo[playerIndex].moveDir * tarDeg < worldInfo.playerInfo[playerIndex].moveDir * tweenDeg ? worldInfo.playerInfo[playerIndex].moveDir * 360f : 0f;
+                int dir = worldInfo.playerInfo[playerIndex].moveDir;
+                tarDeg += dir * tarDeg < dir * curDeg ? dir * 360f : 0f;
                 handy.TryKillSequence(playGM.closestNoteScripts[playerIndex].fadeTweener);
                 handy.TryKillSequence(playGM.closestNoteScripts[playerIndex].radiusTweener);
                 // playGM.closestNoteScripts[playerIndex].TryKillFadeTweener(true);
@@ -135,22 +131,22 @@ public class Player : MonoBehaviour
     {
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(SetPlayerTransform), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex))
         {
-            handy.TryKillSequence(scaleTweener);
-            scaleTweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenScale, (s) => tweenScale = s, worldInfo.playerInfo[playerIndex].scaleTween.value, worldInfo.playerInfo[playerIndex].scaleTween.duration)
+            handy.TryKillSequence(totalScaleTweener);
+            totalScaleTweener = DOTween.Sequence()
+            .Append(DOTween.To(() => tweenTotalScale, (s) => tweenTotalScale = s, worldInfo.playerInfo[playerIndex].scaleTween.value, worldInfo.playerInfo[playerIndex].scaleTween.duration)
             .SetEase(worldInfo.playerInfo[playerIndex].scaleTween.ease));
 
-            handy.TryKillSequence(rotationZTweener);
-            rotationZTweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenRotationZ, (z) => tweenRotationZ = z, handy.GetCorrectDegMaxIs0(worldInfo.playerInfo[playerIndex].rotationTween.value), worldInfo.playerInfo[playerIndex].rotationTween.duration)
+            handy.TryKillSequence(rotationTweener);
+            rotationTweener = DOTween.Sequence()
+            .Append(DOTween.To(() => tweenRotation, (r) => tweenRotation = r, handy.GetCorrectDegMaxIs0(worldInfo.playerInfo[playerIndex].rotationTween.value), worldInfo.playerInfo[playerIndex].rotationTween.duration)
             .SetEase(worldInfo.playerInfo[playerIndex].rotationTween.ease));
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(SetPlayerTransform), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex);
         }
-        transform.position = handy.GetCircularPos(tweenDeg, tweenRadius, worldInfo.centerInfo.posTween.value);
-        transform.rotation = Quaternion.Euler(0, 0, handy.GetCorrectDegMaxIs0(-(tweenRotationZ + tweenDeg)));
-        playerSide.transform.localScale = sideClickScale;
-        transform.localScale = tweenScale;
+        transform.position = handy.GetCircularPos(curDeg, curRadius, worldInfo.centerInfo.posTween.value);
+        transform.rotation = Quaternion.Euler(0, 0, handy.GetCorrectDegMaxIs0(-rotation));
+        playerSide.transform.localScale = tweenSideClickScale;
+        transform.localScale = totalScale;
     }
     void SetPlayerRenderer()
     {
@@ -160,26 +156,35 @@ public class Player : MonoBehaviour
         {
             handy.TryKillSequence(colorTweener);
             colorTweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenSideColor, (c) => tweenSideColor = c, playGM.GetColor01WithPlayerIndex(worldInfo.playerInfo[playerIndex].sideColorTween.value, playerIndex), worldInfo.playerInfo[playerIndex].sideColorTween.duration)
+            .Append(DOTween.To(() => tweenSideColor, (c) => tweenSideColor = c, worldInfo.playerInfo[playerIndex].sideColorTween.value, worldInfo.playerInfo[playerIndex].sideColorTween.duration)
             .SetEase(worldInfo.playerInfo[playerIndex].sideColorTween.ease))
 
-            .Join(DOTween.To(() => tweenCenterColor, (c) => tweenCenterColor = c, playGM.GetColor01WithPlayerIndex(worldInfo.playerInfo[playerIndex].centerColorTween.value, playerIndex), worldInfo.playerInfo[playerIndex].centerColorTween.duration)
+            .Join(DOTween.To(() => tweenCenterColor, (c) => tweenCenterColor = c, worldInfo.playerInfo[playerIndex].centerColorTween.value, worldInfo.playerInfo[playerIndex].centerColorTween.duration)
             .SetEase(worldInfo.playerInfo[playerIndex].centerColorTween.ease));
             // playerSideRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].sideColor), myPlayerIndex);
             // playerCenterRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].centerColor), myPlayerIndex);
             handy.compareValue_int.SetValueForCompare(this.name, nameof(SetPlayerRenderer), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex);
         }
-        playerSideRenderer.color = tweenSideColor;
-        playerCenterRenderer.color = tweenCenterColor;
+        playerSideRenderer.color = sideColor;
+        playerCenterRenderer.color = centerColor;
     }
-    void UpdateTween()
+    void UpdateTweenValue()
     {
-        curDeg = tweenDeg;
+        curDeg = handy.GetCorrectDegMaxIs0(tweenDeg);
         curRadius = tweenRadius;
-        rotation = tweenRotationZ;
-        scale = tweenScale;
-        sideColor = tweenSideColor;
-        centerColor = tweenCenterColor;
+        rotation = handy.GetCorrectDegMaxIs0(tweenRotation + curDeg);
+        totalScale = tweenTotalScale;
+        sideColor = playGM.GetColor01WithPlayerIndex(tweenSideColor, playerIndex);
+        centerColor = playGM.GetColor01WithPlayerIndex(tweenCenterColor, playerIndex);
+    }
+    void InitTween(){
+        tweenDeg = handy.GetCorrectDegMaxIs0(playGM.GetStartDeg(playerIndex, playGM.closestNoteIndex[playerIndex]));
+        tweenRadius = beforeWorldInfo.playerInfo[playerIndex].tarRadiusTween.value;
+        tweenRotation = handy.GetCorrectDegMaxIs0(beforeWorldInfo.playerInfo[playerIndex].rotationTween.value);
+        tweenTotalScale = beforeWorldInfo.playerInfo[playerIndex].scaleTween.value;
+        tweenSideColor = beforeWorldInfo.playerInfo[playerIndex].sideColorTween.value;
+        tweenCenterColor = beforeWorldInfo.playerInfo[playerIndex].centerColorTween.value;
+        tweenSideClickScale = Vector2.one;
     }
     /* public void TryKillMoveTweener(bool isComplete = true)
     {
@@ -189,12 +194,12 @@ public class Player : MonoBehaviour
             moveTweener = null;
         }
     } */
-    /* public void SetRadiusTweener(float tarRadius, float duration, AnimationCurve easeType)
+    public void SetRadiusTweener(float tarRadius, float duration, AnimationCurve ease)
     {
-        handy.TryKillSequence(radiusTweener);
-        // TryKillRadiusTweener();
-        radiusTweener = DOTween.Sequence().Append(DOTween.To(() => curRadius, r => curRadius = r, tarRadius, duration).SetEase(easeType));
-    } */
+        radiusTweener = DOTween.Sequence()
+        .Append(DOTween.To(() => tweenRadius, r => tweenRadius = r, tarRadius, duration)
+        .SetEase(ease));
+    }
     /* public void SetSideScaleTweener(Vector2 tarScale, float duration, float prependInterval = 0f)
     {
         StartCoroutine(SetSideScaleTweenerDelayed(tarScale, duration, prependInterval));
@@ -204,14 +209,12 @@ public class Player : MonoBehaviour
         if (sideScaleTweener != null)
             SetSideScaleTweener(worldInfo.playerInfo[playerIndex].scaleTween.value, 0.15f, 0.15f - sideScaleTweener.Elapsed());
     } */
-    public IEnumerator SetSideScaleTweenerDelayed(Vector2 tarScale, float duration, float prependInterval)
+    public IEnumerator SetSideClickScaleTweenerDelayed(Vector2 tarScale, float duration, float prependInterval)
     {
-        if (sideScaleTweener != null)
-        {
-            yield return new WaitForSeconds(prependInterval);
-            handy.TryKillSequence(sideScaleTweener);
-            sideScaleTweener = DOTween.Sequence().Append(DOTween.To(() => sideClickScale, (s) => sideClickScale = s, tarScale, duration));
-        }
+        yield return new WaitForSeconds(prependInterval);
+        handy.TryKillSequence(sideScaleTweener);
+        sideScaleTweener = DOTween.Sequence()
+        .Append(DOTween.To(() => tweenSideClickScale, (s) => tweenSideClickScale = s, tarScale, duration));
     }
     /* void TryKillRadiusTweener(bool isComplete = true)
     {

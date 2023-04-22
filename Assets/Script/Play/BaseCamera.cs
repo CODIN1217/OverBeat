@@ -10,18 +10,22 @@ public class BaseCamera : MonoBehaviour
     Handy handy;
     WorldInfo worldInfo;
     PlayGameManager playGM;
+    
     float tweenOrthoSize;
     Color tweenBGColor;
     float tweenRotation;
     Vector3 tweenPos;
+
     public float orthoSize;
     public Color BGColor;
     public float rotation;
     public Vector3 pos;
+
     Sequence sizeTweener;
     Sequence colorTweener;
     Sequence rotationTweener;
     Sequence posTweener;
+
     WorldInfo beforeWorldInfo;
     bool isAwake;
     void Awake()

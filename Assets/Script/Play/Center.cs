@@ -10,15 +10,19 @@ public class Center : MonoBehaviour
     WorldInfo worldInfo;
     Handy handy;
     PlayGameManager playGM;
+
     Vector2 tweenScale;
     Vector2 tweenPos;
     Color tweenColor;
+
     public Vector2 scale;
     public Vector2 pos;
     public Color color;
+
     Sequence scaleTweener;
     Sequence posTweener;
     Sequence colorTweener;
+
     WorldInfo beforeWorldInfo;
     bool isAwake;
     void Awake()

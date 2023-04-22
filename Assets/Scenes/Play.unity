@@ -194,14 +194,13 @@ MonoBehaviour:
   isClearWorld: 0
   isAutoPlay: 0
   sumNoteAccuracy01: 0
-  noteWaitSecs: 0
   progress01: 0
   accuracy01: 0
   HP01: 0
   MaxMissCount: 0
   handy: {fileID: 1282508016}
   closestNoteIndex: 
-  curWorldInfoIndex: 0
+  worldInfoIndex: 0
   totalNoteCount: 0
 --- !u!1001 &344732820
 PrefabInstance:
@@ -539,6 +538,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d08ed9e4b33afa479403da8b97adf22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  orthoSize: 0
+  BGColor: {r: 0, g: 0, b: 0, a: 0}
+  rotation: 0
+  pos: {x: 0, y: 0, z: 0}
 --- !u!1 &561773023
 GameObject:
   m_ObjectHideFlags: 0
@@ -657,7 +660,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &630683941
 Transform:
   m_ObjectHideFlags: 0
@@ -1598,6 +1601,10 @@ MonoBehaviour:
   boundaryLineImage: {fileID: 1486238824}
   boundaryCoverImage: {fileID: 2053142318}
   boundaryMaskImage: {fileID: 955165672}
+  coverColor: {r: 0, g: 0, b: 0, a: 0}
+  lineColor: {r: 0, g: 0, b: 0, a: 0}
+  scale: {x: 0, y: 0}
+  pos: {x: 0, y: 0}
 --- !u!1 &1958332716
 GameObject:
   m_ObjectHideFlags: 0
@@ -2125,6 +2132,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd15d6b7fcbdb2641a676313149fd44f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scale: {x: 0, y: 0}
+  pos: {x: 0, y: 0}
+  color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &2118864721
 MonoBehaviour:
   m_ObjectHideFlags: 0
