@@ -301,7 +301,26 @@ public class Handy : MonoBehaviour
             sequence = null;
         }
     }
-    public Vector2 MultiplyXByX_YByY(Vector2 va, Vector2 vb){
+    public void TryKillSequence(TweenValue.TweeningInfo tweenValue_Info, bool isComplete = true)
+    {
+        if (tweenValue_Info != null)
+        {
+            if (tweenValue_Info.valueTween != null)
+            {
+                tweenValue_Info.valueTween.Kill(isComplete);
+                tweenValue_Info = null;
+            }
+        }
+    }
+    public bool IsInfoNull(TweenValue.TweeningInfo tweener)
+    {
+        if (tweener != null)
+            if (tweener.valueTween != null)
+                return false;
+        return true;
+    }
+    public Vector2 MultiplyXByX_YByY(Vector2 va, Vector2 vb)
+    {
         return new Vector2(va.x * vb.x, va.y * vb.y);
     }
 }

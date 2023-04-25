@@ -29,7 +29,7 @@ public class PlayerPosesGuide : MonoBehaviour
         for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
         {
             WorldInfo curWorldInfo = playGM.GetWorldInfo(i, playGM.closestNoteIndex[i]);
-            playerPosDots[i].transform.position = handy.GetCircularPos(playGM.closestNoteScripts[i].curDeg, playGM.GetPlayerScript(i).curRadius, playGM.centerScript.pos);
+            playerPosDots[i].transform.position = handy.GetCircularPos(playGM.closestNoteScripts[i].curDeg, playGM.GetPlayerScript(i).curRadius, (Vector2)playGM.centerScript.posInfo.curValue);
             playerPosDots[i].SetActive(true);
         }
     }

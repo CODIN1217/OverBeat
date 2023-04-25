@@ -51,7 +51,7 @@ public class Player : MonoBehaviour
         handy = Handy.Property;
         playerSideRenderer = playerSide.GetComponent<SpriteRenderer>();
         playerCenterRenderer = playerCenter.GetComponent<SpriteRenderer>();
-        tweenRadius = playGM.GetWorldInfo(playerIndex, playGM.closestNoteIndex[playerIndex] - 1).playerInfo[playerIndex].tarRadiusTween.value;
+        tweenRadius = playGM.GetWorldInfo(playerIndex, playGM.closestNoteIndex[playerIndex] - 1).playerInfo[playerIndex].tarRadiusTween.tweenEndValue;
         isEnable = true;
     }
     void Update()
@@ -64,25 +64,30 @@ public class Player : MonoBehaviour
         {
             isEnable = false;
         }
-        UpdateDegs();
-        stdRadius = beforeWorldInfo.playerInfo[playerIndex].tarRadiusTween.value;
-        tarRadius = worldInfo.playerInfo[playerIndex].tarRadiusTween.value;
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex))
         {
+            stdDeg = playGM.GetStartDeg(playerIndex, playGM.closestNoteIndex[playerIndex]);
+            tarDeg = playGM.GetEndDeg(playerIndex, playGM.closestNoteIndex[playerIndex]);
+
+            stdRadius = beforeWorldInfo.playerInfo[playerIndex].tarRadiusTween.tweenEndValue;
+            tarRadius = worldInfo.playerInfo[playerIndex].tarRadiusTween.tweenEndValue;
+
             InitTween();
+
             isInputted = false;
+
             handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex);
         }
         UpdateTweenValue();
+        SetPlayerRenderer();
+        SetPlayerTransform();
         if (playGM.isBreakUpdate() && playGM.countDownScript.isCountDown)
             return;
-        SetPlayerRenderer();
-        if (!isInputted)
+        /* if (!isInputted)
         {
             if (!playGM.GetIsKeyDown(playerIndex) && !playGM.GetIsKeyPress(playerIndex) && playGM.GetJudgmentValue(playerIndex) > playGM.judgmentRange[playerIndex])
                 curDeg = stdDeg;
-        }
-        SetPlayerTransform();
+        } */
 
         if (playGM.GetIsKeyDown(playerIndex))
         {
@@ -102,8 +107,12 @@ public class Player : MonoBehaviour
             {
                 int dir = worldInfo.playerInfo[playerIndex].moveDir;
                 tarDeg += dir * tarDeg < dir * curDeg ? dir * 360f : 0f;
-                handy.TryKillSequence(playGM.closestNoteScripts[playerIndex].fadeTweener);
-                handy.TryKillSequence(playGM.closestNoteScripts[playerIndex].radiusTweener);
+
+//여기까지 함
+                // handy.TryKillSequence(playGM.closestNoteScripts[playerIndex].fadeTweener);
+                // handy.TryKillSequence(playGM.closestNoteScripts[playerIndex].radiusTweener);
+//여기까지 함
+
                 // playGM.closestNoteScripts[playerIndex].TryKillFadeTweener(true);
                 // playGM.closestNoteScripts[playerIndex].TryKillRadiusTweener(true);
                 if (!playGM.closestNoteScripts[playerIndex].needInput)
@@ -122,28 +131,23 @@ public class Player : MonoBehaviour
             }
         }
     }
-    public void UpdateDegs()
-    {
-        stdDeg = playGM.GetStartDeg(playerIndex, playGM.closestNoteIndex[playerIndex]);
-        tarDeg = playGM.GetEndDeg(playerIndex, playGM.closestNoteIndex[playerIndex]);
-    }
     void SetPlayerTransform()
     {
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(SetPlayerTransform), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex))
         {
             handy.TryKillSequence(totalScaleTweener);
             totalScaleTweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenTotalScale, (s) => tweenTotalScale = s, worldInfo.playerInfo[playerIndex].scaleTween.value, worldInfo.playerInfo[playerIndex].scaleTween.duration)
+            .Append(DOTween.To(() => tweenTotalScale, (s) => tweenTotalScale = s, worldInfo.playerInfo[playerIndex].scaleTween.tweenEndValue, worldInfo.playerInfo[playerIndex].scaleTween.duration)
             .SetEase(worldInfo.playerInfo[playerIndex].scaleTween.ease));
 
             handy.TryKillSequence(rotationTweener);
             rotationTweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenRotation, (r) => tweenRotation = r, handy.GetCorrectDegMaxIs0(worldInfo.playerInfo[playerIndex].rotationTween.value), worldInfo.playerInfo[playerIndex].rotationTween.duration)
+            .Append(DOTween.To(() => tweenRotation, (r) => tweenRotation = r, handy.GetCorrectDegMaxIs0(worldInfo.playerInfo[playerIndex].rotationTween.tweenEndValue), worldInfo.playerInfo[playerIndex].rotationTween.duration)
             .SetEase(worldInfo.playerInfo[playerIndex].rotationTween.ease));
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(SetPlayerTransform), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex);
         }
-        transform.position = handy.GetCircularPos(curDeg, curRadius, worldInfo.centerInfo.posTween.value);
+        transform.position = handy.GetCircularPos(curDeg, curRadius, worldInfo.centerInfo.posTween.tweenEndValue);
         transform.rotation = Quaternion.Euler(0, 0, handy.GetCorrectDegMaxIs0(-rotation));
         playerSide.transform.localScale = tweenSideClickScale;
         transform.localScale = totalScale;
@@ -156,10 +160,10 @@ public class Player : MonoBehaviour
         {
             handy.TryKillSequence(colorTweener);
             colorTweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenSideColor, (c) => tweenSideColor = c, worldInfo.playerInfo[playerIndex].sideColorTween.value, worldInfo.playerInfo[playerIndex].sideColorTween.duration)
+            .Append(DOTween.To(() => tweenSideColor, (c) => tweenSideColor = c, worldInfo.playerInfo[playerIndex].sideColorTween.tweenEndValue, worldInfo.playerInfo[playerIndex].sideColorTween.duration)
             .SetEase(worldInfo.playerInfo[playerIndex].sideColorTween.ease))
 
-            .Join(DOTween.To(() => tweenCenterColor, (c) => tweenCenterColor = c, worldInfo.playerInfo[playerIndex].centerColorTween.value, worldInfo.playerInfo[playerIndex].centerColorTween.duration)
+            .Join(DOTween.To(() => tweenCenterColor, (c) => tweenCenterColor = c, worldInfo.playerInfo[playerIndex].centerColorTween.tweenEndValue, worldInfo.playerInfo[playerIndex].centerColorTween.duration)
             .SetEase(worldInfo.playerInfo[playerIndex].centerColorTween.ease));
             // playerSideRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].sideColor), myPlayerIndex);
             // playerCenterRenderer.color = playGM.GetColor01WithPlayerIndex(handy.GetColor01(worldInfo.playerInfo[myPlayerIndex].centerColor), myPlayerIndex);
@@ -177,13 +181,14 @@ public class Player : MonoBehaviour
         sideColor = playGM.GetColor01WithPlayerIndex(tweenSideColor, playerIndex);
         centerColor = playGM.GetColor01WithPlayerIndex(tweenCenterColor, playerIndex);
     }
-    void InitTween(){
+    void InitTween()
+    {
         tweenDeg = handy.GetCorrectDegMaxIs0(playGM.GetStartDeg(playerIndex, playGM.closestNoteIndex[playerIndex]));
-        tweenRadius = beforeWorldInfo.playerInfo[playerIndex].tarRadiusTween.value;
-        tweenRotation = handy.GetCorrectDegMaxIs0(beforeWorldInfo.playerInfo[playerIndex].rotationTween.value);
-        tweenTotalScale = beforeWorldInfo.playerInfo[playerIndex].scaleTween.value;
-        tweenSideColor = beforeWorldInfo.playerInfo[playerIndex].sideColorTween.value;
-        tweenCenterColor = beforeWorldInfo.playerInfo[playerIndex].centerColorTween.value;
+        tweenRadius = beforeWorldInfo.playerInfo[playerIndex].tarRadiusTween.tweenEndValue;
+        tweenRotation = handy.GetCorrectDegMaxIs0(beforeWorldInfo.playerInfo[playerIndex].rotationTween.tweenEndValue);
+        tweenTotalScale = beforeWorldInfo.playerInfo[playerIndex].scaleTween.tweenEndValue;
+        tweenSideColor = beforeWorldInfo.playerInfo[playerIndex].sideColorTween.tweenEndValue;
+        tweenCenterColor = beforeWorldInfo.playerInfo[playerIndex].centerColorTween.tweenEndValue;
         tweenSideClickScale = Vector2.one;
     }
     /* public void TryKillMoveTweener(bool isComplete = true)
@@ -197,7 +202,7 @@ public class Player : MonoBehaviour
     public void SetRadiusTweener(float tarRadius, float duration, AnimationCurve ease)
     {
         radiusTweener = DOTween.Sequence()
-        .Append(DOTween.To(() => tweenRadius, r => tweenRadius = r, tarRadius, duration)
+        .Append(DOTween.To(() => stdRadius, r => tweenRadius = r, tarRadius, duration)
         .SetEase(ease));
     }
     /* public void SetSideScaleTweener(Vector2 tarScale, float duration, float prependInterval = 0f)
