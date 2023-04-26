@@ -55,7 +55,7 @@ public class PlayGameManager : MonoBehaviour
     public int worldInfoIndex;
     public int totalNoteCount;
     Stopwatch totalElapsedTime;
-    float totalElapsedSecs;
+    public float totalElapsedSecs;
     float totalGamePlaySecs;
     void Awake()
     {
@@ -206,7 +206,7 @@ public class PlayGameManager : MonoBehaviour
             isPause = true;
         }
     }
-    public void SetCurWorldInfoIndex(float waitSec, int eachNoteIndex)
+    /* public void SetCurWorldInfoIndex(float waitSec, int eachNoteIndex)
     {
         StartCoroutine(SetCurWorldInfoIndex_co(waitSec, eachNoteIndex));
     }
@@ -214,7 +214,7 @@ public class PlayGameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(waitSec);
         worldInfoIndex += (int)Mathf.Clamp01(eachNoteIndex);
-    }
+    } */
     void UpdateClosestNoteIndex()
     {
         for (int i = 0; i < GetMaxPlayerCount(); i++)
@@ -388,23 +388,23 @@ public class PlayGameManager : MonoBehaviour
     {
         playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
         WorldInfo worldInfo = GetWorldInfo(playerIndex, eachNoteIndex);
-        return worldInfo.playerInfo[playerIndex].stdDegs[worldInfo.noteInfo.startDegIndex];
+        return worldInfo.playerInfo[playerIndex].degTween.startValue;
     }
     public float GetEndDeg(int playerIndex, int eachNoteIndex)
     {
         playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
         WorldInfo worldInfo = GetWorldInfo(playerIndex, eachNoteIndex);
-        return worldInfo.playerInfo[playerIndex].stdDegs[worldInfo.noteInfo.endDegIndex];
+        return worldInfo.playerInfo[playerIndex].degTween.endValue;
     }
     public float GetNoteWaitSecs(int playerIndex, int eachNoteIndex)
     {
         playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
-        return (float)noteGeneratorScript.notesWaitSecs[playerIndex][handy.GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
+        return noteGeneratorScript.notesWaitSecs[playerIndex][handy.GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
     }
     public float GetNoteLengthSecs(int playerIndex, int eachNoteIndex)
     {
         playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
-        return (float)noteGeneratorScript.notesLengthSecs[playerIndex][handy.GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
+        return noteGeneratorScript.notesLengthSecs[playerIndex][handy.GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
     }
     public GameObject GetNote(int playerIndex, int eachNoteIndex)
     {
@@ -429,7 +429,7 @@ public class PlayGameManager : MonoBehaviour
             judgmentValue = 1f - (float)waitElapsedSecs01;
         return judgmentValue;
     }
-    public int GetMaxStdDegCount(int playerIndex)
+    /* public int GetMaxStdDegCount(int playerIndex)
     {
         int maxStdDegCount = 0;
         for (int i = 0; i < GetWorldInfoCount(); i++)
@@ -441,12 +441,12 @@ public class PlayGameManager : MonoBehaviour
             }
         }
         return maxStdDegCount;
-    }
-    public int GetCorrectNextDegIndex(int nextDegIndex, int playerIndex, int eachNoteIndex)
+    } */
+    /* public int GetCorrectNextDegIndex(int nextDegIndex, int playerIndex, int eachNoteIndex)
     {
         playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
         return nextDegIndex >= 0 ? nextDegIndex : nextDegIndex + GetWorldInfo(playerIndex, eachNoteIndex).playerInfo[playerIndex].stdDegs.Length;
-    }
+    } */
     public int GetMaxPlayerCount()
     {
         int maxPlayerCount = 0;
@@ -546,7 +546,7 @@ public class PlayGameManager : MonoBehaviour
         color01_temp.a = color01.a;
         return color01_temp;
     }
-    public Color2 GetColor201WithPlayerIndex(Color2 color201, int playerIndex)
+    /* public Color2 GetColor201WithPlayerIndex(Color2 color201, int playerIndex)
     {
         Color color01_temp1 = color201.ca;
         Color color01_temp2 = color201.cb;
@@ -560,7 +560,7 @@ public class PlayGameManager : MonoBehaviour
         color01_temp1.a = color201.ca.a;
         color01_temp2.a = color201.cb.a;
         return new Color2(color01_temp1, color01_temp2);
-    }
+    } */
     public float GetWaitElapsedSecs01(int playerIndex, int eachNoteIndex)
     {
         playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
@@ -575,7 +575,7 @@ public class PlayGameManager : MonoBehaviour
             return GetNoteScript(playerIndex, eachNoteIndex).holdElapsedSecs01;
         return 0f;
     }
-    public float[] GetCorrectStdDegs(float[] stdDegs)
+    /* public float[] GetCorrectStdDegs(float[] stdDegs)
     {
         float[] stdDegs_temp = new float[stdDegs.Length];
         for (int i = 0; i < stdDegs.Length; i++)
@@ -583,7 +583,7 @@ public class PlayGameManager : MonoBehaviour
             stdDegs_temp[i] = handy.GetCorrectDegMaxIs0(stdDegs[i]);
         }
         return stdDegs_temp;
-    }
+    } */
     /* void SetInfoForTest()
     {
         for (int i = 0; i < GetWorldInfoCount(); i++)

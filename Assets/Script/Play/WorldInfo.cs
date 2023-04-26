@@ -59,7 +59,7 @@ public class WorldInfo : MonoBehaviour
         // /* [SerializeField] */ public float tarRadius;
         // /* [SerializeField] */ public float rotation;
         /* [SerializeField] */
-        public float[] stdDegs;
+        // public float[] stdDegs;
         // /* [SerializeField] */ public Color posesGuideColor;
         // /* [SerializeField] */ public Color sideColor;
         // /* [SerializeField] */ public Color centerColor;
@@ -67,7 +67,7 @@ public class WorldInfo : MonoBehaviour
         /* [SerializeField] */
         public TweenInfo<float> degTween;
         /* [SerializeField] */
-        public TweenInfo<float> tarRadiusTween;
+        public TweenInfo<float> radiusTween;
         /* [SerializeField] */
         public TweenInfo<float> rotationTween;
         /* [SerializeField] */
@@ -77,7 +77,11 @@ public class WorldInfo : MonoBehaviour
         /* [SerializeField] */
         public TweenInfo<Color> centerColorTween;
         /* [SerializeField] */
-        public TweenInfo<Vector2> scaleTween;
+        public TweenInfo<Vector2> totalScaleTween;
+        /* [SerializeField] */
+        public TweenInfo<Vector2> sideScaleTween;
+        /* [SerializeField] */
+        public TweenInfo<Vector2> centerScaleTween;
         public PlayerInfo()
         {
         }/* 
@@ -105,13 +109,13 @@ public class WorldInfo : MonoBehaviour
         /* [SerializeField] */
         public int tarPlayerIndex;
         /* [SerializeField] */
-        public int startDegIndex;
+        // public int startDegIndex;
         /* [SerializeField] */
-        public int endDegIndex;
+        // public int endDegIndex;
         /* [SerializeField] */
-        public float startDeg;
+        // public float startDeg;
         /* [SerializeField] */
-        public float endDeg;
+        // public float endDeg;
         /* [SerializeField] */
         public float awakeSecs;
         /* [SerializeField] */
@@ -309,21 +313,23 @@ public class WorldInfo : MonoBehaviour
     void Init(PlayerInfo playerInfo)
     {
         playerInfo.moveDir = 1;
-        playerInfo.stdDegs = new float[] { 0f, 90f, 180f, 270f };
+        // playerInfo.stdDegs = new float[] { 0f, 90f, 180f, 270f };
         playerInfo.degTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        playerInfo.tarRadiusTween = new TweenInfo<float>(1.5f, 1.5f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+        playerInfo.radiusTween = new TweenInfo<float>(1.5f, 1.5f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         playerInfo.rotationTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         playerInfo.posesGuideColorTween = new TweenInfo<Color>(new Color(115, 85, 200, 255) / 255f, new Color(115, 85, 200, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         playerInfo.sideColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         playerInfo.centerColorTween = new TweenInfo<Color>(new Color(65, 20, 185, 255) / 255f, new Color(65, 20, 185, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        playerInfo.scaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+        playerInfo.totalScaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+        playerInfo.sideScaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+        playerInfo.centerScaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
     }
     void Init(NoteInfo noteInfo)
     {
         noteInfo.eachNoteIndex = 0;
         noteInfo.tarPlayerIndex = 0;
-        noteInfo.startDegIndex = 0;
-        noteInfo.endDegIndex = 0;
+        // noteInfo.startDegIndex = 0;
+        // noteInfo.endDegIndex = 0;
         noteInfo.awakeSecs = 0f;
         noteInfo.speed = 1f;
         noteInfo.sideImageName = "Basic";
@@ -347,9 +353,9 @@ public class WorldInfo : MonoBehaviour
     void Init(BoundaryInfo boundaryInfo)
     {
         boundaryInfo.lineColorTween = new TweenInfo<Color>(new Color(0, 255, 160, 255) / 255f, new Color(0, 255, 160, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        boundaryInfo.coverColorTween = new TweenInfo<Color>(() => cameraInfo.BGColorTween.tweenStartValue, () => cameraInfo.BGColorTween.tweenEndValue, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+        boundaryInfo.coverColorTween = new TweenInfo<Color>(() => cameraInfo.BGColorTween.startValue, () => cameraInfo.BGColorTween.endValue, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         boundaryInfo.scaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        boundaryInfo.posTween = new TweenInfo<Vector2>(() => centerInfo.posTween.tweenStartValue, () => centerInfo.posTween.tweenEndValue, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+        boundaryInfo.posTween = new TweenInfo<Vector2>(() => centerInfo.posTween.startValue, () => centerInfo.posTween.endValue, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
     }
     void Init(JudgmentInfo judgmentInfo)
     {

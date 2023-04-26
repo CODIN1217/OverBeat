@@ -6,6 +6,7 @@ using System;
 using TMPro;
 using System.Text;
 using DG.Tweening;
+using TweenValue;
 
 public class Handy : MonoBehaviour
 {
@@ -284,13 +285,22 @@ public class Handy : MonoBehaviour
             }
         }
     }
-    public void PlayCodeWaitForSecs(float waitSecs, Action code)
+    public void WaitCodeForSecs(float waitSecs, Action code)
     {
-        StartCoroutine(PlayCodeWaitForSecs_co(waitSecs, code));
+        StartCoroutine(WaitCodeForSecs_Co(waitSecs, code));
     }
-    IEnumerator PlayCodeWaitForSecs_co(float waitSecs, Action code)
+    IEnumerator WaitCodeForSecs_Co(float waitSecs, Action code)
     {
         yield return new WaitForSeconds(waitSecs);
+        code();
+    }
+    public void WaitCodeUntil(Func<bool> predicate, Action code)
+    {
+        StartCoroutine(WaitCodeUntil_Co(predicate, code));
+    }
+    IEnumerator WaitCodeUntil_Co(Func<bool> predicate, Action code)
+    {
+        yield return new WaitUntil(predicate);
         code();
     }
     public void TryKillSequence(Sequence sequence, bool isComplete = true)
@@ -301,26 +311,41 @@ public class Handy : MonoBehaviour
             sequence = null;
         }
     }
-    public void TryKillSequence(TweenValue.TweeningInfo tweenValue_Info, bool isComplete = true)
+    public void TryKillTween(TweeningInfo tweeningInfo, bool isComplete = true)
     {
-        if (tweenValue_Info != null)
+        if (tweeningInfo != null)
         {
-            if (tweenValue_Info.valueTween != null)
+            if (tweeningInfo.valueTween != null)
             {
-                tweenValue_Info.valueTween.Kill(isComplete);
-                tweenValue_Info = null;
+                tweeningInfo.valueTween.Kill(isComplete);
+                tweeningInfo = null;
             }
         }
     }
-    public bool IsInfoNull(TweenValue.TweeningInfo tweener)
+    public bool IsInfoNull(TweeningInfo tweeningInfo)
     {
-        if (tweener != null)
-            if (tweener.valueTween != null)
+        if (tweeningInfo != null)
+            if (tweeningInfo.valueTween != null)
                 return false;
         return true;
     }
     public Vector2 MultiplyXByX_YByY(Vector2 va, Vector2 vb)
     {
         return new Vector2(va.x * vb.x, va.y * vb.y);
+    }
+    public void PlayTweens(params TweeningInfo[] tweeningInfos)
+    {
+        foreach (var TIs in tweeningInfos)
+            TIs.Play();
+    }
+    public void PauseTweens(params TweeningInfo[] tweeningInfos)
+    {
+        foreach (var TIs in tweeningInfos)
+            TIs.Pause();
+    }
+    public void TryKillTweens(params TweeningInfo[] tweeningInfos)
+    {
+        foreach (var TI in tweeningInfos)
+            TryKillTween(TI);
     }
 }

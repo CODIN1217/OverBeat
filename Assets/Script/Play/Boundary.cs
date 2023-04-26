@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TweenValue;
 
 public class Boundary : MonoBehaviour
 {
@@ -15,11 +16,16 @@ public class Boundary : MonoBehaviour
     public Image boundaryCoverImage;
     public Image boundaryMaskImage;
     PlayGameManager playGM;
-    
-    public TweenValue.TweeningInfo coverColorInfo;
-    public TweenValue.TweeningInfo lineColorInfo;
-    public TweenValue.TweeningInfo scaleInfo;
-    public TweenValue.TweeningInfo posInfo;
+
+    public Color coverColor;
+    public Color lineColor;
+    public Vector2 scale;
+    public Vector2 pos;
+
+    public TweeningInfo coverColorTweener;
+    public TweeningInfo lineColorTweener;
+    public TweeningInfo scaleTweener;
+    public TweeningInfo posTweener;
 
     WorldInfo beforeWorldInfo;
     void Awake()
@@ -35,24 +41,34 @@ public class Boundary : MonoBehaviour
         worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
-            handy.TryKillSequence(coverColorInfo);
-            coverColorInfo = new TweenValue.TweeningInfo(worldInfo.boundaryInfo.coverColorTween);
+            handy.TryKillTween(coverColorTweener);
+            coverColorTweener = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween);
 
-            handy.TryKillSequence(lineColorInfo);
-            lineColorInfo = new TweenValue.TweeningInfo(worldInfo.boundaryInfo.lineColorTween);
+            handy.TryKillTween(lineColorTweener);
+            lineColorTweener = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween);
 
-            handy.TryKillSequence(scaleInfo);
-            scaleInfo = new TweenValue.TweeningInfo(worldInfo.boundaryInfo.scaleTween);
+            handy.TryKillTween(scaleTweener);
+            scaleTweener = new TweeningInfo(worldInfo.boundaryInfo.scaleTween);
 
-            handy.TryKillSequence(posInfo);
-            posInfo = new TweenValue.TweeningInfo(worldInfo.boundaryInfo.posTween);
+            handy.TryKillTween(posTweener);
+            posTweener = new TweeningInfo(worldInfo.boundaryInfo.posTween);
+
+            handy.PlayTweens(coverColorTweener, lineColorTweener, scaleTweener, posTweener);
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex);
         }
+        UpdateTweenValue();
 
-        boundaryCoverImage.color = (Color)coverColorInfo.curValue;
-        boundaryLineImage.color = (Color)lineColorInfo.curValue;
-        transform.localScale = (Vector2)scaleInfo.curValue; boundaryCover.transform.localScale = new Vector2(1f / ((Vector2)scaleInfo.curValue).x, 1f / ((Vector2)scaleInfo.curValue).y);
-        transform.localPosition = (Vector2)posInfo.curValue; boundaryCover.transform.localPosition = -(Vector2)posInfo.curValue;
+        boundaryCoverImage.color = coverColor;
+        boundaryLineImage.color = lineColor;
+        transform.localScale = scale; boundaryCover.transform.localScale = new Vector2(1f / scale.x, 1f / scale.y);
+        transform.localPosition = pos; boundaryCover.transform.localPosition = -pos;
+    }
+    void UpdateTweenValue()
+    {
+        coverColor = (Color)coverColorTweener.curValue;
+        lineColor = (Color)lineColorTweener.curValue;
+        scale = (Vector2)scaleTweener.curValue;
+        pos = (Vector2)posTweener.curValue;
     }
 }

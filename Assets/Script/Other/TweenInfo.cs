@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using TweenValue;
 
 [Serializable]
 public class TweenInfo<T>
 {
-    [SerializeField] TweenValue.TweenType<T> _tweenStartValue;
-    [SerializeField] TweenValue.TweenType<T> _tweenEndValue;
+    [SerializeField] TweenType<T> _startValue;
+    [SerializeField] TweenType<T> _endValue;
     [SerializeField] float _duration;
     [SerializeField] AnimationCurve _ease;
     /* public TweenInfo()
@@ -17,20 +18,20 @@ public class TweenInfo<T>
     } */
     public TweenInfo(T startValue, T endValue, float duration, AnimationCurve ease)
     {
-        _tweenStartValue = new TweenValue.TweenType<T>(startValue);
-        _tweenEndValue = new TweenValue.TweenType<T>(endValue);
+        _startValue = new TweenType<T>(startValue);
+        _endValue = new TweenType<T>(endValue);
         _duration = duration;
         _ease = ease;
     }
     public TweenInfo(Func<T> startValue, Func<T> endValue, float duration, AnimationCurve ease)
     {
-        _tweenStartValue = new TweenValue.TweenType<T>(startValue);
-        _tweenEndValue = new TweenValue.TweenType<T>(endValue);
+        _startValue = new TweenType<T>(startValue);
+        _endValue = new TweenType<T>(endValue);
         _duration = duration;
         _ease = ease;
     }
-    public T tweenStartValue { get { return _tweenStartValue.value; }}
-    public T tweenEndValue { get { return _tweenEndValue.value; }}
+    public T startValue { get { return _startValue.value; }}
+    public T endValue { get { return _endValue.value; }}
     public float duration { get { return _duration; } set { _duration = value; } }
     public AnimationCurve ease { get { return _ease; } set { _ease = value; } }
 }

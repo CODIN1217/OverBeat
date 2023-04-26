@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TweenValue;
 
 public class Center : MonoBehaviour
 {
@@ -10,10 +11,14 @@ public class Center : MonoBehaviour
     WorldInfo worldInfo;
     Handy handy;
     PlayGameManager playGM;
+    
+    public Vector2 scale;
+    public Vector2 pos;
+    public Color color;
 
-    public TweenValue.TweeningInfo scaleInfo;
-    public TweenValue.TweeningInfo posInfo;
-    public TweenValue.TweeningInfo colorInfo;
+    public TweeningInfo scaleTweener;
+    public TweeningInfo posTweener;
+    public TweeningInfo colorTweener;
 
     WorldInfo beforeWorldInfo;
     void Awake()
@@ -31,20 +36,29 @@ public class Center : MonoBehaviour
         centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, playGM.HP01, Time.deltaTime * 4f);
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
-            handy.TryKillSequence(scaleInfo);
-            scaleInfo = new TweenValue.TweeningInfo(worldInfo.centerInfo.scaleTween);
+            handy.TryKillTween(scaleTweener);
+            scaleTweener = new TweeningInfo(worldInfo.centerInfo.scaleTween);
 
-            handy.TryKillSequence(posInfo);
-            posInfo = new TweenValue.TweeningInfo(worldInfo.centerInfo.posTween);
+            handy.TryKillTween(posTweener);
+            posTweener = new TweeningInfo(worldInfo.centerInfo.posTween);
 
-            handy.TryKillSequence(colorInfo);
-            colorInfo = new TweenValue.TweeningInfo(worldInfo.centerInfo.colorTween);
+            handy.TryKillTween(colorTweener);
+            colorTweener = new TweeningInfo(worldInfo.centerInfo.colorTween);
+
+            handy.PlayTweens(scaleTweener, posTweener, colorTweener);
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex);
         }
+        UpdateTweenValue();
 
-        transform.localScale = (Vector2)scaleInfo.curValue;
-        transform.localPosition = (Vector2)posInfo.curValue;
-        centerImage.color = (Color)colorInfo.curValue;
+        transform.localScale = scale;
+        transform.localPosition = pos;
+        centerImage.color = color;
+    }
+    void UpdateTweenValue()
+    {
+        scale = (Vector2)scaleTweener.curValue;
+        pos = (Vector2)posTweener.curValue;
+        color = (Color)colorTweener.curValue;
     }
 }
