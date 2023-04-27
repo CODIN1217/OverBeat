@@ -24,6 +24,10 @@ public class WorldInfo : MonoBehaviour
         public TweenInfo<Color> BGColorTween;
         public CameraInfo()
         {
+            rotationTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            sizeTween = new TweenInfo<float>(1f, 1f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            posTween = new TweenInfo<Vector2>(Vector2.zero, Vector2.zero, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            BGColorTween = new TweenInfo<Color>(new Color(39, 29, 35, 255) / 255f, new Color(39, 29, 35, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
             // pos = Vector2.zero;
             // rotation = 0f;
             // size = 1f;
@@ -47,6 +51,8 @@ public class WorldInfo : MonoBehaviour
         public float intervalOfTick;
         public CountDownInfo()
         {
+            numberOfTick = 4;
+            intervalOfTick = 1f;
         }/* 
         public int _numberOfTick { get { return _numberOfTick; } set { _numberOfTick = (int)Mathf.Clamp(value, 1, 400); } }
         public float _intervalOfTick { get { return _intervalOfTick; } set { _intervalOfTick = Mathf.Clamp(value, 0.01f, 100f); } } */
@@ -84,6 +90,17 @@ public class WorldInfo : MonoBehaviour
         public TweenInfo<Vector2> centerScaleTween;
         public PlayerInfo()
         {
+            moveDir = 1;
+            // stdDegs = new float[] { 0f, 90f, 180f, 270f };
+            degTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            radiusTween = new TweenInfo<float>(1.5f, 1.5f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            rotationTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            posesGuideColorTween = new TweenInfo<Color>(new Color(115, 85, 200, 255) / 255f, new Color(115, 85, 200, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            sideColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            centerColorTween = new TweenInfo<Color>(new Color(65, 20, 185, 255) / 255f, new Color(65, 20, 185, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            totalScaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            sideScaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            centerScaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         }/* 
         public int _moveDir { get { return _moveDir; } set { _moveDir = (int)Handy.Property.GetSign0Is0(value); } }
         public float _tarRadius { get { return _tarRadius; } set { _tarRadius = Mathf.Clamp(value, 0f, 500f); } }
@@ -153,6 +170,23 @@ public class WorldInfo : MonoBehaviour
         public TweenInfo<Color> endColorTween;
         public NoteInfo()
         {
+            eachNoteIndex = 0;
+            tarPlayerIndex = 0;
+            // startDegIndex = 0;
+            // endDegIndex = 0;
+            awakeSecs = 0f;
+            speed = 1f;
+            sideImageName = "Basic";
+            waitRadiusTween = new TweenInfo<float>(5f, 1.5f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            holdRadiusTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            appearTween = new TweenInfo<float>(0f, 1f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            totalRotationTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            startRotationTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            endRotationTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            startColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            processStartColorTween = new TweenInfo<Color>(new Color(130, 80, 255, 255) / 255f, new Color(130, 80, 255, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            processEndColorTween = new TweenInfo<Color>(new Color(130, 80, 255, 255) / 255f, new Color(130, 80, 255, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            endColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
         }/* 
         public int _eachNoteIndex { get { return _eachNoteIndex; } set { _eachNoteIndex = Handy.Property.GetCorrectIndex(value); } }
         public int _tarPlayerIndex { get { return _tarPlayerIndex; } set { _tarPlayerIndex = Handy.Property.GetCorrectIndex(value); } }
@@ -195,6 +229,9 @@ public class WorldInfo : MonoBehaviour
         public TweenInfo<Vector2> scaleTween;
         public CenterInfo()
         {
+            colorTween = new TweenInfo<Color>(new Color(0, 255, 160, 255) / 255f, new Color(0, 255, 160, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            posTween = new TweenInfo<Vector2>(Vector2.zero, Vector2.zero, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            scaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
             // color = new Color(0, 255, 160, 255) / 255f;
             // pos = Vector2.zero;
             // scale = Vector2.one;
@@ -223,6 +260,10 @@ public class WorldInfo : MonoBehaviour
         public TweenInfo<Vector2> posTween;
         public BoundaryInfo()
         {
+            lineColorTween = new TweenInfo<Color>(new Color(0, 255, 160, 255) / 255f, new Color(0, 255, 160, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            coverColorTween = new TweenInfo<Color>();
+            scaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
+            posTween = new TweenInfo<Vector2>();
             // lineColor = new Color(0, 255, 160, 255) / 255f;
             // coverColor = null/* new Color(39, 29, 35, 255) */;
             // scale = Vector2.one;
@@ -244,6 +285,7 @@ public class WorldInfo : MonoBehaviour
         public float range;
         public JudgmentInfo()
         {
+            range = 0.5f;
         }/* 
         public float _range { get { return _range; } set { _range = Mathf.Clamp(value, 0.05f, 0.5f); } } */
     }
@@ -260,6 +302,10 @@ public class WorldInfo : MonoBehaviour
         public string songWriter;
         public CreditInfo()
         {
+            worldName = "Empty";
+            worldEditor = "Empty";
+            songName = "Empty";
+            songWriter = "Empty";
         }/* 
         public string _worldName { get { return _worldName; } set { _worldName = value; } }
         public string _worldEditor { get { return _worldEditor; } set { _worldEditor = value; } }
@@ -285,10 +331,10 @@ public class WorldInfo : MonoBehaviour
         boundaryInfo = new BoundaryInfo();
         judgmentInfo = new JudgmentInfo();
         creditInfo = new CreditInfo();
-        Init(cameraInfo);
+        /* Init(cameraInfo);
         Init(centerInfo);
         Init(countDownInfo);
-        for (int i = 0; i < playerInfo.Length; i++)
+        for (int i = 0; i < Length; i++)
         {
             playerInfo[i] = new PlayerInfo();
             Init(playerInfo[i]);
@@ -296,76 +342,30 @@ public class WorldInfo : MonoBehaviour
         Init(noteInfo);
         Init(boundaryInfo);
         Init(judgmentInfo);
-        Init(creditInfo);
+        Init(creditInfo); */
     }
-    void Init(CameraInfo cameraInfo)
+    /* void Init(CameraInfo cameraInfo)
     {
-        cameraInfo.rotationTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        cameraInfo.sizeTween = new TweenInfo<float>(1f, 1f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        cameraInfo.posTween = new TweenInfo<Vector2>(Vector2.zero, Vector2.zero, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        cameraInfo.BGColorTween = new TweenInfo<Color>(new Color(39, 29, 35, 255) / 255f, new Color(39, 29, 35, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
     }
     void Init(CountDownInfo countDownInfo)
     {
-        countDownInfo.numberOfTick = 4;
-        countDownInfo.intervalOfTick = 1f;
     }
     void Init(PlayerInfo playerInfo)
     {
-        playerInfo.moveDir = 1;
-        // playerInfo.stdDegs = new float[] { 0f, 90f, 180f, 270f };
-        playerInfo.degTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        playerInfo.radiusTween = new TweenInfo<float>(1.5f, 1.5f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        playerInfo.rotationTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        playerInfo.posesGuideColorTween = new TweenInfo<Color>(new Color(115, 85, 200, 255) / 255f, new Color(115, 85, 200, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        playerInfo.sideColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        playerInfo.centerColorTween = new TweenInfo<Color>(new Color(65, 20, 185, 255) / 255f, new Color(65, 20, 185, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        playerInfo.totalScaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        playerInfo.sideScaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        playerInfo.centerScaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
     }
     void Init(NoteInfo noteInfo)
     {
-        noteInfo.eachNoteIndex = 0;
-        noteInfo.tarPlayerIndex = 0;
-        // noteInfo.startDegIndex = 0;
-        // noteInfo.endDegIndex = 0;
-        noteInfo.awakeSecs = 0f;
-        noteInfo.speed = 1f;
-        noteInfo.sideImageName = "Basic";
-        noteInfo.waitRadiusTween = new TweenInfo<float>(5f, 1.5f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        noteInfo.holdRadiusTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        noteInfo.appearTween = new TweenInfo<float>(0f, 1f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        noteInfo.totalRotationTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        noteInfo.startRotationTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        noteInfo.endRotationTween = new TweenInfo<float>(0f, 0f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        noteInfo.startColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        noteInfo.processStartColorTween = new TweenInfo<Color>(new Color(130, 80, 255, 255) / 255f, new Color(130, 80, 255, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        noteInfo.processEndColorTween = new TweenInfo<Color>(new Color(130, 80, 255, 255) / 255f, new Color(130, 80, 255, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        noteInfo.endColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
     }
     void Init(CenterInfo centerInfo)
     {
-        centerInfo.colorTween = new TweenInfo<Color>(new Color(0, 255, 160, 255) / 255f, new Color(0, 255, 160, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        centerInfo.posTween = new TweenInfo<Vector2>(Vector2.zero, Vector2.zero, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        centerInfo.scaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
     }
     void Init(BoundaryInfo boundaryInfo)
     {
-        boundaryInfo.lineColorTween = new TweenInfo<Color>(new Color(0, 255, 160, 255) / 255f, new Color(0, 255, 160, 255) / 255f, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        boundaryInfo.coverColorTween = new TweenInfo<Color>(() => cameraInfo.BGColorTween.startValue, () => cameraInfo.BGColorTween.endValue, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        boundaryInfo.scaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
-        boundaryInfo.posTween = new TweenInfo<Vector2>(() => centerInfo.posTween.startValue, () => centerInfo.posTween.endValue, 0.5f, AnimationCurve.Linear(0, 0, 1, 1));
     }
     void Init(JudgmentInfo judgmentInfo)
     {
-        judgmentInfo.range = 0.5f;
     }
     void Init(CreditInfo creditInfo)
     {
-        creditInfo.worldName = "Empty";
-        creditInfo.worldEditor = "Empty";
-        creditInfo.songName = "Empty";
-        creditInfo.songWriter = "Empty";
-    }
+    } */
 }

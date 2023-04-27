@@ -17,10 +17,10 @@ public class BaseCamera : MonoBehaviour
     public float rotation;
     public Vector2 pos;
 
-    public TweeningInfo orthoSizeTweener;
-    public TweeningInfo BGColorTweener;
-    public TweeningInfo rotationTweener;
-    public TweeningInfo posTweener;
+    public TweeningInfo orthoSizeInfo;
+    public TweeningInfo BGColorInfo;
+    public TweeningInfo rotationInfo;
+    public TweeningInfo posInfo;
 
     WorldInfo beforeWorldInfo;
     void Awake()
@@ -37,19 +37,19 @@ public class BaseCamera : MonoBehaviour
         worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
-            handy.TryKillTween(orthoSizeTweener);
-            orthoSizeTweener = new TweeningInfo(worldInfo.cameraInfo.sizeTween);
+            handy.TryKillTween(orthoSizeInfo);
+            orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween);
 
-            handy.TryKillTween(BGColorTweener);
-            BGColorTweener = new TweeningInfo(worldInfo.cameraInfo.BGColorTween);
+            handy.TryKillTween(BGColorInfo);
+            BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween);
 
-            handy.TryKillTween(rotationTweener);
-            rotationTweener = new TweeningInfo(worldInfo.cameraInfo.rotationTween);
+            handy.TryKillTween(rotationInfo);
+            rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween);
 
-            handy.TryKillTween(posTweener);
-            posTweener = new TweeningInfo(worldInfo.cameraInfo.posTween);
+            handy.TryKillTween(posInfo);
+            posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween);
 
-            handy.PlayTweens(orthoSizeTweener, BGColorTweener, rotationTweener, posTweener);
+            handy.PlayTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex);
         }
@@ -62,10 +62,10 @@ public class BaseCamera : MonoBehaviour
     }
     void UpdateTweenValue()
     {
-        orthoSize = stdSize * (float)orthoSizeTweener.curValue;
-        BGColor = (Color)BGColorTweener.curValue;
-        rotation = handy.GetCorrectDegMaxIs0(-(float)rotationTweener.curValue);
-        pos = (Vector2)posTweener.curValue;
+        orthoSize = stdSize * (float)orthoSizeInfo.curValue;
+        BGColor = (Color)BGColorInfo.curValue;
+        rotation = handy.GetCorrectDegMaxIs0(-(float)rotationInfo.curValue);
+        pos = (Vector2)posInfo.curValue;
     }
     BaseCamera()
     {

@@ -6,110 +6,141 @@ using System;
 
 namespace TweenValue
 {
-    [Serializable]
+    /* [Serializable]
     public class TweenType<T>
     {
-        [SerializeField]
-        T _value;
-        Func<T> _autoValue;
+        Func<T> _value;
         public bool isAuto;
         public TweenType(T value)
         {
             isAuto = false;
-            _value = value;
+            _value = () => value;
         }
-        public TweenType(Func<T> autoValue)
+        public TweenType()
         {
             isAuto = true;
-            _autoValue = autoValue;
+            _value = null;
         }
-        public T value { get { if (isAuto) return _autoValue(); else return _value; }}
-    }
+        public void SetAutoValue(Func<T> autoValue)
+        {
+            if (isAuto)
+                _value = autoValue;
+        }
+        public T value { get { return _value(); } }
+    } */
 
     public class TweeningInfo
     {
-        public object startValue;
-        public object endValue;
-        public object curValue;
-        public float duration;
-        public AnimationCurve ease;
-        public Sequence valueTween;
-        public TweeningInfo(TweenInfo<float> tweenInfo, float? duration = null, float prependInterval = 0f)
+        object startValue;
+        object endValue;
+        Func<object> _curValue;
+        float duration;
+        AnimationCurve ease;
+        public Sequence tweener;
+        public TweeningInfo(TweenInfo<float> tweenInfo, Func<object> value = null)
         {
-            startValue = tweenInfo.startValue;
-            endValue = tweenInfo.endValue;
-            curValue = startValue;
-            if (duration == null)
+            if (tweenInfo.isAuto)
+            {
+                if (value != null)
+                {
+                    _curValue = value;
+                }
+                else
+                {
+                    throw new Exception("AutoTween don't have value");
+                }
+            }
+            else
+            {
+                startValue = tweenInfo.startValue;
+                endValue = tweenInfo.endValue;
+                _curValue = () => startValue;
                 duration = tweenInfo.duration;
-            this.duration = (float)duration;
-            ease = tweenInfo.ease;
-            // if (processValue == null)
-            //     processValue = (v) => v;
-            valueTween = DOTween.Sequence()
-            .PrependInterval(prependInterval)
-            .Append(DOTween.To(() => tweenInfo.startValue, (v) => curValue = v/* processValue(v) */, tweenInfo.endValue, tweenInfo.duration)
-            .SetEase(tweenInfo.ease))
-            .Pause();
+                ease = tweenInfo.ease;
+                tweener = DOTween.Sequence()
+                .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, tweenInfo.endValue, tweenInfo.duration)
+                .SetEase(tweenInfo.ease))
+                .Pause();
+            }
         }
-        public TweeningInfo(TweenInfo<Vector2> tweenInfo, float? duration = null, float prependInterval = 0f)
+        public TweeningInfo(TweenInfo<Vector2> tweenInfo, Func<object> value = null)
         {
-            startValue = tweenInfo.startValue;
-            endValue = tweenInfo.endValue;
-            curValue = startValue;
-            if (duration == null)
+            if (tweenInfo.isAuto)
+            {
+                if (value != null)
+                {
+                    _curValue = value;
+                }
+                else
+                {
+                    throw new Exception("AutoTween don't have value");
+                }
+            }
+            else
+            {
+                startValue = tweenInfo.startValue;
+                endValue = tweenInfo.endValue;
+                _curValue = () => startValue;
                 duration = tweenInfo.duration;
-            this.duration = (float)duration;
-            ease = tweenInfo.ease;
-            // if (processValue == null)
-            //     processValue = (v) => v;
-            valueTween = DOTween.Sequence()
-            .PrependInterval(prependInterval)
-            .Append(DOTween.To(() => tweenInfo.startValue, (v) => curValue = v, tweenInfo.endValue, tweenInfo.duration)
-            .SetEase(tweenInfo.ease))
-            .Pause();
+                ease = tweenInfo.ease;
+                tweener = DOTween.Sequence()
+                .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, tweenInfo.endValue, tweenInfo.duration)
+                .SetEase(tweenInfo.ease))
+                .Pause();
+            }
         }
-        public TweeningInfo(TweenInfo<Vector3> tweenInfo, float? duration = null, float prependInterval = 0f)
+        public TweeningInfo(TweenInfo<Vector3> tweenInfo, Func<object> value = null)
         {
-            startValue = tweenInfo.startValue;
-            endValue = tweenInfo.endValue;
-            curValue = startValue;
-            if (duration == null)
+            if (tweenInfo.isAuto)
+            {
+                if (value != null)
+                {
+                    _curValue = value;
+                }
+                else
+                {
+                    throw new Exception("AutoTween don't have value");
+                }
+            }
+            else
+            {
+                startValue = tweenInfo.startValue;
+                endValue = tweenInfo.endValue;
+                _curValue = () => startValue;
                 duration = tweenInfo.duration;
-            this.duration = (float)duration;
-            ease = tweenInfo.ease;
-            // if (processValue == null)
-            //     processValue = (v) => v;
-            valueTween = DOTween.Sequence()
-            .PrependInterval(prependInterval)
-            .Append(DOTween.To(() => tweenInfo.startValue, (v) => curValue = v, tweenInfo.endValue, tweenInfo.duration)
-            .SetEase(tweenInfo.ease))
-            .Pause();
+                ease = tweenInfo.ease;
+                tweener = DOTween.Sequence()
+                .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, tweenInfo.endValue, tweenInfo.duration)
+                .SetEase(tweenInfo.ease))
+                .Pause();
+            }
         }
-        public TweeningInfo(TweenInfo<Color> tweenInfo, float? duration = null, float prependInterval = 0f)
+        public TweeningInfo(TweenInfo<Color> tweenInfo, Func<object> value = null)
         {
-            startValue = tweenInfo.startValue;
-            endValue = tweenInfo.endValue;
-            curValue = startValue;
-            if (duration == null)
+            if (tweenInfo.isAuto)
+            {
+                if (value != null)
+                {
+                    _curValue = value;
+                }
+                else
+                {
+                    throw new Exception("AutoTween don't have value");
+                }
+            }
+            else
+            {
+                startValue = tweenInfo.startValue;
+                endValue = tweenInfo.endValue;
+                _curValue = () => startValue;
                 duration = tweenInfo.duration;
-            this.duration = (float)duration;
-            ease = tweenInfo.ease;
-            // if (processValue == null)
-            //     processValue = (v) => v;
-            valueTween = DOTween.Sequence()
-            .PrependInterval(prependInterval)
-            .Append(DOTween.To(() => tweenInfo.startValue, (v) => curValue = v, tweenInfo.endValue, tweenInfo.duration)
-            .SetEase(tweenInfo.ease))
-            .Pause();
+                ease = tweenInfo.ease;
+                tweener = DOTween.Sequence()
+                .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, tweenInfo.endValue, tweenInfo.duration)
+                .SetEase(tweenInfo.ease))
+                .Pause();
+            }
         }
-        public void Play(){
-            valueTween.Play();
-        }
-        public void Pause(){
-            valueTween.Pause();
-        }
-        public void Goto(float to){
-            valueTween.Goto(to);
-        }
+        public object curValue { get { return _curValue(); } }
     }
 }

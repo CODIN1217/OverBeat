@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     public float tarDeg;
     public float stdRadius;
     public float tarRadius;
-    bool isInputted;
+    bool isDegTweened;
     bool isEnable;
     public GameObject playerSide;
     public GameObject playerCenter;
@@ -47,15 +47,15 @@ public class Player : MonoBehaviour
     // public Sequence totalScaleTweener;
     // public Sequence rotationTweener;
     // public Sequence colorTweener;
-    public TweeningInfo degTweener;
-    public TweeningInfo rotationTweener;
+    public TweeningInfo degInfo;
+    public TweeningInfo rotationInfo;
     public TweeningInfo radiusTweener;
-    public TweeningInfo totalScaleTweener;
-    public TweeningInfo sideClickScaleTweener;
-    public TweeningInfo sideScaleTweener;
-    public TweeningInfo centerScaleTweener;
-    public TweeningInfo sideColorTweener;
-    public TweeningInfo centerColorTweener;
+    public TweeningInfo totalScaleInfo;
+    public TweeningInfo sideClickScaleInfo;
+    public TweeningInfo sideScaleInfo;
+    public TweeningInfo centerScaleInfo;
+    public TweeningInfo sideColorInfo;
+    public TweeningInfo centerColorInfo;
 
     Handy handy;
     PlayGameManager playGM;
@@ -81,34 +81,34 @@ public class Player : MonoBehaviour
         }
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex))
         {
-            handy.TryKillTween(degTweener);
-            degTweener = new TweeningInfo(worldInfo.playerInfo[playerIndex].degTween);
-            
-            handy.TryKillTween(rotationTweener);
-            rotationTweener = new TweeningInfo(worldInfo.playerInfo[playerIndex].rotationTween);
-            
+            handy.TryKillTween(degInfo);
+            degInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].degTween);
+
+            handy.TryKillTween(rotationInfo);
+            rotationInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].rotationTween);
+
             handy.TryKillTween(radiusTweener);
             radiusTweener = new TweeningInfo(worldInfo.playerInfo[playerIndex].radiusTween);
-            
-            handy.TryKillTween(totalScaleTweener);
-            totalScaleTweener = new TweeningInfo(worldInfo.playerInfo[playerIndex].totalScaleTween);
-            
-            handy.TryKillTween(sideClickScaleTweener);
-            sideClickScaleTweener = new TweeningInfo(new TweenInfo<float>(1f, 0.8f, 0.15f, AnimationCurve.Linear(0f, 0f, 1f, 1f)));
-            
-            handy.TryKillTween(sideScaleTweener);
-            sideScaleTweener = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideScaleTween);
-            
-            handy.TryKillTween(centerScaleTweener);
-            centerScaleTweener = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerScaleTween);
-            
-            handy.TryKillTween(sideColorTweener);
-            sideColorTweener = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideColorTween);
-            
-            handy.TryKillTween(centerColorTweener);
-            centerColorTweener = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerColorTween);
 
-            handy.PlayTweens(rotationTweener, totalScaleTweener, sideScaleTweener, centerScaleTweener, sideColorTweener, centerColorTweener);
+            handy.TryKillTween(totalScaleInfo);
+            totalScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].totalScaleTween);
+
+            handy.TryKillTween(sideClickScaleInfo);
+            sideClickScaleInfo = new TweeningInfo(new TweenInfo<float>(1f, 0.8f, 0.15f, AnimationCurve.Linear(0f, 0f, 1f, 1f)));
+
+            handy.TryKillTween(sideScaleInfo);
+            sideScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideScaleTween);
+
+            handy.TryKillTween(centerScaleInfo);
+            centerScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerScaleTween);
+
+            handy.TryKillTween(sideColorInfo);
+            sideColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideColorTween);
+
+            handy.TryKillTween(centerColorInfo);
+            centerColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerColorTween);
+
+            handy.PlayTweens(rotationInfo, totalScaleInfo, sideScaleInfo, centerScaleInfo, sideColorInfo, centerColorInfo);
 
             stdDeg = playGM.GetStartDeg(playerIndex, playGM.closestNoteIndex[playerIndex]);
             tarDeg = playGM.GetEndDeg(playerIndex, playGM.closestNoteIndex[playerIndex]);
@@ -118,7 +118,7 @@ public class Player : MonoBehaviour
 
             // InitTween();
 
-            isInputted = false;
+            isDegTweened = false;
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex);
         }
@@ -139,21 +139,33 @@ public class Player : MonoBehaviour
         }
         else if (!playGM.GetIsKeyPress(playerIndex) && playGM.GetIsKeyUp(playerIndex))
         {
-            if (handy.IsInfoNull(sideClickScaleTweener))
-                handy.StartCoroutine(SetSideClickScaleTweenerDelayed(false, 0.15f - sideClickScaleTweener.valueTween.Elapsed()));
+            if (handy.IsInfoNull(sideClickScaleInfo))
+                handy.StartCoroutine(SetSideClickScaleTweenerDelayed(false, 0.15f - sideClickScaleInfo.tweener.Elapsed()));
         }
-        if (!isInputted)
+
+        if (!isDegTweened)
+        {
+            if (playGM.closestNoteScripts[playerIndex].isNeedInput)
+            {
+                int dir = worldInfo.playerInfo[playerIndex].moveDir;
+                tarDeg += dir * tarDeg < dir * curDeg ? dir * 360f : 0f;
+
+                StartCoroutine(CheckHoldingKey(playGM.closestNoteIndex[playerIndex]));
+                degInfo.tweener.Goto(Mathf.Clamp(playGM.closestNoteScripts[playerIndex].toleranceSecsEndWait, 0f, float.MaxValue));
+                handy.PlayTweens(degInfo);
+                isDegTweened = true;
+            }
+        }
+        /* if (!isInputted)
         {
             if (playGM.GetIsKeyDown(playerIndex) && playGM.GetJudgmentValue(playerIndex) <= playGM.judgmentRange[playerIndex])
             {
                 int dir = worldInfo.playerInfo[playerIndex].moveDir;
                 tarDeg += dir * tarDeg < dir * curDeg ? dir * 360f : 0f;
 
-                handy.TryKillTween(playGM.closestNoteScripts[playerIndex].colorATweener);
-                handy.TryKillTween(playGM.closestNoteScripts[playerIndex].curRadiusTweener);
+                handy.TryKillTween(playGM.closestNoteScripts[playerIndex].colorAInfo);
+                handy.TryKillTween(playGM.closestNoteScripts[playerIndex].curRadiusInfo);
 
-                // playGM.closestNoteScripts[playerIndex].TryKillFadeTweener(true);
-                // playGM.closestNoteScripts[playerIndex].TryKillRadiusTweener(true);
                 if (!playGM.closestNoteScripts[playerIndex].isClick)
                 {
                     playGM.closestNoteScripts[playerIndex].ActNeedInput();
@@ -161,18 +173,12 @@ public class Player : MonoBehaviour
                 StartCoroutine(CheckInputtingKeys(playGM.closestNoteIndex[playerIndex]));
                 handy.WaitCodeUntil(() => playGM.closestNoteScripts[playerIndex].isNeedInput, () =>
                 {
-                    degTweener.Goto(Mathf.Clamp(playGM.closestNoteScripts[playerIndex].toleranceSecsEndWait, 0f, float.MaxValue));
-                    handy.PlayTweens(degTweener);
+                    degInfo.tweener.Goto(Mathf.Clamp(playGM.closestNoteScripts[playerIndex].toleranceSecsEndWait, 0f, float.MaxValue));
+                    handy.PlayTweens(degInfo);
                 });
-
-                /* moveTweener = DOTween.Sequence()
-                .AppendInterval(playGM.GetNoteWaitSecs(playerIndex, playGM.closestNoteIndex[playerIndex]) * Mathf.Clamp(-handy.GetSign0IsMin(playGM.closestNoteScripts[playerIndex].holdElapsedSecs) * playGM.GetJudgmentValue(playerIndex), 0f, playGM.judgmentRange[playerIndex]))
-                .Append(DOTween.To(() => stdDeg, (d) => tweenDeg = d, tarDeg,
-                playGM.GetNoteLengthSecs(playerIndex, playGM.closestNoteIndex[playerIndex]) * (1f - Mathf.Clamp(handy.GetSign0IsMin(playGM.closestNoteScripts[playerIndex].holdElapsedSecs) * playGM.GetJudgmentValue(playerIndex), 0f, playGM.judgmentRange[playerIndex])))
-                .SetEase(worldInfo.playerInfo[playerIndex].degTween.ease)); */
                 isInputted = true;
             }
-        }
+        } */
     }
     void SetPlayerTransform()
     {
@@ -228,15 +234,15 @@ public class Player : MonoBehaviour
     }
     void UpdateTweenValue()
     {
-        curDeg = handy.GetCorrectDegMaxIs0((float)degTweener.curValue);
-        rotation = handy.GetCorrectDegMaxIs0((float)rotationTweener.curValue);
+        curDeg = handy.GetCorrectDegMaxIs0((float)degInfo.curValue);
+        rotation = handy.GetCorrectDegMaxIs0((float)rotationInfo.curValue);
         curRadius = (float)radiusTweener.curValue;
-        totalScale = (Vector2)totalScaleTweener.curValue;
-        sideClickScale = (float)sideClickScaleTweener.curValue;
-        sideScale = (Vector2)sideScaleTweener.curValue;
-        centerScale = (Vector2)centerScaleTweener.curValue;
-        sideColor = playGM.GetColor01WithPlayerIndex((Color)sideColorTweener.curValue, playerIndex);
-        centerColor = playGM.GetColor01WithPlayerIndex((Color)centerColorTweener.curValue, playerIndex);
+        totalScale = (Vector2)totalScaleInfo.curValue;
+        sideClickScale = (float)sideClickScaleInfo.curValue;
+        sideScale = (Vector2)sideScaleInfo.curValue;
+        centerScale = (Vector2)centerScaleInfo.curValue;
+        sideColor = playGM.GetColor01WithPlayerIndex((Color)sideColorInfo.curValue, playerIndex);
+        centerColor = playGM.GetColor01WithPlayerIndex((Color)centerColorInfo.curValue, playerIndex);
     }
     /* void InitTween()
     {
@@ -256,7 +262,7 @@ public class Player : MonoBehaviour
             moveTweener = null;
         }
     } */
-    
+
     // public void SetRadiusTweener(/* float tarRadius, float duration, AnimationCurve ease */)
     // {
     //     radiusTweener.Play();
@@ -277,11 +283,12 @@ public class Player : MonoBehaviour
     public IEnumerator SetSideClickScaleTweenerDelayed(bool isForward, float prependInterval = 0f)
     {
         yield return new WaitForSeconds(prependInterval);
-        sideClickScaleTweener.valueTween.Complete(true);
-        if(!isForward){
-            sideClickScaleTweener.valueTween.PlayBackwards();
+        sideClickScaleInfo.tweener.Complete(true);
+        if (!isForward)
+        {
+            sideClickScaleInfo.tweener.PlayBackwards();
         }
-        sideClickScaleTweener.Play();
+        sideClickScaleInfo.tweener.Play();
         /* handy.TryKillSequence(sideScaleTweener);
         sideScaleTweener = DOTween.Sequence()
         .Append(DOTween.To(() => tweenSideClickScale, (s) => tweenSideClickScale = s, tarScale, duration)); */
@@ -302,15 +309,18 @@ public class Player : MonoBehaviour
             sideScaleTweener = null;
         }
     } */
-    IEnumerator CheckInputtingKeys(int eachNoteIndex)
+    IEnumerator CheckHoldingKey(int eachNoteIndex)
     {
-        while (playGM.GetIsKeyPress(playerIndex) && playGM.GetNoteScript(playerIndex, eachNoteIndex).noteLengthSecs != 0f && playGM.closestNoteIndex[playerIndex] == eachNoteIndex)
+        if (playGM.GetNoteScript(playerIndex, eachNoteIndex).noteLengthSecs != 0f)
         {
-            yield return null;
-        }
-        if (playGM.GetNote(playerIndex, eachNoteIndex).activeSelf)
-        {
-            playGM.GetNoteScript(playerIndex, eachNoteIndex).StopNote();
+            while (playGM.GetIsKeyPress(playerIndex) && playGM.closestNoteIndex[playerIndex] == eachNoteIndex)
+            {
+                yield return null;
+            }
+            if (playGM.GetNote(playerIndex, eachNoteIndex).activeSelf)
+            {
+                playGM.GetNoteScript(playerIndex, eachNoteIndex).StopNote();
+            }
         }
     }
 }

@@ -16,9 +16,9 @@ public class Center : MonoBehaviour
     public Vector2 pos;
     public Color color;
 
-    public TweeningInfo scaleTweener;
-    public TweeningInfo posTweener;
-    public TweeningInfo colorTweener;
+    public TweeningInfo scaleInfo;
+    public TweeningInfo posInfo;
+    public TweeningInfo colorInfo;
 
     WorldInfo beforeWorldInfo;
     void Awake()
@@ -36,16 +36,16 @@ public class Center : MonoBehaviour
         centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, playGM.HP01, Time.deltaTime * 4f);
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
-            handy.TryKillTween(scaleTweener);
-            scaleTweener = new TweeningInfo(worldInfo.centerInfo.scaleTween);
+            handy.TryKillTween(scaleInfo);
+            scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween);
 
-            handy.TryKillTween(posTweener);
-            posTweener = new TweeningInfo(worldInfo.centerInfo.posTween);
+            handy.TryKillTween(posInfo);
+            posInfo = new TweeningInfo(worldInfo.centerInfo.posTween);
 
-            handy.TryKillTween(colorTweener);
-            colorTweener = new TweeningInfo(worldInfo.centerInfo.colorTween);
+            handy.TryKillTween(colorInfo);
+            colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween);
 
-            handy.PlayTweens(scaleTweener, posTweener, colorTweener);
+            handy.PlayTweens(scaleInfo, posInfo, colorInfo);
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex);
         }
@@ -57,8 +57,8 @@ public class Center : MonoBehaviour
     }
     void UpdateTweenValue()
     {
-        scale = (Vector2)scaleTweener.curValue;
-        pos = (Vector2)posTweener.curValue;
-        color = (Color)colorTweener.curValue;
+        scale = (Vector2)scaleInfo.curValue;
+        pos = (Vector2)posInfo.curValue;
+        color = (Color)colorInfo.curValue;
     }
 }

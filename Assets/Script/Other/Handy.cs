@@ -7,6 +7,8 @@ using TMPro;
 using System.Text;
 using DG.Tweening;
 using TweenValue;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 public class Handy : MonoBehaviour
 {
@@ -303,7 +305,7 @@ public class Handy : MonoBehaviour
         yield return new WaitUntil(predicate);
         code();
     }
-    public void TryKillSequence(Sequence sequence, bool isComplete = true)
+    public void TryKillTween(Sequence sequence, bool isComplete = true)
     {
         if (sequence != null)
         {
@@ -315,9 +317,9 @@ public class Handy : MonoBehaviour
     {
         if (tweeningInfo != null)
         {
-            if (tweeningInfo.valueTween != null)
+            if (tweeningInfo.tweener != null)
             {
-                tweeningInfo.valueTween.Kill(isComplete);
+                tweeningInfo.tweener.Kill(isComplete);
                 tweeningInfo = null;
             }
         }
@@ -325,7 +327,7 @@ public class Handy : MonoBehaviour
     public bool IsInfoNull(TweeningInfo tweeningInfo)
     {
         if (tweeningInfo != null)
-            if (tweeningInfo.valueTween != null)
+            if (tweeningInfo.tweener != null)
                 return false;
         return true;
     }
@@ -336,12 +338,12 @@ public class Handy : MonoBehaviour
     public void PlayTweens(params TweeningInfo[] tweeningInfos)
     {
         foreach (var TIs in tweeningInfos)
-            TIs.Play();
+            TIs.tweener.Play();
     }
     public void PauseTweens(params TweeningInfo[] tweeningInfos)
     {
         foreach (var TIs in tweeningInfos)
-            TIs.Pause();
+            TIs.tweener.Pause();
     }
     public void TryKillTweens(params TweeningInfo[] tweeningInfos)
     {

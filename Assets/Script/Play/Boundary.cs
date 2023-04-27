@@ -22,10 +22,10 @@ public class Boundary : MonoBehaviour
     public Vector2 scale;
     public Vector2 pos;
 
-    public TweeningInfo coverColorTweener;
-    public TweeningInfo lineColorTweener;
-    public TweeningInfo scaleTweener;
-    public TweeningInfo posTweener;
+    public TweeningInfo coverColorInfo;
+    public TweeningInfo lineColorInfo;
+    public TweeningInfo scaleInfo;
+    public TweeningInfo posInfo;
 
     WorldInfo beforeWorldInfo;
     void Awake()
@@ -41,19 +41,19 @@ public class Boundary : MonoBehaviour
         worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
-            handy.TryKillTween(coverColorTweener);
-            coverColorTweener = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween);
+            handy.TryKillTween(coverColorInfo);
+            coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, () => playGM.baseCameraScript.BGColor);
 
-            handy.TryKillTween(lineColorTweener);
-            lineColorTweener = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween);
+            handy.TryKillTween(posInfo);
+            posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, () => playGM.baseCameraScript.pos);
 
-            handy.TryKillTween(scaleTweener);
-            scaleTweener = new TweeningInfo(worldInfo.boundaryInfo.scaleTween);
+            handy.TryKillTween(lineColorInfo);
+            lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween);
 
-            handy.TryKillTween(posTweener);
-            posTweener = new TweeningInfo(worldInfo.boundaryInfo.posTween);
+            handy.TryKillTween(scaleInfo);
+            scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween);
 
-            handy.PlayTweens(coverColorTweener, lineColorTweener, scaleTweener, posTweener);
+            handy.PlayTweens(coverColorInfo, lineColorInfo, scaleInfo, posInfo);
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex);
         }
@@ -66,9 +66,9 @@ public class Boundary : MonoBehaviour
     }
     void UpdateTweenValue()
     {
-        coverColor = (Color)coverColorTweener.curValue;
-        lineColor = (Color)lineColorTweener.curValue;
-        scale = (Vector2)scaleTweener.curValue;
-        pos = (Vector2)posTweener.curValue;
+        coverColor = (Color)coverColorInfo.curValue;
+        lineColor = (Color)lineColorInfo.curValue;
+        scale = (Vector2)scaleInfo.curValue;
+        pos = (Vector2)posInfo.curValue;
     }
 }
