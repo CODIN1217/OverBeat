@@ -42,16 +42,16 @@ public class Boundary : MonoBehaviour
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
             handy.TryKillTween(coverColorInfo);
-            coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, () => playGM.baseCameraScript.BGColor);
+            coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex), () => playGM.baseCameraScript.BGColor);
 
             handy.TryKillTween(posInfo);
-            posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, () => playGM.baseCameraScript.pos);
+            posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex), () => playGM.baseCameraScript.pos);
 
             handy.TryKillTween(lineColorInfo);
-            lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween);
+            lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
 
             handy.TryKillTween(scaleInfo);
-            scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween);
+            scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
 
             handy.PlayTweens(coverColorInfo, lineColorInfo, scaleInfo, posInfo);
 

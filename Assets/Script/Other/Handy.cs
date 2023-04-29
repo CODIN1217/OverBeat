@@ -14,7 +14,6 @@ public class Handy : MonoBehaviour
 {
     private static Handy instance = null;
     PlayGameManager playGM;
-    // Dictionary<string, object> beforeValuesWithNames;
     CompareValue<int> _compareValue_int;
     public CompareValue<int> compareValue_int
     {
@@ -27,7 +26,6 @@ public class Handy : MonoBehaviour
     {
         instance = this;
         playGM = PlayGameManager.Property;
-        // beforeValuesWithNames = new Dictionary<string, object>();
         _compareValue_int = new CompareValue<int>();
     }
     public static Handy Property
@@ -69,30 +67,6 @@ public class Handy : MonoBehaviour
             return false;
         }
     }
-    /* public void SetValueForCompare(string parentsName, string methodName, string varName, object value)
-    {
-        string fullName = $"{parentsName} / {methodName} / {varName}";
-        if (beforeValuesWithNames.ContainsKey(fullName))
-        {
-            beforeValuesWithNames[fullName] = value;
-        }
-        else
-        {
-            beforeValuesWithNames.Add(fullName, value);
-        }
-    }
-    public bool CompareWithBeforeValue(string parentsName, string methodName, string varName, object curValue)
-    {
-        string fullName = $"{parentsName} / {methodName} / {varName}";
-        if (beforeValuesWithNames.ContainsKey(fullName))
-        {
-            if (beforeValuesWithNames[fullName] == curValue)
-            {
-                return true;
-            }
-        }
-        return false;
-    } */
     public float GetCorrectDegMaxIs0(float deg)
     {
         if (deg < 0f || deg >= 360f)
@@ -122,6 +96,10 @@ public class Handy : MonoBehaviour
     {
         renderer.startColor = new Color(renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, alpha);
         renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, alpha);
+    }
+    public void ChangeAlpha(TextMeshProUGUI renderer, float alpha)
+    {
+        renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, alpha);
     }
     public Vector2 GetCircularPos(float deg, float radius, Vector2? centerPos = null)
     {
@@ -216,24 +194,14 @@ public class Handy : MonoBehaviour
             return Mathf.Sign(value);
         return 0f;
     }
-    public int GetCorrectIndex(int index, int? maxIndex = null)
+    public int GetCorrectIndex(int index, int maxIndex = int.MaxValue, int minIndex = 0)
     {
-        if (maxIndex == null)
-            maxIndex = int.MaxValue;
-        return (int)Mathf.Clamp(index, 0f, (float)maxIndex);
+        return (int)Mathf.Clamp(index, minIndex, maxIndex);
     }
     public Vector2 GetSpritePixels(Sprite sprite)
     {
         return new Vector2(sprite.texture.width, sprite.texture.height);
     }
-    /* public Color GetColor01(Color color)
-    {
-        return color / 255f;
-    }
-    public Color2 GetColor201(Color2 color2)
-    {
-        return new Color2(color2.ca / 255f, color2.cb / 255f);
-    } */
     public void RepeatCode(Action<int> code, int count)
     {
         for (int i = 0; i < count; i++)
@@ -271,10 +239,6 @@ public class Handy : MonoBehaviour
             return null;
         return new Color2(GetCorrectRGBA(((Color2)RGBA2).ca, minRGBA, maxRGBA), GetCorrectRGBA(((Color2)RGBA2).cb, minRGBA, maxRGBA));
     }
-    /* public Color GetColorChangedA(Color color, float a)
-    {
-        return new Color(color.r, color.g, color.b, a);
-    } */
     public void PlayEachCodesWithBoolens(List<bool> boolen, List<Action> codes)
     {
         if (boolen.Count < codes.Count)
@@ -305,6 +269,13 @@ public class Handy : MonoBehaviour
         yield return new WaitUntil(predicate);
         code();
     }
+    public bool IsInfoNull(TweeningInfo tweeningInfo)
+    {
+        if (tweeningInfo != null)
+            if (tweeningInfo.tweener != null)
+                return false;
+        return true;
+    }
     public void TryKillTween(Sequence sequence, bool isComplete = true)
     {
         if (sequence != null)
@@ -324,13 +295,6 @@ public class Handy : MonoBehaviour
             }
         }
     }
-    public bool IsInfoNull(TweeningInfo tweeningInfo)
-    {
-        if (tweeningInfo != null)
-            if (tweeningInfo.tweener != null)
-                return false;
-        return true;
-    }
     public Vector2 MultiplyXByX_YByY(Vector2 va, Vector2 vb)
     {
         return new Vector2(va.x * vb.x, va.y * vb.y);
@@ -349,5 +313,18 @@ public class Handy : MonoBehaviour
     {
         foreach (var TI in tweeningInfos)
             TryKillTween(TI);
+    }
+    public object GetTweenValue(TweeningInfo tweeningInfo, float progress01)
+    {
+        float curduration = tweeningInfo.tweener.Elapsed();
+
+        tweeningInfo.tweener.Goto(progress01 * tweeningInfo.tweener.Duration(), true);
+        tweeningInfo.tweener.ManualUpdate(Time.deltaTime, Time.unscaledDeltaTime);
+        object tweenValueTemp = tweeningInfo.curValue;
+
+        tweeningInfo.tweener.Goto(curduration, true);
+        tweeningInfo.tweener.ManualUpdate(Time.deltaTime, Time.unscaledDeltaTime);
+
+        return tweenValueTemp;
     }
 }

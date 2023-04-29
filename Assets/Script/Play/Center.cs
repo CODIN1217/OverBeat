@@ -37,13 +37,13 @@ public class Center : MonoBehaviour
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
             handy.TryKillTween(scaleInfo);
-            scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween);
+            scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
 
             handy.TryKillTween(posInfo);
-            posInfo = new TweeningInfo(worldInfo.centerInfo.posTween);
+            posInfo = new TweeningInfo(worldInfo.centerInfo.posTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
 
             handy.TryKillTween(colorInfo);
-            colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween);
+            colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
 
             handy.PlayTweens(scaleInfo, posInfo, colorInfo);
 

@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TweenValue;
 
 public class NoteGenerator : MonoBehaviour
 {
     public GameObject notePrefab;
-    public GameObject[] closestNotes;
-    public NotePrefab[] closestNoteScripts;
     public List<float>[] notesWaitSecs;
     public List<float>[] notesLengthSecs;
     public List<GameObject>[] notes;
@@ -31,27 +30,18 @@ public class NoteGenerator : MonoBehaviour
             noteScripts[i] = new List<NotePrefab>();
         }
         eachNoteCount = new int[playGM.GetMaxPlayerCount()];
-        closestNotes = new GameObject[playGM.GetMaxPlayerCount()];
-        closestNoteScripts = new NotePrefab[playGM.GetMaxPlayerCount()];
+
         for (int j = 0; j < playGM.GetWorldInfoCount(); j++)
         {
             SetNotePrefab(j);
         }
-        for (int j = 0; j < playGM.GetWorldInfoCount(); j++)
+
+        for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
         {
-            GameObject curNote = playGM.GetNote(playGM.GetWorldInfo(j).noteInfo.tarPlayerIndex, playGM.GetWorldInfo(j).noteInfo.eachNoteIndex);
-            NotePrefab curNoteScript = playGM.GetNoteScript(playGM.GetWorldInfo(j).noteInfo.tarPlayerIndex, playGM.GetWorldInfo(j).noteInfo.eachNoteIndex);
-            curNoteScript.InitNote();
-            if (curNoteScript.myEachNoteIndex == 0)
+            for (int j = 0; j < playGM.GetNoteCount(i); j++)
             {
-                closestNotes[curNoteScript.tarPlayerIndex] = curNote;
-                closestNoteScripts[curNoteScript.tarPlayerIndex] = curNoteScript;
+                playGM.GetNoteScript(i, j).InitNote();
             }
-            curNote.SetActive(false);
-        }
-        foreach (var CN in closestNotes)
-        {
-            CN.SetActive(true);
         }
         isAwake = true;
     }
@@ -68,21 +58,37 @@ public class NoteGenerator : MonoBehaviour
         NotePrefab newNoteScript = newNote.GetComponent<NotePrefab>();
 
         WorldInfo worldInfo = playGM.GetWorldInfo(worldInfoIndex);
+        int playerIndex = worldInfo.noteInfo.tarPlayerIndex;
         int eachNoteIndex = worldInfo.noteInfo.eachNoteIndex;
 
-        newNoteScript.noteWaitSecs = worldInfo.noteInfo.waitRadiusTween.duration / worldInfo.noteInfo.speed;
-        newNoteScript.noteWaitSecs *= Mathf.Clamp01(eachNoteIndex);
-        notesWaitSecs[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript.noteWaitSecs);
+        newNoteScript.noteWaitSecs = Mathf.Abs(worldInfo.noteInfo.waitRadiusTween.startValue - worldInfo.noteInfo.waitRadiusTween.endValue) / 3.5f / worldInfo.noteInfo.speed;
+        newNoteScript.noteWaitSecs *= Mathf.Clamp01(worldInfoIndex);
+        if (playerIndex != -1)
+            notesWaitSecs[playerIndex].Add(newNoteScript.noteWaitSecs);
 
-        newNoteScript.noteLengthSecs = worldInfo.noteInfo.holdRadiusTween.duration / worldInfo.noteInfo.speed;
-        newNoteScript.noteLengthSecs *= Mathf.Clamp01(eachNoteIndex);
-        notesLengthSecs[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript.noteLengthSecs);
+        newNoteScript.holdNoteSecs = Mathf.Abs(worldInfo.noteInfo.holdRadiusTween.startValue - worldInfo.noteInfo.holdRadiusTween.endValue) / worldInfo.noteInfo.speed;
+        newNoteScript.holdNoteSecs *= Mathf.Clamp01(worldInfoIndex);
+        if (playerIndex != -1)
+            notesLengthSecs[playerIndex].Add(newNoteScript.holdNoteSecs);
 
-        notes[worldInfo.noteInfo.tarPlayerIndex].Add(newNote);
-        noteScripts[worldInfo.noteInfo.tarPlayerIndex].Add(newNoteScript);
+        if (playerIndex != -1)
+        {
+            notes[playerIndex].Add(newNote);
+            noteScripts[playerIndex].Add(newNoteScript);
+        }
 
         newNoteScript.myEachNoteIndex = eachNoteIndex;
-        newNoteScript.tarPlayerIndex = worldInfo.noteInfo.tarPlayerIndex;
-        eachNoteCount[worldInfo.noteInfo.tarPlayerIndex]++;
+        newNoteScript.tarPlayerIndex = playerIndex;
+        if (playerIndex != -1)
+            eachNoteCount[playerIndex]++;
+        if (worldInfoIndex == 0)
+        {
+            for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
+            {
+                playGM.closestNotes[i] = newNote;
+                playGM.closestNoteScripts[i] = newNoteScript;
+            }
+        }
+        newNote.SetActive(false);
     }
 }

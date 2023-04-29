@@ -59,26 +59,4 @@ public class InfoViewer : MonoBehaviour
             infos.Add(fullName, infoFunc);
         }
     }
-    /* public string ArrayToText<T>(T[] array)
-    {
-        StringBuilder content = new StringBuilder();
-        for (int i = 0; i < array.Length; i++)
-        {
-            if (i > 0)
-                content.Append("  ");
-            content.Append("( Index : ").Append(i.ToString()).Append(", Value : ").Append(array[i]).Append(" )");
-        }
-        return content.ToString();
-    }
-    public string ListToText<T>(List<T> array)
-    {
-        StringBuilder content = new StringBuilder();
-        for (int i = 0; i < array.Count; i++)
-        {
-            if (i > 0)
-                content.Append("  ");
-            content.Append("( Index : ").Append(i.ToString()).Append(", Value : ").Append(array[i]).Append(" )");
-        }
-        return content.ToString();
-    } */
 }

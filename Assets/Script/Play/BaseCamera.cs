@@ -35,19 +35,20 @@ public class BaseCamera : MonoBehaviour
             return;
         beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
         worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
+        InfoViewer.Property.SetInfo(this.name, nameof(playGM.GetHoldNoteSecs), () => playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
             handy.TryKillTween(orthoSizeInfo);
-            orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween);
+            orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
 
             handy.TryKillTween(BGColorInfo);
-            BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween);
+            BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
 
             handy.TryKillTween(rotationInfo);
-            rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween);
+            rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
 
             handy.TryKillTween(posInfo);
-            posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween);
+            posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
 
             handy.PlayTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
 
@@ -69,6 +70,6 @@ public class BaseCamera : MonoBehaviour
     }
     BaseCamera()
     {
-        stdSize = 5.4f;
+        stdSize = Screen.height * 0.005f;
     }
 }

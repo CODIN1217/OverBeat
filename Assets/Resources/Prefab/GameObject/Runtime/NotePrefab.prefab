@@ -258,21 +258,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isInputted: 0
-  myNoteIndex: 0
+  myEachNoteIndex: 0
+  tarPlayerIndex: 0
   curDeg: 0
   stdRadius: 0
-  curRadius: 0
   tarRadius: 0
-  elapsedTimeWhenNeedInput: 0
-  elapsedTimeWhenNeedlessInput: 0
-  noteWaitTime: 0
-  noteLengthTime: 0
-  toleranceTimeWhenNeedlessInput: 0
+  holdElapsedSecs: 0
+  waitElapsedSecs: 0
+  waitElapsedSecs01: 0
+  holdElapsedSecs01: 0
+  noteWaitSecs: 0
+  holdNoteSecs: 0
+  toleranceSecsEndWait: 0
   isDisable: 0
-  needInput: 0
-  isPrepare: 0
+  isStop: 0
+  isNeedInput: 0
   startNoteSprite: {fileID: 0}
   endNoteSprite: {fileID: 0}
+  waitRadius: 0
+  totalRotation: 0
+  startRotation: 0
+  endRotation: 0
+  appearance: 0
+  startColor: {r: 0, g: 0, b: 0, a: 0}
+  processStartColor: {r: 0, g: 0, b: 0, a: 0}
+  processEndColor: {r: 0, g: 0, b: 0, a: 0}
+  endColor: {r: 0, g: 0, b: 0, a: 0}
+  beforeWorldInfo: {fileID: 0}
+  afterWorldInfo: {fileID: 0}
+  worldInfo: {fileID: 0}
+  toleranceSecsWhenAwake: 0
 --- !u!1 &7683705817249617831
 GameObject:
   m_ObjectHideFlags: 0
@@ -373,8 +388,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_UseWorldSpace
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: m_SortingLayerID
       value: -1460643017
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_Positions.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: m_Materials.Array.data[0]

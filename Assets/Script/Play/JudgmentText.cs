@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using DG.Tweening;
 
-public enum JudgmentType { Perfect, Great, Good, Bad, Miss }
+public enum JudgmentType { Perfect, Good, Bad, Miss }
 public class JudgmentText : MonoBehaviour
 {
     public int playerIndex;
@@ -16,6 +16,7 @@ public class JudgmentText : MonoBehaviour
     Handy handy;
     PlayGameManager playGM;
     Sequence FadeTweener;
+    WorldInfo worldInfo;
     bool isAwake;
     void Awake()
     {
@@ -29,9 +30,12 @@ public class JudgmentText : MonoBehaviour
             judgmentText_rect = GetComponent<RectTransform>();
             handy = Handy.Property;
             playGM = PlayGameManager.Property;
+            worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
             judgmentText_TMP.text = judgmentType.ToString();
             stdPlayerPos = playGM.GetPlayer(playerIndex).transform.position;
             stdPlayerScale = playGM.GetPlayer(playerIndex).transform.localScale;
+            judgmentText_TMP.color = worldInfo.judgmentInfo.judgmentColors[(int)judgmentType];
+            handy.ChangeAlpha(judgmentText_TMP, 0f);
             FadeTweener = DOTween.Sequence()
             .Append(judgmentText_TMP.DOFade(1f, 0.05f))
             .AppendInterval(0.2f)
