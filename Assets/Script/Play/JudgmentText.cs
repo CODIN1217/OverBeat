@@ -40,7 +40,8 @@ public class JudgmentText : MonoBehaviour
             .Append(judgmentText_TMP.DOFade(1f, 0.05f))
             .AppendInterval(0.2f)
             .Append(judgmentText_TMP.DOFade(0f, 0.05f))
-            .OnComplete(() => {gameObject.SetActive(false); handy.TryKillTween(FadeTweener);});
+            .OnComplete(() => {gameObject.SetActive(false); handy.TryKillTween(FadeTweener);})
+            .Play();
             judgmentText_rect.localPosition = stdPlayerPos + new Vector2(0, 0.61f * handy.GetScaleAbsAverage(stdPlayerScale) + judgmentText_rect.sizeDelta.y * 0.005f);
             isAwake = false;
         }

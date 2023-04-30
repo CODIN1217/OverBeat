@@ -8,15 +8,12 @@ using TweenValue;
 public class Player : MonoBehaviour
 {
     public int playerIndex;
-    bool isEnable;
     public GameObject playerSide;
     public GameObject playerCenter;
     SpriteRenderer playerSideRenderer;
     SpriteRenderer playerCenterRenderer;
     public Sprite playerSideSprite;
-    WorldInfo beforeWorldInfo;
     WorldInfo worldInfo;
-    WorldInfo nextWorldInfo;
 
     public float curDeg;
     public float rotation;
@@ -45,17 +42,11 @@ public class Player : MonoBehaviour
         handy = Handy.Property;
         playerSideRenderer = playerSide.GetComponent<SpriteRenderer>();
         playerCenterRenderer = playerCenter.GetComponent<SpriteRenderer>();
-        isEnable = true;
     }
     void Update()
     {
-        worldInfo = playGM.GetWorldInfo(playerIndex, playGM.closestNoteIndex[playerIndex]);
-        beforeWorldInfo = playGM.GetWorldInfo(playerIndex, playGM.closestNoteIndex[playerIndex] - 1);
-        nextWorldInfo = playGM.GetWorldInfo(playerIndex, playGM.closestNoteIndex[playerIndex] + 1);
-        if (isEnable)
-        {
-            isEnable = false;
-        }
+        NotePrefab closestNoteScript = playGM.closestNoteScripts[playerIndex];
+        worldInfo = closestNoteScript.tarPlayerIndex == -1 && closestNoteScript.myEachNoteIndex == -1 ? playGM.GetWorldInfo(0) : playGM.GetWorldInfo(playerIndex, playGM.closestNoteIndex[playerIndex]);
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.closestNoteIndex), playGM.closestNoteIndex[playerIndex], playerIndex))
         {
             handy.TryKillTween(radiusTweener);

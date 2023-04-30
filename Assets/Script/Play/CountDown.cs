@@ -12,7 +12,6 @@ public class CountDown : MonoBehaviour
     float intervalOfCountDownTick;
     float totalCountDownSecs;
     public bool isCountDown;
-    bool isEnable;
     float countDownSecs;
     TextMeshProUGUI countDownTMP;
     WorldInfo worldInfo;
@@ -34,10 +33,6 @@ public class CountDown : MonoBehaviour
     {
         if (playGM.isBreakUpdate() && !isCountDown)
             return;
-        if (isEnable)
-        {
-            isEnable = false;
-        }
         countDowner.Start();
         countDownSecs = countDowner.ElapsedMilliseconds * 0.001f;
         if (countDownSecs < totalCountDownSecs - intervalOfCountDownTick)
@@ -72,7 +67,6 @@ public class CountDown : MonoBehaviour
             this.intervalOfCountDownTick = (float)intervalOfCountDownTick;
         totalCountDownSecs = this.numberOfCountDownTick * this.intervalOfCountDownTick;
         isCountDown = true;
-        isEnable = true;
         countDowner.Reset();
         countDowner.Stop();
     }

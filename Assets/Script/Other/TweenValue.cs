@@ -37,8 +37,7 @@ namespace TweenValue
                 ease = tweenInfo.ease;
                 tweener = DOTween.Sequence()
                 .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, tweenInfo.endValue, duration)
-                .SetEase(tweenInfo.ease))
-                .Pause();
+                .SetEase(tweenInfo.ease));
             }
         }
         public TweeningInfo(TweenInfo<Vector2> tweenInfo, float duration, Func<object> value = null)
@@ -63,8 +62,7 @@ namespace TweenValue
                 ease = tweenInfo.ease;
                 tweener = DOTween.Sequence()
                 .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, tweenInfo.endValue, duration)
-                .SetEase(tweenInfo.ease))
-                .Pause();
+                .SetEase(tweenInfo.ease));
             }
         }
         public TweeningInfo(TweenInfo<Vector3> tweenInfo, float duration, Func<object> value = null)
@@ -89,8 +87,7 @@ namespace TweenValue
                 ease = tweenInfo.ease;
                 tweener = DOTween.Sequence()
                 .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, tweenInfo.endValue, duration)
-                .SetEase(tweenInfo.ease))
-                .Pause();
+                .SetEase(tweenInfo.ease));
             }
         }
         public TweeningInfo(TweenInfo<Color> tweenInfo, float duration, Func<object> value = null)
@@ -115,8 +112,7 @@ namespace TweenValue
                 ease = tweenInfo.ease;
                 tweener = DOTween.Sequence()
                 .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, tweenInfo.endValue, duration)
-                .SetEase(tweenInfo.ease))
-                .Pause();
+                .SetEase(tweenInfo.ease));
             }
         }
     }

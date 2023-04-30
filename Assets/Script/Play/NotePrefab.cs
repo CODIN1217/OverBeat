@@ -14,7 +14,7 @@ public class NotePrefab : MonoBehaviour
     public int myEachNoteIndex;
     public int tarPlayerIndex;
     int curPathIndex;
-    public float curDeg;
+    // public float curDeg;
     float stdDeg;
     float tarDeg;
     public float stdRadius;
@@ -86,9 +86,7 @@ public class NotePrefab : MonoBehaviour
     }
     void Update()
     {
-        if (playGM.isBreakUpdate() && playGM.countDownScript.isCountDown)
-            return;
-        if (playGM.countDownScript.isCountDown)
+        if (playGM.isPause)
             return;
         UpdateTweenValue();
         UpdateElapsedSecs01();
@@ -212,7 +210,7 @@ public class NotePrefab : MonoBehaviour
         appearance = (float)appearanceInfo.curValue;
 
         totalRotation = handy.GetCorrectDegMaxIs0(-((float)totalRotationInfo.curValue));
-        startRotation = handy.GetCorrectDegMaxIs0(-((float)startRotationInfo.curValue + curDeg));
+        startRotation = handy.GetCorrectDegMaxIs0(-((float)startRotationInfo.curValue + stdDeg));
         endRotation = handy.GetCorrectDegMaxIs0(-((float)endRotationInfo.curValue + tarDeg));
         startColor = playGM.GetColor01WithPlayerIndex((Color)startColorInfo.curValue, tarPlayerIndex);
         processStartColor = playGM.GetColor01WithPlayerIndex((Color)processStartColorInfo.curValue, tarPlayerIndex);
@@ -263,8 +261,8 @@ public class NotePrefab : MonoBehaviour
     }
     void UpdateNoteTransform()
     {
-        curDeg = tarPlayerScript.curDeg;
-        transform.position = handy.GetCircularPos(curDeg, waitRadius, playGM.centerScript.pos);
+        // curDeg = tarPlayerScript.curDeg;
+        transform.position = handy.GetCircularPos(tarDeg, waitRadius, playGM.centerScript.pos);
         startNote.transform.localScale = tarPlayerScript.playerSide.transform.localScale;
         endNote.transform.localScale = tarPlayerScript.playerSide.transform.localScale;
         transform.rotation = Quaternion.Euler(0f, 0f, totalRotation);

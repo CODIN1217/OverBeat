@@ -35,7 +35,7 @@ public class BaseCamera : MonoBehaviour
             return;
         beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
         worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
-        InfoViewer.Property.SetInfo(this.name, nameof(playGM.GetHoldNoteSecs), () => playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+        // InfoViewer.Property.SetInfo(this.name, nameof(playGM.GetHoldNoteSecs), () => playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
         if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
             handy.TryKillTween(orthoSizeInfo);
