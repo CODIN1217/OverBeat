@@ -10,7 +10,7 @@ public class CountDown : MonoBehaviour
 {
     int numberOfCountDownTick;
     float intervalOfCountDownTick;
-    float totalCountDownSecs;
+    public float totalCountDownSecs;
     public bool isCountDown;
     float countDownSecs;
     TextMeshProUGUI countDownTMP;

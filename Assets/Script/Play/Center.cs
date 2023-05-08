@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using TweenValue;
+using TweenManager;
 
-public class Center : MonoBehaviour
+public class Center : MonoBehaviour, ITweenerInfo
 {
     Image centerImage;
     WorldInfo worldInfo;
     Handy handy;
     PlayGameManager playGM;
-    
+
     public Vector2 scale;
     public Vector2 pos;
     public Color color;
@@ -20,45 +20,56 @@ public class Center : MonoBehaviour
     public TweeningInfo posInfo;
     public TweeningInfo colorInfo;
 
-    WorldInfo beforeWorldInfo;
+    // WorldInfo beforeWorldInfo;
     void Awake()
     {
         playGM = PlayGameManager.Property;
         handy = Handy.Property;
         centerImage = GetComponent<Image>();
+        playGM.initTweenEvent += InitTween;
+        playGM.playTweenEvent += PlayTween;
     }
     void Update()
     {
         if (playGM.isBreakUpdate())
             return;
-        beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
-        worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
+        // beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
         centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, playGM.HP01, Time.deltaTime * 4f);
-        if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
+        /* if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
-            handy.TryKillTween(scaleInfo);
-            scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+            InitTween();
 
-            handy.TryKillTween(posInfo);
-            posInfo = new TweeningInfo(worldInfo.centerInfo.posTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
-
-            handy.TryKillTween(colorInfo);
-            colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
-
-            handy.PlayTweens(scaleInfo, posInfo, colorInfo);
+            PlayTween();
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex);
-        }
+        } */
         UpdateTweenValue();
 
         transform.localScale = scale;
         transform.localPosition = pos;
         centerImage.color = color;
     }
-    void UpdateTweenValue()
+    public void InitTween()
     {
-        scale = (Vector2)scaleInfo.curValue;
-        pos = (Vector2)posInfo.curValue;
-        color = (Color)colorInfo.curValue;
+        worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
+        
+        handy.TryKillTween(scaleInfo);
+        scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+
+        handy.TryKillTween(posInfo);
+        posInfo = new TweeningInfo(worldInfo.centerInfo.posTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+
+        handy.TryKillTween(colorInfo);
+        colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+    }
+    public void UpdateTweenValue()
+    {
+        scale = ((TweenerInfo<Vector2>)scaleInfo).curValue;
+        pos = ((TweenerInfo<Vector2>)posInfo).curValue;
+        color = ((TweenerInfo<Color>)colorInfo).curValue;
+    }
+    public void PlayTween()
+    {
+        handy.PlayTweens(scaleInfo, posInfo, colorInfo);
     }
 }

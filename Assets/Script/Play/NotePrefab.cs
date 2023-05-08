@@ -6,29 +6,29 @@ using System.Diagnostics;
 using System;
 using Debug = UnityEngine.Debug;
 using DG.Tweening;
-using TweenValue;
+using TweenManager;
 
 public class NotePrefab : MonoBehaviour
 {
     public bool isInputted;
-    public int myEachNoteIndex;
+    public int myWorldInfoIndex;
+    public int myNoteIndex;
     public int tarPlayerIndex;
     int curPathIndex;
-    // public float curDeg;
     float stdDeg;
     float tarDeg;
     public float stdRadius;
     public float tarRadius;
-    float longNoteCurRadius;
     public float holdElapsedSecs;
     public float waitElapsedSecs;
     public float waitElapsedSecs01;
     public float holdElapsedSecs01;
     public float noteWaitSecs;
     public float holdNoteSecs;
+    public float toleranceSecsWhenAwake;
     public float toleranceSecsEndWait;
     float dottedLineLength;
-    bool isAfterAwake;
+    bool isAwake;
     public bool isDisable;
     public bool isStop;
     public bool isNeedInput;
@@ -40,9 +40,9 @@ public class NotePrefab : MonoBehaviour
     GameObject tarPlayer;
     Player tarPlayerScript;
     GameObject nextNote;
-    List<Vector3> myPathPoses;
-    List<Vector3> myLocalPathPoses;
-    List<Vector3> myProcessPathPoses;
+    List<Vector3> pathPoses;
+    List<Vector3> localPathPoses;
+    List<Vector3> processPathPoses;
 
     public float waitRadius;
     public float totalRotation;
@@ -71,34 +71,31 @@ public class NotePrefab : MonoBehaviour
     SpriteRenderer endNoteRenderer;
     Stopwatch myElapsedTime;
     NotePrefab nextNoteScript;
-    public WorldInfo beforeWorldInfo;
-    public WorldInfo afterWorldInfo;
     public WorldInfo worldInfo;
     Handy handy;
-    public float toleranceSecsWhenAwake;
     PlayGameManager playGM;
     void Awake()
     {
         playGM = PlayGameManager.Property;
         myElapsedTime = new Stopwatch();
         myElapsedTime.Stop();
-        isAfterAwake = true;
+        isAwake = true;
     }
     void Update()
     {
         if (playGM.isPause)
             return;
-        UpdateTweenValue();
-        UpdateElapsedSecs01();
-        if (isAfterAwake)
+        if (tarPlayerIndex == -1 && myNoteIndex == -1)
+            return;
+        if (isAwake)
         {
-            handy.PlayTweens(
-                waitRadiusInfo,
-                appearanceInfo);
+            PlayWaitTween();
             myElapsedTime.Reset();
             myElapsedTime.Stop();
-            isAfterAwake = false;
+            isAwake = false;
         }
+        UpdateTweenValue();
+        UpdateElapsedSecs01();
         myElapsedTime.Start();
         if (!isNeedInput)
         {
@@ -139,7 +136,7 @@ public class NotePrefab : MonoBehaviour
     }
     void LateUpdate()
     {
-        if (tarPlayerIndex == -1 && myEachNoteIndex == -1)
+        if (tarPlayerIndex == -1 && myNoteIndex == -1)
             return;
         UpdateNoteTransform();
         UpdateNotePartsTransform();
@@ -148,52 +145,39 @@ public class NotePrefab : MonoBehaviour
     public void InitNote()
     {
         handy = Handy.Property;
-        myPathPoses = new List<Vector3>();
-        myLocalPathPoses = new List<Vector3>();
-        myProcessPathPoses = new List<Vector3>();
+        pathPoses = new List<Vector3>();
+        localPathPoses = new List<Vector3>();
+        processPathPoses = new List<Vector3>();
 
         InitChildInfo();
 
-        beforeWorldInfo = playGM.GetWorldInfo(tarPlayerIndex, myEachNoteIndex - 1);
-        worldInfo = playGM.GetWorldInfo(tarPlayerIndex, myEachNoteIndex);
-        afterWorldInfo = playGM.GetWorldInfo(tarPlayerIndex, myEachNoteIndex + 1);
+        worldInfo = playGM.GetWorldInfo(myWorldInfoIndex);
         tarPlayer = playGM.GetPlayer(tarPlayerIndex);
         tarPlayerScript = playGM.GetPlayerScript(tarPlayerIndex);
         stdRadius = worldInfo.playerInfo[tarPlayerIndex].radiusTween.startValue;
         tarRadius = worldInfo.playerInfo[tarPlayerIndex].radiusTween.endValue;
         stdDeg = worldInfo.playerInfo[tarPlayerIndex].degTween.startValue;
         tarDeg = worldInfo.playerInfo[tarPlayerIndex].degTween.endValue;
-        nextNote = playGM.GetNote(tarPlayerIndex, myEachNoteIndex + 1);
-        nextNoteScript = playGM.GetNoteScript(tarPlayerIndex, myEachNoteIndex + 1);
+        nextNote = playGM.GetNote(tarPlayerIndex, myNoteIndex + 1);
+        nextNoteScript = playGM.GetNoteScript(tarPlayerIndex, myNoteIndex + 1);
         startNoteSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
         endNoteSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
 
-        waitRadiusInfo = new TweeningInfo(worldInfo.noteInfo.waitRadiusTween, playGM.GetNoteWaitSecs(tarPlayerIndex, myEachNoteIndex));
-        appearanceInfo = new TweeningInfo(worldInfo.noteInfo.appearanceTween, playGM.GetNoteWaitSecs(tarPlayerIndex, myEachNoteIndex) * 0.3f);
+        InitTween();
 
-        holdRadiusInfo = new TweeningInfo(worldInfo.noteInfo.holdRadiusTween, playGM.GetHoldNoteSecs(tarPlayerIndex, myEachNoteIndex));
-        totalRotationInfo = new TweeningInfo(worldInfo.noteInfo.totalRotationTween, playGM.GetHoldNoteSecs(tarPlayerIndex, myEachNoteIndex));
-        startRotationInfo = new TweeningInfo(worldInfo.noteInfo.startRotationTween, playGM.GetHoldNoteSecs(tarPlayerIndex, myEachNoteIndex));
-        endRotationInfo = new TweeningInfo(worldInfo.noteInfo.endRotationTween, playGM.GetHoldNoteSecs(tarPlayerIndex, myEachNoteIndex));
-        startColorInfo = new TweeningInfo(worldInfo.noteInfo.startColorTween, playGM.GetHoldNoteSecs(tarPlayerIndex, myEachNoteIndex));
-        processStartColorInfo = new TweeningInfo(worldInfo.noteInfo.processStartColorTween, playGM.GetHoldNoteSecs(tarPlayerIndex, myEachNoteIndex));
-        processEndColorInfo = new TweeningInfo(worldInfo.noteInfo.processEndColorTween, playGM.GetHoldNoteSecs(tarPlayerIndex, myEachNoteIndex));
-        endColorInfo = new TweeningInfo(worldInfo.noteInfo.endColorTween, playGM.GetHoldNoteSecs(tarPlayerIndex, myEachNoteIndex));
-        TweeningInfo playerDegInfo = new TweeningInfo(worldInfo.playerInfo[tarPlayerIndex].degTween, holdNoteSecs);
-        TweeningInfo playerRadiusInfo = new TweeningInfo(worldInfo.playerInfo[tarPlayerIndex].radiusTween, holdNoteSecs);
         if (holdNoteSecs != 0f)
         {
             for (int i = 0; i <= (int)(100f * holdNoteSecs); i++)
             {
-                float curDeg = (float)handy.GetTweenValue(playerDegInfo, (float)i / Mathf.Floor(100f * holdNoteSecs));
-                float curRadius = (float)handy.GetTweenValue(playerRadiusInfo, (float)i / Mathf.Floor(100f * holdNoteSecs)) + (float)handy.GetTweenValue(holdRadiusInfo, (float)i / Mathf.Floor(100f * holdNoteSecs));
-                myPathPoses.Add(handy.GetCircularPos(curDeg, curRadius));
+                float curDeg = TweenMethod.GetTweenValue(worldInfo.playerInfo[tarPlayerIndex].degTween, (float)i / Mathf.Floor(100f * holdNoteSecs));
+                float curRadius = TweenMethod.GetTweenValue(worldInfo.playerInfo[tarPlayerIndex].radiusTween, (float)i / Mathf.Floor(100f * holdNoteSecs)) + TweenMethod.GetTweenValue(worldInfo.noteInfo.holdRadiusTween, (float)i / Mathf.Floor(100f * holdNoteSecs));
+                pathPoses.Add(handy.GetCircularPos(curDeg, curRadius));
             }
         }
         else
         {
-            myPathPoses.Add(handy.GetCircularPos(stdDeg, stdRadius));
-            myPathPoses.Add(handy.GetCircularPos(tarDeg, tarRadius));
+            pathPoses.Add(handy.GetCircularPos(stdDeg, stdRadius));
+            pathPoses.Add(handy.GetCircularPos(tarDeg, tarRadius));
         }
 
         UpdateNoteTransform();
@@ -201,21 +185,51 @@ public class NotePrefab : MonoBehaviour
         UpdateNoteRenderer();
         UpdateElapsedSecs01();
 
-        playerDegInfo.tweener.Kill();
-        playerRadiusInfo.tweener.Kill();
+        playGM.playTweenEvent += PlayHoldTween;
     }
-    void UpdateTweenValue()
+    public void InitTween()
     {
-        waitRadius = (float)waitRadiusInfo.curValue;
-        appearance = (float)appearanceInfo.curValue;
+        waitRadiusInfo = new TweeningInfo(worldInfo.noteInfo.waitRadiusTween, playGM.GetNoteWaitSecs(myWorldInfoIndex));
+        appearanceInfo = new TweeningInfo(worldInfo.noteInfo.appearanceTween, playGM.GetNoteWaitSecs(myWorldInfoIndex) * 0.3f);
 
-        totalRotation = handy.GetCorrectDegMaxIs0(-((float)totalRotationInfo.curValue));
-        startRotation = handy.GetCorrectDegMaxIs0(-((float)startRotationInfo.curValue + stdDeg));
-        endRotation = handy.GetCorrectDegMaxIs0(-((float)endRotationInfo.curValue + tarDeg));
-        startColor = playGM.GetColor01WithPlayerIndex((Color)startColorInfo.curValue, tarPlayerIndex);
-        processStartColor = playGM.GetColor01WithPlayerIndex((Color)processStartColorInfo.curValue, tarPlayerIndex);
-        processEndColor = playGM.GetColor01WithPlayerIndex((Color)processEndColorInfo.curValue, tarPlayerIndex);
-        endColor = playGM.GetColor01WithPlayerIndex((Color)endColorInfo.curValue, tarPlayerIndex);
+        holdRadiusInfo = new TweeningInfo(worldInfo.noteInfo.holdRadiusTween, playGM.GetHoldNoteSecs(myWorldInfoIndex));
+        totalRotationInfo = new TweeningInfo(worldInfo.noteInfo.totalRotationTween, playGM.GetHoldNoteSecs(myWorldInfoIndex));
+        startRotationInfo = new TweeningInfo(worldInfo.noteInfo.startRotationTween, playGM.GetHoldNoteSecs(myWorldInfoIndex));
+        endRotationInfo = new TweeningInfo(worldInfo.noteInfo.endRotationTween, playGM.GetHoldNoteSecs(myWorldInfoIndex));
+        startColorInfo = new TweeningInfo(worldInfo.noteInfo.startColorTween, playGM.GetHoldNoteSecs(myWorldInfoIndex));
+        processStartColorInfo = new TweeningInfo(worldInfo.noteInfo.processStartColorTween, playGM.GetHoldNoteSecs(myWorldInfoIndex));
+        processEndColorInfo = new TweeningInfo(worldInfo.noteInfo.processEndColorTween, playGM.GetHoldNoteSecs(myWorldInfoIndex));
+        endColorInfo = new TweeningInfo(worldInfo.noteInfo.endColorTween, playGM.GetHoldNoteSecs(myWorldInfoIndex));
+    }
+    public void UpdateTweenValue()
+    {
+        waitRadius = ((TweenerInfo<float>)waitRadiusInfo).curValue;
+        appearance = ((TweenerInfo<float>)appearanceInfo).curValue;
+
+        totalRotation = handy.GetCorrectDegMaxIs0(-(((TweenerInfo<float>)totalRotationInfo).curValue));
+        startRotation = handy.GetCorrectDegMaxIs0(-(((TweenerInfo<float>)startRotationInfo).curValue + stdDeg));
+        endRotation = handy.GetCorrectDegMaxIs0(-(((TweenerInfo<float>)endRotationInfo).curValue + tarDeg));
+        startColor = playGM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)startColorInfo).curValue, tarPlayerIndex);
+        processStartColor = playGM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)processStartColorInfo).curValue, tarPlayerIndex);
+        processEndColor = playGM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)processEndColorInfo).curValue, tarPlayerIndex);
+        endColor = playGM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)endColorInfo).curValue, tarPlayerIndex);
+    }
+    public void PlayWaitTween()
+    {
+        handy.PlayTweens(
+            waitRadiusInfo,
+            appearanceInfo);
+    }
+    public void PlayHoldTween()
+    {
+        handy.PlayTweens(
+            totalRotationInfo,
+            startRotationInfo,
+            endRotationInfo,
+            startColorInfo,
+            processStartColorInfo,
+            processEndColorInfo,
+            endColorInfo);
     }
     public void UpdateElapsedSecs01()
     {
@@ -227,41 +241,30 @@ public class NotePrefab : MonoBehaviour
         if (holdNoteSecs != 0f)
             holdElapsedSecs01 = Mathf.Clamp01(Mathf.Clamp(holdElapsedSecs, 0f, holdNoteSecs) / holdNoteSecs);
         else
-            holdElapsedSecs01 = Mathf.Clamp01(Mathf.Clamp(holdElapsedSecs, 0f, playGM.GetNoteWaitSecs(tarPlayerIndex, myEachNoteIndex + 1)) / playGM.GetNoteWaitSecs(tarPlayerIndex, myEachNoteIndex + 1));
+            holdElapsedSecs01 = Mathf.Clamp01(Mathf.Clamp(holdElapsedSecs, 0f, playGM.GetNoteWaitSecs(tarPlayerIndex, myNoteIndex + 1)) / playGM.GetNoteWaitSecs(tarPlayerIndex, myNoteIndex + 1));
     }
     public void EndWaiting()
     {
+        playGM.worldInfoIndex++;
+
         toleranceSecsEndWait = waitElapsedSecs - noteWaitSecs;
         waitElapsedSecs = noteWaitSecs;
 
         handy.TryKillTween(appearanceInfo);
         handy.TryKillTween(waitRadiusInfo);
+        
+        playGM.initTweenEvent();
+        playGM.playTweenEvent();
+        // playerScript.InitTween();
 
-        handy.PlayTweens(
-            totalRotationInfo,
-            startRotationInfo,
-            endRotationInfo,
-            startColorInfo,
-            processStartColorInfo,
-            processEndColorInfo,
-            endColorInfo,
-
-            tarPlayerScript.radiusTweener,
-            tarPlayerScript.degInfo,
-            tarPlayerScript.rotationInfo,
-            tarPlayerScript.totalScaleInfo,
-            tarPlayerScript.sideScaleInfo,
-            tarPlayerScript.centerScaleInfo,
-            tarPlayerScript.sideColorInfo,
-            tarPlayerScript.centerColorInfo);
+        // PlayHoldTween();
+        // playerScript.PlayTween();
         myElapsedTime.Reset();
         myElapsedTime.Stop();
-        playGM.worldInfoIndex += 1;
         isNeedInput = true;
     }
     void UpdateNoteTransform()
     {
-        // curDeg = tarPlayerScript.curDeg;
         transform.position = handy.GetCircularPos(tarDeg, waitRadius, playGM.centerScript.pos);
         startNote.transform.localScale = tarPlayerScript.playerSide.transform.localScale;
         endNote.transform.localScale = tarPlayerScript.playerSide.transform.localScale;
@@ -270,32 +273,32 @@ public class NotePrefab : MonoBehaviour
     void UpdateNotePartsTransform()
     {
         curPathIndex = (int)(100f * Mathf.Clamp(holdElapsedSecs, 0f, float.MaxValue));
-        myLocalPathPoses.Clear();
-        myProcessPathPoses.Clear();
+        localPathPoses.Clear();
+        processPathPoses.Clear();
         dottedLineLength = 0f;
-        for (int i = curPathIndex; i < myPathPoses.Count; i++)
+        for (int i = curPathIndex; i < pathPoses.Count; i++)
         {
-            myProcessPathPoses.Add(myPathPoses[i]);
-            myLocalPathPoses.Add(myPathPoses[i] - (Vector3)handy.GetCircularPos(stdDeg, stdRadius));
+            processPathPoses.Add(pathPoses[i]);
+            localPathPoses.Add(pathPoses[i] - (Vector3)handy.GetCircularPos(stdDeg, stdRadius));
             Sprite playerSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
-            if (handy.CheckObjInOtherObj(myPathPoses[i], Vector2.zero, handy.GetCircularPos(stdDeg, stdRadius), worldInfo.playerInfo[tarPlayerIndex].totalScaleTween.startValue, Vector2.zero, handy.GetSpritePixels(playerSprite)) || handy.CheckObjInOtherObj(myPathPoses[i], Vector2.zero, handy.GetCircularPos(tarDeg, worldInfo.playerInfo[tarPlayerIndex].radiusTween.endValue), worldInfo.playerInfo[tarPlayerIndex].totalScaleTween.endValue, Vector2.zero, handy.GetSpritePixels(playerSprite)))
+            if (handy.CheckObjInOtherObj(pathPoses[i], Vector2.zero, handy.GetCircularPos(stdDeg, stdRadius), worldInfo.playerInfo[tarPlayerIndex].totalScaleTween.startValue, Vector2.zero, handy.GetSpritePixels(playerSprite)) || handy.CheckObjInOtherObj(pathPoses[i], Vector2.zero, handy.GetCircularPos(tarDeg, worldInfo.playerInfo[tarPlayerIndex].radiusTween.endValue), worldInfo.playerInfo[tarPlayerIndex].totalScaleTween.endValue, Vector2.zero, handy.GetSpritePixels(playerSprite)))
             {
-                myProcessPathPoses.RemoveAt(myProcessPathPoses.Count - 1);
+                processPathPoses.RemoveAt(processPathPoses.Count - 1);
             }
             else
             {
-                myProcessPathPoses[myProcessPathPoses.Count - 1] -= (Vector3)handy.GetCircularPos(stdDeg, stdRadius);
-                dottedLineLength += Vector2.Distance(myPathPoses[handy.GetBeforeIndex(i - curPathIndex)], myPathPoses[i - curPathIndex]);
+                processPathPoses[processPathPoses.Count - 1] -= (Vector3)handy.GetCircularPos(stdDeg, stdRadius);
+                dottedLineLength += Vector2.Distance(pathPoses[handy.GetBeforeIndex(i - curPathIndex)], pathPoses[i - curPathIndex]);
             }
         }
-        if (myLocalPathPoses.Count > 0)
+        if (localPathPoses.Count > 0)
         {
-            startNote.transform.localPosition = myLocalPathPoses[0];
-            endNote.transform.localPosition = myLocalPathPoses[myLocalPathPoses.Count - 1];
+            startNote.transform.localPosition = localPathPoses[0];
+            endNote.transform.localPosition = localPathPoses[localPathPoses.Count - 1];
         }
-        if (myProcessPathPoses.Count > 0)
+        if (processPathPoses.Count > 0)
         {
-            processNoteDottedLine.poses = myProcessPathPoses;
+            processNoteDottedLine.poses = processPathPoses;
             processNoteDottedLine.SetRepeatCount(dottedLineLength * 2.444f);
         }
         startNote.transform.rotation = Quaternion.Euler(0f, 0f, startRotation);
@@ -353,6 +356,7 @@ public class NotePrefab : MonoBehaviour
     }
     void DisableMe()
     {
+        playGM.closestNoteIndex[tarPlayerIndex]++;
         gameObject.SetActive(false);
     }
     IEnumerator CheckHoldingKey()

@@ -6,7 +6,7 @@ using System;
 using TMPro;
 using System.Text;
 using DG.Tweening;
-using TweenValue;
+using TweenManager;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
@@ -152,7 +152,7 @@ public class Handy : MonoBehaviour
     {
         return index <= initIndex ? initIndex : index - 1;
     }
-    public bool CheckObjInOtherObj(GameObject includedObj, GameObject includeObj, Vector2 includedObjImagePixelCount, Vector2 includeObjImagePixelCount)
+    /* public bool CheckObjInOtherObj(GameObject includedObj, GameObject includeObj, Vector2 includedObjImagePixelCount, Vector2 includeObjImagePixelCount)
     {
         if (Vector2.Distance(includedObj.transform.position, includeObj.transform.position) <= GetScaleAbsAverage(includedObj) * (includedObjImagePixelCount.x + includedObjImagePixelCount.y) * 0.0025f + GetScaleAbsAverage(includeObj) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f)
         {
@@ -175,10 +175,10 @@ public class Handy : MonoBehaviour
             return true;
         }
         return false;
-    }
+    } */
     public bool CheckObjInOtherObj(Vector2 includedObjPos, Vector2 includedObjScale, Vector2 includeObjPos, Vector2 includeObjScale, Vector2 includedObjImagePixelCount, Vector2 includeObjImagePixelCount)
     {
-        if (Vector2.Distance(includedObjPos, includeObjPos) <= GetScaleAbsAverage(includedObjScale) * (includedObjImagePixelCount.x + includedObjImagePixelCount.y) * 0.0025f + GetScaleAbsAverage(includeObjScale) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f)
+        if (Vector2.Distance(includedObjPos, includeObjPos) <= (GetScaleAbsAverage(MultiplyXByX_YByY(includedObjScale, includedObjImagePixelCount)) + GetScaleAbsAverage(MultiplyXByX_YByY(includeObjScale, includeObjImagePixelCount))) * 0.005f)
         {
             return true;
         }
@@ -301,20 +301,20 @@ public class Handy : MonoBehaviour
     }
     public void PlayTweens(params TweeningInfo[] tweeningInfos)
     {
-        foreach (var TIs in tweeningInfos)
-            TIs.tweener.Play();
+        foreach (var TI in tweeningInfos)
+            TI.tweener.Play();
     }
     public void PauseTweens(params TweeningInfo[] tweeningInfos)
     {
-        foreach (var TIs in tweeningInfos)
-            TIs.tweener.Pause();
+        foreach (var TI in tweeningInfos)
+            TI.tweener.Pause();
     }
     public void TryKillTweens(params TweeningInfo[] tweeningInfos)
     {
         foreach (var TI in tweeningInfos)
             TryKillTween(TI);
     }
-    public object GetTweenValue(TweeningInfo tweeningInfo, float progress01)
+    /* public object GetTweenValue(TweeningInfo tweeningInfo, float progress01)
     {
         float curduration = tweeningInfo.tweener.Elapsed();
 
@@ -326,5 +326,5 @@ public class Handy : MonoBehaviour
         tweeningInfo.tweener.ManualUpdate(Time.deltaTime, Time.unscaledDeltaTime);
 
         return tweenValueTemp;
-    }
+    } */
 }

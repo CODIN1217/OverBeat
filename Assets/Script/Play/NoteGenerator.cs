@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TweenValue;
+using TweenManager;
 
 public class NoteGenerator : MonoBehaviour
 {
@@ -10,8 +10,9 @@ public class NoteGenerator : MonoBehaviour
     public List<float>[] notesLengthSecs;
     public List<GameObject>[] notes;
     public List<NotePrefab>[] noteScripts;
+    public GameObject startNote;
+    public NotePrefab startNoteScript;
     public int[] eachNoteCount;
-    bool isAwake;
     Handy handy;
     PlayGameManager playGM;
     void Awake()
@@ -43,14 +44,6 @@ public class NoteGenerator : MonoBehaviour
                 playGM.GetNoteScript(i, j).InitNote();
             }
         }
-        isAwake = true;
-    }
-    void Update()
-    {
-        if (isAwake)
-        {
-            isAwake = false;
-        }
     }
     void SetNotePrefab(int worldInfoIndex)
     {
@@ -76,8 +69,14 @@ public class NoteGenerator : MonoBehaviour
             notes[playerIndex].Add(newNote);
             noteScripts[playerIndex].Add(newNoteScript);
         }
+        else
+        {
+            startNote = newNote;
+            startNoteScript = newNoteScript;
+        }
 
-        newNoteScript.myEachNoteIndex = eachNoteIndex;
+        newNoteScript.myWorldInfoIndex = worldInfoIndex;
+        newNoteScript.myNoteIndex = eachNoteIndex;
         newNoteScript.tarPlayerIndex = playerIndex;
         if (playerIndex != -1)
             eachNoteCount[playerIndex]++;

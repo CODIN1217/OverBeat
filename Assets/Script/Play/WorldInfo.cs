@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
+using TweenManager;
 
 [Serializable]
 public class WorldInfo : MonoBehaviour
@@ -36,7 +37,7 @@ public class WorldInfo : MonoBehaviour
     [Serializable]
     public class PlayerInfo
     {
-        public int moveDir;
+        public int degDir;
         public TweenInfo<float> degTween;
         public TweenInfo<float> radiusTween;
         public TweenInfo<float> rotationTween;
@@ -47,7 +48,7 @@ public class WorldInfo : MonoBehaviour
         public TweenInfo<Vector2> centerScaleTween;
         public PlayerInfo()
         {
-            moveDir = 1;
+            degDir = 1;
             degTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             radiusTween = new TweenInfo<float>(1.5f, 1.5f, AnimationCurve.Linear(0, 0, 1, 1));
             rotationTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
@@ -118,9 +119,9 @@ public class WorldInfo : MonoBehaviour
         public BoundaryInfo()
         {
             lineColorTween = new TweenInfo<Color>(new Color(0, 255, 160, 255) / 255f, new Color(0, 255, 160, 255) / 255f, AnimationCurve.Linear(0, 0, 1, 1));
-            coverColorTween = new TweenInfo<Color>();
+            coverColorTween = new TweenInfo<Color>(new Color(39, 29, 35, 255) / 255f, new Color(39, 29, 35, 255) / 255f, AnimationCurve.Linear(0, 0, 1, 1));
             scaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, AnimationCurve.Linear(0, 0, 1, 1));
-            posTween = new TweenInfo<Vector2>();
+            posTween = new TweenInfo<Vector2>(Vector2.zero, Vector2.zero, AnimationCurve.Linear(0, 0, 1, 1));
         }
     }
     [Serializable]

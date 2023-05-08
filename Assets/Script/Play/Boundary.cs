@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using TweenValue;
+using TweenManager;
 
-public class Boundary : MonoBehaviour
+public class Boundary : MonoBehaviour, ITweenerInfo
 {
     Handy handy;
     WorldInfo worldInfo;
@@ -27,36 +27,27 @@ public class Boundary : MonoBehaviour
     public TweeningInfo scaleInfo;
     public TweeningInfo posInfo;
 
-    WorldInfo beforeWorldInfo;
+    // WorldInfo beforeWorldInfo;
     void Awake()
     {
         playGM = PlayGameManager.Property;
         handy = Handy.Property;
+        playGM.initTweenEvent += InitTween;
+        playGM.playTweenEvent += PlayTween;
     }
     void Update()
     {
         if (playGM.isBreakUpdate())
             return;
-        beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
-        worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
-        if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
+        // beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
+        /* if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
-            handy.TryKillTween(coverColorInfo);
-            coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex), () => playGM.baseCameraScript.BGColor);
+            InitTween();
 
-            handy.TryKillTween(posInfo);
-            posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex), () => playGM.baseCameraScript.pos);
-
-            handy.TryKillTween(lineColorInfo);
-            lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
-
-            handy.TryKillTween(scaleInfo);
-            scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
-
-            handy.PlayTweens(coverColorInfo, lineColorInfo, scaleInfo, posInfo);
+            PlayTween();
 
             handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex);
-        }
+        } */
         UpdateTweenValue();
 
         boundaryCoverImage.color = coverColor;
@@ -64,11 +55,31 @@ public class Boundary : MonoBehaviour
         transform.localScale = scale; boundaryCover.transform.localScale = new Vector2(1f / scale.x, 1f / scale.y);
         transform.localPosition = pos; boundaryCover.transform.localPosition = -pos;
     }
-    void UpdateTweenValue()
+    public void InitTween()
     {
-        coverColor = (Color)coverColorInfo.curValue;
-        lineColor = (Color)lineColorInfo.curValue;
-        scale = (Vector2)scaleInfo.curValue;
-        pos = (Vector2)posInfo.curValue;
+        worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
+        
+        handy.TryKillTween(coverColorInfo);
+        coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.BGColor */);
+
+        handy.TryKillTween(posInfo);
+        posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.pos */);
+
+        handy.TryKillTween(lineColorInfo);
+        lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+
+        handy.TryKillTween(scaleInfo);
+        scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+    }
+    public void UpdateTweenValue()
+    {
+        coverColor = ((TweenerInfo<Color>)coverColorInfo).curValue;
+        lineColor = ((TweenerInfo<Color>)lineColorInfo).curValue;
+        scale = ((TweenerInfo<Vector2>)scaleInfo).curValue;
+        pos = ((TweenerInfo<Vector2>)posInfo).curValue;
+    }
+    public void PlayTween()
+    {
+        handy.PlayTweens(coverColorInfo, lineColorInfo, scaleInfo, posInfo);
     }
 }

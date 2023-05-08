@@ -40,7 +40,6 @@ public class PlayGameManager : MonoBehaviour
     public bool isClearWorld;
     public bool isAutoPlay;
     bool isBeforeAwake;
-    bool isAfterAwake;
     bool isInputted;
     bool isInputted_temp;
     static PlayGameManager instance = null;
@@ -58,11 +57,14 @@ public class PlayGameManager : MonoBehaviour
     Stopwatch totalElapsedTime;
     public float totalElapsedSecs;
     float totalGamePlaySecs;
+    public delegate void TweenEvent();
+    public TweenEvent initTweenEvent;
+    public TweenEvent playTweenEvent;
     void Awake()
     {
         instance = this;
         isPause = true;
-        canInputKeys = new List<List<KeyCode>>() { new List<KeyCode>() { KeyCode.W, KeyCode.D, KeyCode.S, KeyCode.A }, new List<KeyCode>() { KeyCode.I, KeyCode.L, KeyCode.K, KeyCode.J } };
+        canInputKeys = new List<List<KeyCode>>() { new List<KeyCode>() { KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.F }, new List<KeyCode>() { KeyCode.H, KeyCode.J, KeyCode.K, KeyCode.L } };
         accuracy01 = 1f;
         closestNoteIndex = new int[GetMaxPlayerCount()];
         isKeyDowns = new List<List<bool>>();
@@ -78,7 +80,8 @@ public class PlayGameManager : MonoBehaviour
         closestNotes = new GameObject[GetMaxPlayerCount()];
         closestNoteScripts = new NotePrefab[GetMaxPlayerCount()];
         isBeforeAwake = true;
-        isAfterAwake = true;
+        initTweenEvent = () => {};
+        playTweenEvent = () => {};
     }
     void Update()
     {
@@ -112,6 +115,8 @@ public class PlayGameManager : MonoBehaviour
         }
         if (isBeforeAwake)
         {
+            initTweenEvent();
+            playTweenEvent();
             for (int i = 0; i < GetMaxPlayerCount(); i++)
             {
                 totalNoteCount += GetNoteCount(i);
@@ -129,15 +134,10 @@ public class PlayGameManager : MonoBehaviour
         {
             return;
         }
-        if (isAfterAwake)
-        {
-            worldInfoIndex++;
-            isAfterAwake = false;
-        }
 
         totalElapsedTime.Start();
         totalElapsedSecs = totalElapsedTime.ElapsedMilliseconds * 0.001f;
-        for (int i = 0; i < GetWorldInfoCount(); i++)
+        for (int i = 1; i < GetWorldInfoCount(); i++)
         {
             GameObject curNote = GetNote(GetWorldInfo(i).noteInfo.tarPlayerIndex, GetWorldInfo(i).noteInfo.eachNoteIndex);
             NotePrefab curNoteScript = GetNoteScript(GetWorldInfo(i).noteInfo.tarPlayerIndex, GetWorldInfo(i).noteInfo.eachNoteIndex);
@@ -153,7 +153,6 @@ public class PlayGameManager : MonoBehaviour
                 }
             }
         }
-        UpdateClosestNoteIndex();
         for (int i = 0; i < GetMaxPlayerCount(); i++)
         {
             closestNotes[i] = GetNote(i, closestNoteIndex[i]);
@@ -207,19 +206,6 @@ public class PlayGameManager : MonoBehaviour
         {
             isClearWorld = true;
             isPause = true;
-        }
-    }
-    void UpdateClosestNoteIndex()
-    {
-        for (int i = 0; i < GetMaxPlayerCount(); i++)
-        {
-            for (int j = GetMaxNoteIndex(i); j >= closestNoteIndex[i]; j--)
-            {
-                if (GetNote(i, j).activeSelf)
-                {
-                    closestNoteIndex[i] = j;
-                }
-            }
         }
     }
     public JudgmentType GetJudgment(int playerIndex, float judgmentValue, Action codeOnJudgBad = null, Action codeOnJudgGood = null, Action codeOnStart = null)
@@ -330,7 +316,7 @@ public class PlayGameManager : MonoBehaviour
     {
         playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
         eachNoteIndex = handy.GetCorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex));
-        for (int i = 0; i < GetWorldInfoCount(); i++)
+        for (int i = 1; i < GetWorldInfoCount(); i++)
         {
             WorldInfo curWorldInfo = GetWorldInfo(i);
             if (curWorldInfo.noteInfo.tarPlayerIndex == playerIndex && curWorldInfo.noteInfo.eachNoteIndex == eachNoteIndex)
@@ -340,31 +326,43 @@ public class PlayGameManager : MonoBehaviour
     }
     public float GetNoteWaitSecs(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
-        return noteGeneratorScript.notesWaitSecs[playerIndex][handy.GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
+        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
+        eachNoteIndex = handy.GetCorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
+        return playerIndex == -1 && eachNoteIndex == -1 ? 0f : noteGeneratorScript.notesWaitSecs[playerIndex][eachNoteIndex];
     }
     public float GetHoldNoteSecs(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
-        return noteGeneratorScript.notesLengthSecs[playerIndex][handy.GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
+        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
+        eachNoteIndex = handy.GetCorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
+        return playerIndex == -1 && eachNoteIndex == -1 ? countDownScript.totalCountDownSecs : noteGeneratorScript.notesLengthSecs[playerIndex][eachNoteIndex];
     }
     public float GetNoteWaitSecs(int worldInfoIndex)
     {
-        return noteGeneratorScript.notesWaitSecs[GetWorldInfo(worldInfoIndex).noteInfo.tarPlayerIndex][GetWorldInfo(worldInfoIndex).noteInfo.eachNoteIndex];
+        return worldInfoIndex == 0 ? 0f : noteGeneratorScript.notesWaitSecs[GetWorldInfo(worldInfoIndex).noteInfo.tarPlayerIndex][GetWorldInfo(worldInfoIndex).noteInfo.eachNoteIndex];
     }
     public float GetHoldNoteSecs(int worldInfoIndex)
     {
-        return noteGeneratorScript.notesLengthSecs[GetWorldInfo(worldInfoIndex).noteInfo.tarPlayerIndex][GetWorldInfo(worldInfoIndex).noteInfo.eachNoteIndex];
+        return worldInfoIndex == 0 ? countDownScript.totalCountDownSecs : noteGeneratorScript.notesLengthSecs[GetWorldInfo(worldInfoIndex).noteInfo.tarPlayerIndex][GetWorldInfo(worldInfoIndex).noteInfo.eachNoteIndex];
+    }
+    public float GetNoteWaitSecs(WorldInfo worldInfo)
+    {
+        return worldInfo.noteInfo.tarPlayerIndex == -1 && worldInfo.noteInfo.eachNoteIndex == -1 ? 0f : noteGeneratorScript.notesWaitSecs[worldInfo.noteInfo.tarPlayerIndex][worldInfo.noteInfo.eachNoteIndex];
+    }
+    public float GetHoldNoteSecs(WorldInfo worldInfo)
+    {
+        return worldInfo.noteInfo.tarPlayerIndex == -1 && worldInfo.noteInfo.eachNoteIndex == -1 ? countDownScript.totalCountDownSecs : noteGeneratorScript.notesLengthSecs[worldInfo.noteInfo.tarPlayerIndex][worldInfo.noteInfo.eachNoteIndex];
     }
     public GameObject GetNote(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
-        return noteGeneratorScript.notes[playerIndex][handy.GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
+        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
+        eachNoteIndex = handy.GetCorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
+        return playerIndex == -1 && eachNoteIndex == -1 ? noteGeneratorScript.startNote : noteGeneratorScript.notes[playerIndex][eachNoteIndex];
     }
     public NotePrefab GetNoteScript(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
-        return noteGeneratorScript.noteScripts[playerIndex][handy.GetCorrectIndex((int)eachNoteIndex, GetMaxNoteIndex(playerIndex))];
+        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
+        eachNoteIndex = handy.GetCorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
+        return playerIndex == -1 && eachNoteIndex == -1 ? noteGeneratorScript.startNoteScript : noteGeneratorScript.noteScripts[playerIndex][eachNoteIndex];
     }
     public float GetJudgmentValue(int playerIndex, float? waitElapsedSecs01 = null, float? holdElapsedSecs01 = null)
     {
@@ -382,7 +380,7 @@ public class PlayGameManager : MonoBehaviour
     public int GetMaxPlayerCount()
     {
         int maxPlayerCount = 0;
-        for (int i = 0; i < GetWorldInfoCount(); i++)
+        for (int i = 1; i < GetWorldInfoCount(); i++)
         {
             if (maxPlayerCount < GetWorldInfo(i).playerInfo.Length)
             {
@@ -406,7 +404,7 @@ public class PlayGameManager : MonoBehaviour
     public int GetNoteCount(int playerIndex)
     {
         int noteCount = 0;
-        for (int i = 0; i < GetWorldInfoCount(); i++)
+        for (int i = 1; i < GetWorldInfoCount(); i++)
         {
             if (GetWorldInfo(i).noteInfo.tarPlayerIndex == playerIndex)
                 noteCount++;
@@ -415,7 +413,7 @@ public class PlayGameManager : MonoBehaviour
     }
     public int GetMaxNoteIndex(int playerIndex)
     {
-        playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
+        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
         return GetNoteCount(playerIndex) - 1;
     }
     public int GetActivePlayerCount()
@@ -465,14 +463,14 @@ public class PlayGameManager : MonoBehaviour
     }
     public float GetWaitElapsedSecs01(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
+        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
         if (GetNoteScript(playerIndex, eachNoteIndex) != null)
             return GetNoteScript(playerIndex, eachNoteIndex).waitElapsedSecs01;
         return 0f;
     }
     public float GetHoldElapsedSecs01(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex((int)playerIndex, GetMaxPlayerIndex());
+        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
         if (GetNoteScript(playerIndex, eachNoteIndex) != null)
             return GetNoteScript(playerIndex, eachNoteIndex).holdElapsedSecs01;
         return 0f;
