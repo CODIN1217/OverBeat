@@ -14,7 +14,7 @@ public class JudgmentText : MonoBehaviour
     Vector2 stdPlayerPos;
     Vector2 stdPlayerScale;
     Handy handy;
-    PlayGameManager playGM;
+    PlayManager PM;
     Sequence FadeTweener;
     WorldInfo worldInfo;
     bool isAwake;
@@ -29,11 +29,11 @@ public class JudgmentText : MonoBehaviour
             judgmentText_TMP = GetComponent<TextMeshProUGUI>();
             judgmentText_rect = GetComponent<RectTransform>();
             handy = Handy.Property;
-            playGM = PlayGameManager.Property;
-            worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
+            PM = PlayManager.Property;
+            worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
             judgmentText_TMP.text = judgmentType.ToString();
-            stdPlayerPos = playGM.GetPlayer(playerIndex).transform.position;
-            stdPlayerScale = playGM.GetPlayer(playerIndex).transform.localScale;
+            stdPlayerPos = PM.GetPlayer(playerIndex).transform.position;
+            stdPlayerScale = PM.GetPlayer(playerIndex).transform.localScale;
             judgmentText_TMP.color = worldInfo.judgmentInfo.judgmentColors[(int)judgmentType];
             handy.ChangeAlpha(judgmentText_TMP, 0f);
             FadeTweener = DOTween.Sequence()

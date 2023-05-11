@@ -7,8 +7,9 @@ using System;
 using System.Linq;
 using System.Text;
 using Debug = UnityEngine.Debug;
+using TweenManager;
 
-public class PlayGameManager : MonoBehaviour
+public class PlayManager : MonoBehaviour
 {
     public GameObject countDown;
     public CountDown countDownScript;
@@ -42,7 +43,7 @@ public class PlayGameManager : MonoBehaviour
     bool isBeforeAwake;
     bool isInputted;
     bool isInputted_temp;
-    static PlayGameManager instance = null;
+    static PlayManager instance = null;
     public List<List<KeyCode>> canInputKeys;
     public float sumNoteAccuracy01;
     public float progress01;
@@ -59,7 +60,7 @@ public class PlayGameManager : MonoBehaviour
     float totalGamePlaySecs;
     public delegate void TweenEvent();
     public TweenEvent initTweenEvent;
-    public TweenEvent playTweenEvent;
+    public TweenEvent playHoldTweenEvent;
     void Awake()
     {
         instance = this;
@@ -80,8 +81,8 @@ public class PlayGameManager : MonoBehaviour
         closestNotes = new GameObject[GetMaxPlayerCount()];
         closestNoteScripts = new NotePrefab[GetMaxPlayerCount()];
         isBeforeAwake = true;
-        initTweenEvent = () => {};
-        playTweenEvent = () => {};
+        initTweenEvent = () => { };
+        playHoldTweenEvent = () => { };
     }
     void Update()
     {
@@ -116,7 +117,7 @@ public class PlayGameManager : MonoBehaviour
         if (isBeforeAwake)
         {
             initTweenEvent();
-            playTweenEvent();
+            playHoldTweenEvent();
             for (int i = 0; i < GetMaxPlayerCount(); i++)
             {
                 totalNoteCount += GetNoteCount(i);
@@ -148,7 +149,7 @@ public class PlayGameManager : MonoBehaviour
                     if (GetWorldInfo(i).noteInfo.awakeSecs <= totalElapsedSecs)
                     {
                         curNote.SetActive(true);
-                        curNoteScript.toleranceSecsWhenAwake = totalElapsedSecs - GetWorldInfo(i).noteInfo.awakeSecs;
+                        curNoteScript.toleranceSecsAwake = totalElapsedSecs - GetWorldInfo(i).noteInfo.awakeSecs;
                     }
                 }
             }
@@ -236,7 +237,7 @@ public class PlayGameManager : MonoBehaviour
         }
         return judgmentType;
     }
-    public static PlayGameManager Property
+    public static PlayManager Property
     {
         get
         {
@@ -475,7 +476,14 @@ public class PlayGameManager : MonoBehaviour
             return GetNoteScript(playerIndex, eachNoteIndex).holdElapsedSecs01;
         return 0f;
     }
-    PlayGameManager()
+    public TweenInfo<float> CorrectDegTween(TweenInfo<float> degTween, int dir)
+    {
+        TweenInfo<float> degTweenTemp = degTween.Clone();
+        dir = (int)handy.GetSign0Is0(dir);
+        degTweenTemp.endValue += dir * degTweenTemp.startValue > dir * degTweenTemp.endValue ? dir * 360f : 0f;
+        return degTweenTemp;
+    }
+    PlayManager()
     {
         MaxHPCount = 15;
     }

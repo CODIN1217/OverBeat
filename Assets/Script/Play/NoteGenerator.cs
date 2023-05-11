@@ -14,34 +14,34 @@ public class NoteGenerator : MonoBehaviour
     public NotePrefab startNoteScript;
     public int[] eachNoteCount;
     Handy handy;
-    PlayGameManager playGM;
+    PlayManager PM;
     void Awake()
     {
         handy = Handy.Property;
-        playGM = PlayGameManager.Property;
-        notesWaitSecs = new List<float>[playGM.GetMaxPlayerCount()];
-        notesLengthSecs = new List<float>[playGM.GetMaxPlayerCount()];
-        notes = new List<GameObject>[playGM.GetMaxPlayerCount()];
-        noteScripts = new List<NotePrefab>[playGM.GetMaxPlayerCount()];
-        for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
+        PM = PlayManager.Property;
+        notesWaitSecs = new List<float>[PM.GetMaxPlayerCount()];
+        notesLengthSecs = new List<float>[PM.GetMaxPlayerCount()];
+        notes = new List<GameObject>[PM.GetMaxPlayerCount()];
+        noteScripts = new List<NotePrefab>[PM.GetMaxPlayerCount()];
+        for (int i = 0; i < PM.GetMaxPlayerCount(); i++)
         {
             notesWaitSecs[i] = new List<float>();
             notesLengthSecs[i] = new List<float>();
             notes[i] = new List<GameObject>();
             noteScripts[i] = new List<NotePrefab>();
         }
-        eachNoteCount = new int[playGM.GetMaxPlayerCount()];
+        eachNoteCount = new int[PM.GetMaxPlayerCount()];
 
-        for (int j = 0; j < playGM.GetWorldInfoCount(); j++)
+        for (int j = 0; j < PM.GetWorldInfoCount(); j++)
         {
             SetNotePrefab(j);
         }
 
-        for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
+        for (int i = 0; i < PM.GetMaxPlayerCount(); i++)
         {
-            for (int j = 0; j < playGM.GetNoteCount(i); j++)
+            for (int j = 0; j < PM.GetNoteCount(i); j++)
             {
-                playGM.GetNoteScript(i, j).InitNote();
+                PM.GetNoteScript(i, j).InitNote();
             }
         }
     }
@@ -50,7 +50,7 @@ public class NoteGenerator : MonoBehaviour
         GameObject newNote = Instantiate(notePrefab, transform);
         NotePrefab newNoteScript = newNote.GetComponent<NotePrefab>();
 
-        WorldInfo worldInfo = playGM.GetWorldInfo(worldInfoIndex);
+        WorldInfo worldInfo = PM.GetWorldInfo(worldInfoIndex);
         int playerIndex = worldInfo.noteInfo.tarPlayerIndex;
         int eachNoteIndex = worldInfo.noteInfo.eachNoteIndex;
 
@@ -82,10 +82,10 @@ public class NoteGenerator : MonoBehaviour
             eachNoteCount[playerIndex]++;
         if (worldInfoIndex == 0)
         {
-            for (int i = 0; i < playGM.GetMaxPlayerCount(); i++)
+            for (int i = 0; i < PM.GetMaxPlayerCount(); i++)
             {
-                playGM.closestNotes[i] = newNote;
-                playGM.closestNoteScripts[i] = newNoteScript;
+                PM.closestNotes[i] = newNote;
+                PM.closestNoteScripts[i] = newNoteScript;
             }
         }
         newNote.SetActive(false);

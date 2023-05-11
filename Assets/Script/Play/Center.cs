@@ -10,7 +10,7 @@ public class Center : MonoBehaviour, ITweenerInfo
     Image centerImage;
     WorldInfo worldInfo;
     Handy handy;
-    PlayGameManager playGM;
+    PlayManager PM;
 
     public Vector2 scale;
     public Vector2 pos;
@@ -23,18 +23,18 @@ public class Center : MonoBehaviour, ITweenerInfo
     // WorldInfo beforeWorldInfo;
     void Awake()
     {
-        playGM = PlayGameManager.Property;
+        PM = PlayManager.Property;
         handy = Handy.Property;
         centerImage = GetComponent<Image>();
-        playGM.initTweenEvent += InitTween;
-        playGM.playTweenEvent += PlayTween;
+        PM.initTweenEvent += InitTween;
+        PM.playHoldTweenEvent += PlayHoldTween;
     }
     void Update()
     {
-        if (playGM.isBreakUpdate())
+        if (PM.isBreakUpdate())
             return;
         // beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
-        centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, playGM.HP01, Time.deltaTime * 4f);
+        centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, PM.HP01, Time.deltaTime * 4f);
         /* if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
         {
             InitTween();
@@ -51,16 +51,16 @@ public class Center : MonoBehaviour, ITweenerInfo
     }
     public void InitTween()
     {
-        worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
+        worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
         
         handy.TryKillTween(scaleInfo);
-        scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+        scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
         handy.TryKillTween(posInfo);
-        posInfo = new TweeningInfo(worldInfo.centerInfo.posTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+        posInfo = new TweeningInfo(worldInfo.centerInfo.posTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
         handy.TryKillTween(colorInfo);
-        colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+        colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
     {
@@ -68,7 +68,8 @@ public class Center : MonoBehaviour, ITweenerInfo
         pos = ((TweenerInfo<Vector2>)posInfo).curValue;
         color = ((TweenerInfo<Color>)colorInfo).curValue;
     }
-    public void PlayTween()
+    public void PlayWaitTween(){}
+    public void PlayHoldTween()
     {
         handy.PlayTweens(scaleInfo, posInfo, colorInfo);
     }

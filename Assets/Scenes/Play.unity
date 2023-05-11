@@ -1115,6 +1115,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notePrefab: {fileID: 6953654910098136422, guid: 2eae1d3addf77dd41ad85a30921a751d, type: 3}
+  startNote: {fileID: 0}
+  startNoteScript: {fileID: 0}
   eachNoteCount: 
 --- !u!1 &1465550834
 GameObject:
@@ -1722,6 +1724,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23ea7cc7b4d721c4caa71d2a79b90027, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  totalCountDownSecs: 0
   isCountDown: 0
 --- !u!1 &2002421889
 GameObject:

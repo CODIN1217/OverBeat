@@ -14,6 +14,8 @@ public class Player : MonoBehaviour, ITweenerInfo
     SpriteRenderer playerCenterRenderer;
     public Sprite playerSideSprite;
     WorldInfo worldInfo;
+    public float curDegDistance;
+    public float stdDegDistance;
 
     public float curDeg;
     public float rotation;
@@ -35,11 +37,11 @@ public class Player : MonoBehaviour, ITweenerInfo
     public TweeningInfo centerColorInfo;
 
     Handy handy;
-    PlayGameManager playGM;
-    
+    PlayManager PM;
+
     void OnEnable()
     {
-        playGM = PlayGameManager.Property;
+        PM = PlayManager.Property;
         handy = Handy.Property;
         playerSideRenderer = playerSide.GetComponent<SpriteRenderer>();
         playerCenterRenderer = playerCenter.GetComponent<SpriteRenderer>();
@@ -47,20 +49,21 @@ public class Player : MonoBehaviour, ITweenerInfo
         handy.TryKillTween(sideClickScaleInfo);
         sideClickScaleInfo = new TweeningInfo(new TweenInfo<float>(1f, 0.8f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.15f);
 
-        playGM.initTweenEvent += InitTween;
-        playGM.playTweenEvent += PlayTween;
+        PM.initTweenEvent += InitTween;
+        PM.playHoldTweenEvent += PlayHoldTween;
     }
     void Update()
     {
         UpdateTweenValue();
-        if (playGM.isPause)
+        curDegDistance = handy.GetDegDistance(worldInfo.playerInfo[playerIndex].degTween.endValue, curDeg, false, worldInfo.playerInfo[playerIndex].degDir);
+        if (PM.isPause)
             return;
 
-        if (playGM.GetIsKeyDown(playerIndex))
+        if (PM.GetIsKeyDown(playerIndex))
         {
             handy.StartCoroutine(SetSideClickScaleTweener(false));
         }
-        else if (!playGM.GetIsKeyPress(playerIndex) && playGM.GetIsKeyUp(playerIndex))
+        else if (!PM.GetIsKeyPress(playerIndex) && PM.GetIsKeyUp(playerIndex))
         {
             handy.StartCoroutine(SetSideClickScaleTweener(true));
         }
@@ -72,7 +75,7 @@ public class Player : MonoBehaviour, ITweenerInfo
     }
     void UpdatePlayerTransform()
     {
-        transform.position = handy.GetCircularPos(curDeg, curRadius, playGM.centerScript.pos);
+        transform.position = handy.GetCircularPos(curDeg, curRadius, PM.centerScript.pos);
         transform.rotation = Quaternion.Euler(0, 0, rotation);
         transform.localScale = totalScale;
         playerSide.transform.localScale = sideScale * sideClickScale;
@@ -87,34 +90,33 @@ public class Player : MonoBehaviour, ITweenerInfo
     }
     public void InitTween()
     {
-        worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
+        worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
+
+        stdDegDistance = handy.GetDegDistance(worldInfo.playerInfo[playerIndex].degTween.endValue, worldInfo.playerInfo[playerIndex].degTween.startValue, false, worldInfo.playerInfo[playerIndex].degDir);
 
         handy.TryKillTween(radiusInfo);
-        radiusInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].radiusTween, playGM.GetHoldNoteSecs(worldInfo));
+        radiusInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].radiusTween, PM.GetHoldNoteSecs(worldInfo));
 
         handy.TryKillTween(degInfo);
-        TweenInfo<float> degTweenTemp = worldInfo.playerInfo[playerIndex].degTween.Clone();
-        int degDir = worldInfo.playerInfo[playerIndex].degDir;
-        degTweenTemp.endValue += degDir * degTweenTemp.startValue > degDir * degTweenTemp.endValue ? degDir * 360f : 0f;
-        degInfo = new TweeningInfo(degTweenTemp, playGM.GetHoldNoteSecs(worldInfo));
+        degInfo = new TweeningInfo(PM.CorrectDegTween(worldInfo.playerInfo[playerIndex].degTween, worldInfo.playerInfo[playerIndex].degDir), PM.GetHoldNoteSecs(worldInfo));
 
         handy.TryKillTween(rotationInfo);
-        rotationInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].rotationTween, playGM.GetHoldNoteSecs(worldInfo));
+        rotationInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].rotationTween, PM.GetHoldNoteSecs(worldInfo));
 
         handy.TryKillTween(totalScaleInfo);
-        totalScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].totalScaleTween, playGM.GetHoldNoteSecs(worldInfo));
+        totalScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].totalScaleTween, PM.GetHoldNoteSecs(worldInfo));
 
         handy.TryKillTween(sideScaleInfo);
-        sideScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideScaleTween, playGM.GetHoldNoteSecs(worldInfo));
+        sideScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideScaleTween, PM.GetHoldNoteSecs(worldInfo));
 
         handy.TryKillTween(centerScaleInfo);
-        centerScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerScaleTween, playGM.GetHoldNoteSecs(worldInfo));
+        centerScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerScaleTween, PM.GetHoldNoteSecs(worldInfo));
 
         handy.TryKillTween(sideColorInfo);
-        sideColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideColorTween, playGM.GetHoldNoteSecs(worldInfo));
+        sideColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideColorTween, PM.GetHoldNoteSecs(worldInfo));
 
         handy.TryKillTween(centerColorInfo);
-        centerColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerColorTween, playGM.GetHoldNoteSecs(worldInfo));
+        centerColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerColorTween, PM.GetHoldNoteSecs(worldInfo));
     }
     public void UpdateTweenValue()
     {
@@ -125,10 +127,11 @@ public class Player : MonoBehaviour, ITweenerInfo
         sideClickScale = ((TweenerInfo<float>)sideClickScaleInfo).curValue;
         sideScale = ((TweenerInfo<Vector2>)sideScaleInfo).curValue;
         centerScale = ((TweenerInfo<Vector2>)centerScaleInfo).curValue;
-        sideColor = playGM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)sideColorInfo).curValue, playerIndex);
-        centerColor = playGM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)centerColorInfo).curValue, playerIndex);
+        sideColor = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)sideColorInfo).curValue, playerIndex);
+        centerColor = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)centerColorInfo).curValue, playerIndex);
     }
-    public void PlayTween()
+    public void PlayWaitTween() { }
+    public void PlayHoldTween()
     {
         handy.PlayTweens(
             radiusInfo,

@@ -6,10 +6,10 @@ public class JudgmentGen : MonoBehaviour
 {
     public GameObject judgmentTextPrefab;
     Handy handy;
-    PlayGameManager playGM;
+    PlayManager PM;
     void Awake()
     {
-        playGM = PlayGameManager.Property;
+        PM = PlayManager.Property;
         handy = Handy.Property;
     }
     public void SetJudgmentText(int playerIndex, JudgmentType judgmentType)

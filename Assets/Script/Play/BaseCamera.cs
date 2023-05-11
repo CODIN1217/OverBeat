@@ -10,7 +10,7 @@ public class BaseCamera : MonoBehaviour, ITweenerInfo
     public readonly float stdSize;
     Handy handy;
     WorldInfo worldInfo;
-    PlayGameManager playGM;
+    PlayManager PM;
 
     public float orthoSize;
     public Color BGColor;
@@ -25,15 +25,15 @@ public class BaseCamera : MonoBehaviour, ITweenerInfo
     // WorldInfo beforeWorldInfo;
     void Awake()
     {
-        playGM = PlayGameManager.Property;
+        PM = PlayManager.Property;
         handy = Handy.Property;
         baseCamera = Camera.main;
-        playGM.initTweenEvent += InitTween;
-        playGM.playTweenEvent += PlayTween;
+        PM.initTweenEvent += InitTween;
+        PM.playHoldTweenEvent += PlayHoldTween;
     }
     void Update()
     {
-        if (playGM.isBreakUpdate())
+        if (PM.isBreakUpdate())
             return;
         // beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
         /* if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
@@ -53,19 +53,19 @@ public class BaseCamera : MonoBehaviour, ITweenerInfo
     }
     public void InitTween()
     {
-        worldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex);
+        worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
         
         handy.TryKillTween(orthoSizeInfo);
-        orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+        orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
         handy.TryKillTween(BGColorInfo);
-        BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+        BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
         handy.TryKillTween(rotationInfo);
-        rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+        rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
         handy.TryKillTween(posInfo);
-        posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween, playGM.GetHoldNoteSecs(playGM.worldInfoIndex));
+        posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
     {
@@ -74,7 +74,8 @@ public class BaseCamera : MonoBehaviour, ITweenerInfo
         rotation = handy.GetCorrectDegMaxIs0(-((TweenerInfo<float>)rotationInfo).curValue);
         pos = ((TweenerInfo<Vector2>)posInfo).curValue;
     }
-    public void PlayTween()
+    public void PlayWaitTween(){}
+    public void PlayHoldTween()
     {
         handy.PlayTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
     }

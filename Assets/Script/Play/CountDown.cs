@@ -16,11 +16,11 @@ public class CountDown : MonoBehaviour
     TextMeshProUGUI countDownTMP;
     WorldInfo worldInfo;
     Handy handy;
-    PlayGameManager playGM;
+    PlayManager PM;
     Stopwatch countDowner;
     void Awake()
     {
-        playGM = PlayGameManager.Property;
+        PM = PlayManager.Property;
         handy = Handy.Property;
         countDownTMP = GetComponent<TextMeshProUGUI>();
         countDowner = new Stopwatch();
@@ -31,7 +31,7 @@ public class CountDown : MonoBehaviour
     }
     void Update()
     {
-        if (playGM.isBreakUpdate() && !isCountDown)
+        if (PM.isBreakUpdate() && !isCountDown)
             return;
         countDowner.Start();
         countDownSecs = countDowner.ElapsedMilliseconds * 0.001f;
@@ -47,7 +47,7 @@ public class CountDown : MonoBehaviour
         {
             countDownTMP.text = "";
             isCountDown = false;
-            playGM.isPause = false;
+            PM.isPause = false;
             gameObject.SetActive(false);
         }
     }
@@ -55,8 +55,8 @@ public class CountDown : MonoBehaviour
     public void PlayCountDown(int? numberOfCountDownTick = null, float? intervalOfCountDownTick = null, int? worldInfoIndex = null)
     {
         if (worldInfoIndex == null)
-            worldInfoIndex = playGM.worldInfoIndex;
-        worldInfo = playGM.GetWorldInfo((int)worldInfoIndex);
+            worldInfoIndex = PM.worldInfoIndex;
+        worldInfo = PM.GetWorldInfo((int)worldInfoIndex);
         if (numberOfCountDownTick == null)
             this.numberOfCountDownTick = worldInfo.countDownInfo.numberOfTick;
         else

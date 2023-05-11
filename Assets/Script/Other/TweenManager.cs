@@ -10,7 +10,8 @@ namespace TweenManager
     {
         void InitTween();
         void UpdateTweenValue();
-        void PlayTween();
+        void PlayWaitTween();
+        void PlayHoldTween();
     }
     [Serializable]
     public class TweenInfo<T> : IDeepCopy<TweenInfo<T>>
@@ -86,10 +87,15 @@ namespace TweenManager
     }
     public static class TweenMethod
     {
-        public static float GetTweenValue(TweenInfo<float> tweenInfo, float progress) => tweenInfo.startValue + (tweenInfo.endValue - tweenInfo.startValue) * tweenInfo.ease.Evaluate(progress);
-        public static Vector2 GetTweenValue(TweenInfo<Vector2> tweenInfo, float progress) => tweenInfo.startValue + (tweenInfo.endValue - tweenInfo.startValue) * tweenInfo.ease.Evaluate(progress);
-        public static Vector3 GetTweenValue(TweenInfo<Vector3> tweenInfo, float progress) => tweenInfo.startValue + (tweenInfo.endValue - tweenInfo.startValue) * tweenInfo.ease.Evaluate(progress);
-        public static Color GetTweenValue(TweenInfo<Color> tweenInfo, float progress) => tweenInfo.startValue + (tweenInfo.endValue - tweenInfo.startValue) * tweenInfo.ease.Evaluate(progress);
+        public static float GetTweenGap(TweenInfo<float> tweenInfo, float progress) => (tweenInfo.endValue - tweenInfo.startValue) * tweenInfo.ease.Evaluate(progress);
+        public static Vector2 GetTweenGap(TweenInfo<Vector2> tweenInfo, float progress) => (tweenInfo.endValue - tweenInfo.startValue) * tweenInfo.ease.Evaluate(progress);
+        public static Vector3 GetTweenGap(TweenInfo<Vector3> tweenInfo, float progress) => (tweenInfo.endValue - tweenInfo.startValue) * tweenInfo.ease.Evaluate(progress);
+        public static Color GetTweenGap(TweenInfo<Color> tweenInfo, float progress) => (tweenInfo.endValue - tweenInfo.startValue) * tweenInfo.ease.Evaluate(progress);
+
+        public static float GetTweenValue(TweenInfo<float> tweenInfo, float progress) => tweenInfo.startValue + GetTweenGap(tweenInfo, progress);
+        public static Vector2 GetTweenValue(TweenInfo<Vector2> tweenInfo, float progress) => tweenInfo.startValue + GetTweenGap(tweenInfo, progress);
+        public static Vector3 GetTweenValue(TweenInfo<Vector3> tweenInfo, float progress) => tweenInfo.startValue + GetTweenGap(tweenInfo, progress);
+        public static Color GetTweenValue(TweenInfo<Color> tweenInfo, float progress) => tweenInfo.startValue + GetTweenGap(tweenInfo, progress);
 
         public static TweenerInfo<float> SetTweenerInfo(TweenInfo<float> tweenInfo, float duration, out Sequence tweener)
         {

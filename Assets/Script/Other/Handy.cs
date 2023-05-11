@@ -13,7 +13,7 @@ using Debug = UnityEngine.Debug;
 public class Handy : MonoBehaviour
 {
     private static Handy instance = null;
-    PlayGameManager playGM;
+    PlayManager PM;
     CompareValue<int> _compareValue_int;
     public CompareValue<int> compareValue_int
     {
@@ -25,7 +25,7 @@ public class Handy : MonoBehaviour
     void Awake()
     {
         instance = this;
-        playGM = PlayGameManager.Property;
+        PM = PlayManager.Property;
         _compareValue_int = new CompareValue<int>();
     }
     public static Handy Property
@@ -83,7 +83,7 @@ public class Handy : MonoBehaviour
         }
         return deg;
     }
-    public float GetDistanceDeg(float tarDeg, float curDeg, bool maxIs360, int direction)
+    public float GetDegDistance(float tarDeg, float curDeg, bool maxIs360, int direction)
     {
         float distanceDeg = (tarDeg - curDeg) * direction;
         return maxIs360 ? GetCorrectDegMaxIs360(distanceDeg) : GetCorrectDegMaxIs0(distanceDeg);
