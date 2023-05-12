@@ -25,18 +25,6 @@ namespace TweenManager
             this.endValue = endValue;
             this.ease = new AnimationCurve(ease.keys);
         }
-        /* public TweenInfo (TweenInfo<T> tweenInfo)
-        {
-            startValue = tweenInfo.startValue;
-            endValue = tweenInfo.endValue;
-            ease = new AnimationCurve(tweenInfo.ease.keys);
-        }
-        public TweenInfo (TweenerInfo<T> tweenerInfo)
-        {
-            startValue = tweenerInfo.startValue;
-            endValue = tweenerInfo.endValue;
-            ease = new AnimationCurve(tweenerInfo.ease.keys);
-        } */
         public TweenInfo<T> Clone()
         {
             return new TweenInfo<T>(startValue, endValue, ease);
@@ -46,7 +34,6 @@ namespace TweenManager
     {
         public T curValue;
         float duration;
-        // public Sequence tweener;
         public TweenerInfo(TweenInfo<T> tweenInfo, float duration) : base(tweenInfo.startValue, tweenInfo.endValue, tweenInfo.ease)
         {
             this.duration = duration;
@@ -130,58 +117,4 @@ namespace TweenManager
             return tweenerInfoTemp;
         }
     }
-    /* public class TweeningInfo
-    {
-        object startValue;
-        object endValue;
-        Func<object> _curValue;
-        float duration;
-        AnimationCurve ease;
-        public Sequence tweener;
-        public object curValue { get { return _curValue(); } }
-        public TweeningInfo(TweenInfo<float> tweenInfo, float duration, Func<float, float> processEndValue = null, Func<object> value = null)
-        {
-            startValue = tweenInfo.startValue;
-            endValue = tweenInfo.endValue;
-            _curValue = () => startValue;
-            this.duration = duration;
-            ease = tweenInfo.ease;
-            tweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, processEndValue(tweenInfo.endValue), duration)
-            .SetEase(tweenInfo.ease));
-        }
-        public TweeningInfo(TweenInfo<Vector2> tweenInfo, float duration, Func<Vector2, Vector2> processEndValue = null, Func<object> value = null)
-        {
-            startValue = tweenInfo.startValue;
-            endValue = tweenInfo.endValue;
-            _curValue = () => startValue;
-            this.duration = duration;
-            ease = tweenInfo.ease;
-            tweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, processEndValue(tweenInfo.endValue), duration)
-            .SetEase(tweenInfo.ease));
-        }
-        public TweeningInfo(TweenInfo<Vector3> tweenInfo, float duration, Func<Vector3, Vector3> processEndValue = null, Func<object> value = null)
-        {
-            startValue = tweenInfo.startValue;
-            endValue = tweenInfo.endValue;
-            _curValue = () => startValue;
-            this.duration = duration;
-            ease = tweenInfo.ease;
-            tweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, processEndValue(tweenInfo.endValue), duration)
-            .SetEase(tweenInfo.ease));
-        }
-        public TweeningInfo(TweenInfo<Color> tweenInfo, float duration, Func<Color, Color> processEndValue = null, Func<object> value = null)
-        {
-            startValue = tweenInfo.startValue;
-            endValue = tweenInfo.endValue;
-            _curValue = () => startValue;
-            this.duration = duration;
-            ease = tweenInfo.ease;
-            tweener = DOTween.Sequence()
-            .Append(DOTween.To(() => tweenInfo.startValue, (v) => { _curValue = () => v; }, processEndValue(tweenInfo.endValue), duration)
-            .SetEase(tweenInfo.ease));
-        }
-    } */
 }

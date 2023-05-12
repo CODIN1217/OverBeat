@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TweenManager;
 
-public class Center : MonoBehaviour, ITweenerInfo
+public class Center : MonoBehaviour, ITweenerInfo, IGameObject
 {
     Image centerImage;
     WorldInfo worldInfo;
@@ -19,8 +19,6 @@ public class Center : MonoBehaviour, ITweenerInfo
     public TweeningInfo scaleInfo;
     public TweeningInfo posInfo;
     public TweeningInfo colorInfo;
-
-    // WorldInfo beforeWorldInfo;
     void Awake()
     {
         PM = PlayManager.Property;
@@ -31,28 +29,22 @@ public class Center : MonoBehaviour, ITweenerInfo
     }
     void Update()
     {
-        if (PM.isBreakUpdate())
-            return;
-        // beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
-        centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, PM.HP01, Time.deltaTime * 4f);
-        /* if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
-        {
-            InitTween();
-
-            PlayTween();
-
-            handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex);
-        } */
         UpdateTweenValue();
-
-        transform.localScale = scale;
-        transform.localPosition = pos;
-        centerImage.color = color;
+        if (PM.isPause)
+            return;
+        centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, PM.HP01, Time.deltaTime * 4f);
+    }
+    void LateUpdate()
+    {
+        if (PM.worldInfoIndex == 0)
+            return;
+        UpdateTransform();
+        UpdateRenderer();
     }
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
-        
+
         handy.TryKillTween(scaleInfo);
         scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
@@ -68,9 +60,18 @@ public class Center : MonoBehaviour, ITweenerInfo
         pos = ((TweenerInfo<Vector2>)posInfo).curValue;
         color = ((TweenerInfo<Color>)colorInfo).curValue;
     }
-    public void PlayWaitTween(){}
+    public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
         handy.PlayTweens(scaleInfo, posInfo, colorInfo);
+    }
+    public void UpdateTransform()
+    {
+        transform.localScale = scale;
+        transform.localPosition = pos;
+    }
+    public void UpdateRenderer()
+    {
+        centerImage.color = color;
     }
 }

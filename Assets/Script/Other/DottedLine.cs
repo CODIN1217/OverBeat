@@ -33,7 +33,7 @@ public class DottedLine : MonoBehaviour
     void Update()
     {
         lineRenderer.positionCount = poses.Count;
-        lineRenderer.SetPositions(poses.ToArray());
+        lineRenderer.SetPositions(poses.Cast<Vector3>().ToArray());
     }
     public void SetRepeatCount(float repeatCount)
     {

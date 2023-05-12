@@ -289,7 +289,7 @@ public class PlayManager : MonoBehaviour
         }
         return false;
     }
-    public bool isBreakUpdate()
+    /* public bool isBreakUpdate()
     {
         if (isPause)
         {
@@ -297,7 +297,7 @@ public class PlayManager : MonoBehaviour
                 return true;
         }
         return false;
-    }
+    } */
     public void UpdateJudgmentRange()
     {
         for (int i = 0; i < GetMaxPlayerCount(); i++)

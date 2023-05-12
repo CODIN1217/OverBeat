@@ -31,7 +31,7 @@ public class CountDown : MonoBehaviour
     }
     void Update()
     {
-        if (PM.isBreakUpdate() && !isCountDown)
+        if (PM.isPause && !isCountDown)
             return;
         countDowner.Start();
         countDownSecs = countDowner.ElapsedMilliseconds * 0.001f;

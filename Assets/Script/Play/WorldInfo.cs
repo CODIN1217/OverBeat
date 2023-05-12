@@ -67,8 +67,8 @@ public class WorldInfo : MonoBehaviour
         public float awakeSecs;
         public float speed;
         public string sideImageName;
-        public TweenInfo<float> waitRadiusTween;
-        public TweenInfo<float> holdRadiusTween;
+        public TweenInfo<float> waitDeltaRadiusTween;
+        public TweenInfo<float> holdDeltaRadiusTween;
         public TweenInfo<float> appearanceTween;
         public TweenInfo<float> totalRotationTween;
         public TweenInfo<float> startRotationTween;
@@ -84,8 +84,8 @@ public class WorldInfo : MonoBehaviour
             awakeSecs = 0f;
             speed = 1f;
             sideImageName = "Basic";
-            waitRadiusTween = new TweenInfo<float>(5f, 1.5f, AnimationCurve.Linear(0, 0, 1, 1));
-            holdRadiusTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
+            waitDeltaRadiusTween = new TweenInfo<float>(3.5f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
+            holdDeltaRadiusTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             appearanceTween = new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0, 0, 1, 1));
             totalRotationTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             startRotationTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));

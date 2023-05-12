@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TweenManager;
 
-public class Boundary : MonoBehaviour, ITweenerInfo
+public class Boundary : MonoBehaviour, ITweenerInfo, IGameObject
 {
     Handy handy;
     WorldInfo worldInfo;
@@ -26,8 +26,6 @@ public class Boundary : MonoBehaviour, ITweenerInfo
     public TweeningInfo lineColorInfo;
     public TweeningInfo scaleInfo;
     public TweeningInfo posInfo;
-
-    // WorldInfo beforeWorldInfo;
     void Awake()
     {
         PM = PlayManager.Property;
@@ -37,23 +35,13 @@ public class Boundary : MonoBehaviour, ITweenerInfo
     }
     void Update()
     {
-        if (PM.isBreakUpdate())
-            return;
-        // beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
-        /* if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
-        {
-            InitTween();
-
-            PlayTween();
-
-            handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex);
-        } */
         UpdateTweenValue();
-
-        boundaryCoverImage.color = coverColor;
-        boundaryLineImage.color = lineColor;
-        transform.localScale = scale; boundaryCover.transform.localScale = new Vector2(1f / scale.x, 1f / scale.y);
-        transform.localPosition = pos; boundaryCover.transform.localPosition = -pos;
+    }
+    void LateUpdate() {
+        if (PM.worldInfoIndex == 0)
+            return;
+        UpdateTransform();
+        UpdateRenderer();
     }
     public void InitTween()
     {
@@ -82,5 +70,13 @@ public class Boundary : MonoBehaviour, ITweenerInfo
     public void PlayHoldTween()
     {
         handy.PlayTweens(coverColorInfo, lineColorInfo, scaleInfo, posInfo);
+    }
+    public void UpdateTransform(){
+        transform.localScale = scale; boundaryCover.transform.localScale = new Vector2(1f / scale.x, 1f / scale.y);
+        transform.localPosition = pos; boundaryCover.transform.localPosition = -pos;
+    }
+    public void UpdateRenderer(){
+        boundaryCoverImage.color = coverColor;
+        boundaryLineImage.color = lineColor;
     }
 }

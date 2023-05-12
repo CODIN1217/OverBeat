@@ -4,7 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using TweenManager;
 
-public class BaseCamera : MonoBehaviour, ITweenerInfo
+public class BaseCamera : MonoBehaviour, ITweenerInfo, IGameObject
 {
     Camera baseCamera;
     public readonly float stdSize;
@@ -21,8 +21,6 @@ public class BaseCamera : MonoBehaviour, ITweenerInfo
     public TweeningInfo BGColorInfo;
     public TweeningInfo rotationInfo;
     public TweeningInfo posInfo;
-
-    // WorldInfo beforeWorldInfo;
     void Awake()
     {
         PM = PlayManager.Property;
@@ -33,28 +31,16 @@ public class BaseCamera : MonoBehaviour, ITweenerInfo
     }
     void Update()
     {
-        if (PM.isBreakUpdate())
-            return;
-        // beforeWorldInfo = playGM.GetWorldInfo(playGM.worldInfoIndex - 1);
-        /* if (!handy.compareValue_int.CompareWithBeforeValue(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex))
-        {
-            InitTween();
-
-            PlayTween();
-
-            handy.compareValue_int.SetValueForCompare(this.name, nameof(Update), nameof(playGM.worldInfoIndex), playGM.worldInfoIndex);
-        } */
         UpdateTweenValue();
-
-        baseCamera.orthographicSize = orthoSize;
-        baseCamera.backgroundColor = BGColor;
-        transform.rotation = Quaternion.Euler(0f, 0f, rotation);
-        transform.position = new Vector3(pos.x, pos.y, -1000f);
+    }
+    void LateUpdate() {
+        UpdateTransform();
+        UpdateRenderer();
     }
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
-        
+
         handy.TryKillTween(orthoSizeInfo);
         orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
@@ -74,10 +60,20 @@ public class BaseCamera : MonoBehaviour, ITweenerInfo
         rotation = handy.GetCorrectDegMaxIs0(-((TweenerInfo<float>)rotationInfo).curValue);
         pos = ((TweenerInfo<Vector2>)posInfo).curValue;
     }
-    public void PlayWaitTween(){}
+    public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
         handy.PlayTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
+    }
+    public void UpdateTransform()
+    {
+        transform.rotation = Quaternion.Euler(0f, 0f, rotation);
+        transform.position = new Vector3(pos.x, pos.y, -1000f);
+    }
+    public void UpdateRenderer()
+    {
+        baseCamera.orthographicSize = orthoSize;
+        baseCamera.backgroundColor = BGColor;
     }
     BaseCamera()
     {

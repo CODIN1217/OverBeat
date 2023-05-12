@@ -176,9 +176,9 @@ public class Handy : MonoBehaviour
         }
         return false;
     } */
-    public bool CheckObjInOtherObj(Vector2 includedObjPos, Vector2 includedObjScale, Vector2 includeObjPos, Vector2 includeObjScale, Vector2 includedObjImagePixelCount, Vector2 includeObjImagePixelCount)
+    public bool CheckColliding(Vector2 objAPos, Vector2 objAScale, Vector2 objAPixelCount, Vector2 objBPos, Vector2 objBScale, Vector2 objBPixelCount)
     {
-        if (Vector2.Distance(includedObjPos, includeObjPos) <= (GetScaleAbsAverage(MultiplyXByX_YByY(includedObjScale, includedObjImagePixelCount)) + GetScaleAbsAverage(MultiplyXByX_YByY(includeObjScale, includeObjImagePixelCount))) * 0.005f)
+        if (Vector2.Distance(objAPos, objBPos) <= (GetScaleAbsAverage(MultiplyXByX_YByY(objAScale, objAPixelCount)) + GetScaleAbsAverage(MultiplyXByX_YByY(objBScale, objBPixelCount))) * 0.005f)
         {
             return true;
         }

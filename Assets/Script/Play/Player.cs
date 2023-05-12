@@ -5,17 +5,15 @@ using System;
 using DG.Tweening;
 using TweenManager;
 
-public class Player : MonoBehaviour, ITweenerInfo
+public class Player : MonoBehaviour, ITweenerInfo, IGameObject
 {
     public int playerIndex;
     public GameObject playerSide;
     public GameObject playerCenter;
-    SpriteRenderer playerSideRenderer;
-    SpriteRenderer playerCenterRenderer;
+    public SpriteRenderer playerSideRenderer;
+    public SpriteRenderer playerCenterRenderer;
     public Sprite playerSideSprite;
     WorldInfo worldInfo;
-    public float curDegDistance;
-    public float stdDegDistance;
 
     public float curDeg;
     public float rotation;
@@ -55,7 +53,6 @@ public class Player : MonoBehaviour, ITweenerInfo
     void Update()
     {
         UpdateTweenValue();
-        curDegDistance = handy.GetDegDistance(worldInfo.playerInfo[playerIndex].degTween.endValue, curDeg, false, worldInfo.playerInfo[playerIndex].degDir);
         if (PM.isPause)
             return;
 
@@ -70,29 +67,14 @@ public class Player : MonoBehaviour, ITweenerInfo
     }
     void LateUpdate()
     {
-        UpdatePlayerTransform();
-        UpdatePlayerRenderer();
-    }
-    void UpdatePlayerTransform()
-    {
-        transform.position = handy.GetCircularPos(curDeg, curRadius, PM.centerScript.pos);
-        transform.rotation = Quaternion.Euler(0, 0, rotation);
-        transform.localScale = totalScale;
-        playerSide.transform.localScale = sideScale * sideClickScale;
-        playerCenter.transform.localScale = centerScale;
-    }
-    void UpdatePlayerRenderer()
-    {
-        playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
-        playerSideRenderer.sprite = playerSideSprite;
-        playerSideRenderer.color = sideColor;
-        playerCenterRenderer.color = centerColor;
+        UpdateTransform();
+        UpdateRenderer();
     }
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
-
-        stdDegDistance = handy.GetDegDistance(worldInfo.playerInfo[playerIndex].degTween.endValue, worldInfo.playerInfo[playerIndex].degTween.startValue, false, worldInfo.playerInfo[playerIndex].degDir);
+        
+        playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
 
         handy.TryKillTween(radiusInfo);
         radiusInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].radiusTween, PM.GetHoldNoteSecs(worldInfo));
@@ -142,6 +124,20 @@ public class Player : MonoBehaviour, ITweenerInfo
             centerScaleInfo,
             sideColorInfo,
             centerColorInfo);
+    }
+    public void UpdateTransform()
+    {
+        transform.position = handy.GetCircularPos(curDeg, curRadius, PM.centerScript.pos);
+        transform.rotation = Quaternion.Euler(0, 0, rotation);
+        transform.localScale = totalScale;
+        playerSide.transform.localScale = sideScale * sideClickScale;
+        playerCenter.transform.localScale = centerScale;
+    }
+    public void UpdateRenderer()
+    {
+        playerSideRenderer.sprite = playerSideSprite;
+        playerSideRenderer.color = sideColor;
+        playerCenterRenderer.color = centerColor;
     }
     public IEnumerator SetSideClickScaleTweener(bool IsBackwards)
     {
