@@ -35,8 +35,4 @@ public class PlayerController : MonoBehaviour
             playerScripts[i].playerIndex = i;
         }
     }
-    void Update()
-    {
-        
-    }
 }

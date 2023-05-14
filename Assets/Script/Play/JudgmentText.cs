@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using TweenManager;
 
 public enum JudgmentType { Perfect, Good, Bad, Miss }
 public class JudgmentText : MonoBehaviour
 {
+    float fade;
     public int playerIndex;
     public JudgmentType judgmentType;
     TextMeshProUGUI judgmentText_TMP;
@@ -15,7 +17,7 @@ public class JudgmentText : MonoBehaviour
     Vector2 stdPlayerScale;
     Handy handy;
     PlayManager PM;
-    Sequence FadeTweener;
+    TweeningInfo fadeInfo;
     WorldInfo worldInfo;
     bool isAwake;
     void Awake()
@@ -32,18 +34,19 @@ public class JudgmentText : MonoBehaviour
             PM = PlayManager.Property;
             worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
             judgmentText_TMP.text = judgmentType.ToString();
-            stdPlayerPos = PM.GetPlayer(playerIndex).transform.position;
+            stdPlayerPos = (Vector2)PM.GetPlayer(playerIndex).transform.position * 100f;
             stdPlayerScale = PM.GetPlayer(playerIndex).transform.localScale;
             judgmentText_TMP.color = worldInfo.judgmentInfo.judgmentColors[(int)judgmentType];
-            handy.Fade(judgmentText_TMP, 0f);
-            FadeTweener = DOTween.Sequence()
-            .Append(judgmentText_TMP.DOFade(1f, 0.05f))
-            .AppendInterval(0.2f)
-            .Append(judgmentText_TMP.DOFade(0f, 0.05f))
-            .OnComplete(() => {gameObject.SetActive(false); handy.TryKillTween(FadeTweener);})
+            handy.FadeColor(judgmentText_TMP, 0f);
+            fadeInfo = new TweeningInfo(new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.1f)
+            .AppendInterval(0.1f)
+            .Append(new TweeningInfo(new TweenInfo<float>(1f, 0f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.1f))
+            .OnComplete(() => {gameObject.SetActive(false); TweenMethod.TryKillTween(fadeInfo);})
             .Play();
-            judgmentText_rect.localPosition = stdPlayerPos + new Vector2(0, 0.61f * handy.GetScaleAbsAverage(stdPlayerScale) + judgmentText_rect.sizeDelta.y * 0.005f);
+            judgmentText_rect.localPosition = stdPlayerPos + new Vector2(0, 0.61f * handy.GetScaleAbsAverage(stdPlayerScale) + judgmentText_rect.sizeDelta.y * 0.005f) * 100f;
             isAwake = false;
         }
+        fade = ((TweenerInfo<float>)fadeInfo).curValue;
+        handy.FadeColor(judgmentText_TMP, fade);
     }
 }

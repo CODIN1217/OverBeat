@@ -31,33 +31,21 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
         PM = PlayManager.Property;
         handy = Handy.Property;
         PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
-        // PM.initTweenEvent += InitTween;
-        // PM.playHoldTweenEvent += PlayHoldTween;
     }
-    /* void Update()
-    {
-        UpdateTweenValue();
-    }
-    void LateUpdate() {
-        if (PM.worldInfoIndex == 0)
-            return;
-        UpdateTransform();
-        UpdateRenderer();
-    } */
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
         
-        handy.TryKillTween(coverColorInfo);
+        TweenMethod.TryKillTween(coverColorInfo);
         coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.BGColor */);
 
-        handy.TryKillTween(posInfo);
+        TweenMethod.TryKillTween(posInfo);
         posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, PM.GetHoldNoteSecs(PM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.pos */);
 
-        handy.TryKillTween(lineColorInfo);
+        TweenMethod.TryKillTween(lineColorInfo);
         lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        handy.TryKillTween(scaleInfo);
+        TweenMethod.TryKillTween(scaleInfo);
         scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
@@ -70,7 +58,7 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
     public void PlayWaitTween(){}
     public void PlayHoldTween()
     {
-        handy.PlayTweens(coverColorInfo, lineColorInfo, scaleInfo, posInfo);
+        TweenMethod.PlayTweens(coverColorInfo, lineColorInfo, scaleInfo, posInfo);
     }
     public void UpdateTransform(){
         transform.localScale = scale; boundaryCover.transform.localScale = new Vector2(1f / scale.x, 1f / scale.y);

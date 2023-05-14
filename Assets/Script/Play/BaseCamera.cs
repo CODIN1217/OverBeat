@@ -27,31 +27,21 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
         handy = Handy.Property;
         baseCamera = Camera.main;
         PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
-        // PM.initTweenEvent += InitTween;
-        // PM.playHoldTweenEvent += PlayHoldTween;
     }
-    /* void Update()
-    {
-        UpdateTweenValue();
-    }
-    void LateUpdate() {
-        UpdateTransform();
-        UpdateRenderer();
-    } */
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
 
-        handy.TryKillTween(orthoSizeInfo);
+        TweenMethod.TryKillTween(orthoSizeInfo);
         orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        handy.TryKillTween(BGColorInfo);
+        TweenMethod.TryKillTween(BGColorInfo);
         BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        handy.TryKillTween(rotationInfo);
+        TweenMethod.TryKillTween(rotationInfo);
         rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        handy.TryKillTween(posInfo);
+        TweenMethod.TryKillTween(posInfo);
         posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
@@ -64,7 +54,7 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
-        handy.PlayTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
+        TweenMethod.PlayTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
     }
     public void UpdateTransform()
     {

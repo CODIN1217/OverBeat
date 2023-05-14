@@ -88,16 +88,16 @@ public class Handy : MonoBehaviour
         float distanceDeg = (tarDeg - curDeg) * direction;
         return maxIs360 ? CorrectDegMaxIs360(distanceDeg) : CorrectDegMaxIs0(distanceDeg);
     }
-    public void Fade(Renderer renderer, float alpha)
+    public void FadeColor(Renderer renderer, float alpha)
     {
         renderer.material.color = new Color(renderer.material.color.r, renderer.material.color.g, renderer.material.color.b, alpha);
     }
-    public void Fade(LineRenderer renderer, float alpha)
+    public void FadeColor(LineRenderer renderer, float alpha)
     {
         renderer.startColor = new Color(renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, alpha);
         renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, alpha);
     }
-    public void Fade(TextMeshProUGUI renderer, float alpha)
+    public void FadeColor(TextMeshProUGUI renderer, float alpha)
     {
         renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, alpha);
     }
@@ -129,15 +129,27 @@ public class Handy : MonoBehaviour
     }
     public float GetBiggerAbsScale(GameObject go)
     {
-        return Mathf.Abs(go.transform.localScale.x) > Mathf.Abs(go.transform.localScale.y) ? go.transform.localScale.x : go.transform.localScale.y;
+        return Mathf.Abs(go.transform.localScale.x) > Mathf.Abs(go.transform.localScale.y) ? Mathf.Abs(go.transform.localScale.x) : Mathf.Abs(go.transform.localScale.y);
     }
     public float GetBiggerAbsScale(Vector2 scale)
     {
-        return Mathf.Abs(scale.x) > Mathf.Abs(scale.y) ? scale.x : scale.y;
+        return Mathf.Abs(scale.x) > Mathf.Abs(scale.y) ? Mathf.Abs(scale.x) : Mathf.Abs(scale.y);
     }
     public float GetBiggerAbsScale(float x, float y)
     {
-        return Mathf.Abs(x) > Mathf.Abs(y) ? x : y;
+        return Mathf.Abs(x) > Mathf.Abs(y) ? Mathf.Abs(x) : Mathf.Abs(y);
+    }
+    public float GetSmallerAbsScale(GameObject go)
+    {
+        return Mathf.Abs(go.transform.localScale.x) < Mathf.Abs(go.transform.localScale.y) ? Mathf.Abs(go.transform.localScale.x) : Mathf.Abs(go.transform.localScale.y);
+    }
+    public float GetSmallerAbsScale(Vector2 scale)
+    {
+        return Mathf.Abs(scale.x) < Mathf.Abs(scale.y) ? Mathf.Abs(scale.x) : Mathf.Abs(scale.y);
+    }
+    public float GetSmallerAbsScale(float x, float y)
+    {
+        return Mathf.Abs(x) < Mathf.Abs(y) ? Mathf.Abs(x) : Mathf.Abs(y);
     }
     public void WaitCodeUntilUpdateEnd(Action PlayCode)
     {
@@ -152,30 +164,6 @@ public class Handy : MonoBehaviour
     {
         return index <= initIndex ? initIndex : index - 1;
     }
-    /* public bool CheckObjInOtherObj(GameObject includedObj, GameObject includeObj, Vector2 includedObjImagePixelCount, Vector2 includeObjImagePixelCount)
-    {
-        if (Vector2.Distance(includedObj.transform.position, includeObj.transform.position) <= GetScaleAbsAverage(includedObj) * (includedObjImagePixelCount.x + includedObjImagePixelCount.y) * 0.0025f + GetScaleAbsAverage(includeObj) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f)
-        {
-            return true;
-        }
-        return false;
-    }
-    public bool CheckObjInOtherObj(Vector2 includedObjPos, Vector2 includedObjScale, GameObject includeObj, Vector2 includedObjImagePixelCount, Vector2 includeObjImagePixelCount)
-    {
-        if (Vector2.Distance(includedObjPos, includeObj.transform.position) <= GetScaleAbsAverage(includedObjScale) * (includedObjImagePixelCount.x + includedObjImagePixelCount.y) * 0.0025f + GetScaleAbsAverage(includeObj) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f)
-        {
-            return true;
-        }
-        return false;
-    }
-    public bool CheckObjInOtherObj(GameObject includedObj, Vector2 includeObjPos, Vector2 includeObjScale, Vector2 includedObjImagePixelCount, Vector2 includeObjImagePixelCount)
-    {
-        if (Vector2.Distance(includedObj.transform.position, includeObjPos) <= GetScaleAbsAverage(includedObj) * (includedObjImagePixelCount.x + includedObjImagePixelCount.y) * 0.0025f + GetScaleAbsAverage(includeObjScale) * (includeObjImagePixelCount.x + includeObjImagePixelCount.y) * 0.0025f)
-        {
-            return true;
-        }
-        return false;
-    } */
     public bool CheckColliding(Vector2 objAPos, Vector2 objAScale, Vector2 objAPixelCount, Vector2 objBPos, Vector2 objBScale, Vector2 objBPixelCount)
     {
         if (Vector2.Distance(objAPos, objBPos) <= (GetScaleAbsAverage(MultiplyXByX_YByY(objAScale, objAPixelCount)) + GetScaleAbsAverage(MultiplyXByX_YByY(objBScale, objBPixelCount))) * 0.005f)
@@ -269,50 +257,9 @@ public class Handy : MonoBehaviour
         yield return new WaitUntil(predicate);
         code();
     }
-    public bool IsInfoNull(TweeningInfo tweeningInfo)
-    {
-        if (tweeningInfo != null)
-            if (tweeningInfo.tweener != null)
-                return false;
-        return true;
-    }
-    public void TryKillTween(Sequence sequence, bool isComplete = true)
-    {
-        if (sequence != null)
-        {
-            sequence.Kill(isComplete);
-            sequence = null;
-        }
-    }
-    public void TryKillTween(TweeningInfo tweeningInfo, bool isComplete = true)
-    {
-        if (tweeningInfo != null)
-        {
-            if (tweeningInfo.tweener != null)
-            {
-                tweeningInfo.tweener.Kill(isComplete);
-                tweeningInfo = null;
-            }
-        }
-    }
     public Vector2 MultiplyXByX_YByY(Vector2 va, Vector2 vb)
     {
         return new Vector2(va.x * vb.x, va.y * vb.y);
-    }
-    public void PlayTweens(params TweeningInfo[] tweeningInfos)
-    {
-        foreach (var TI in tweeningInfos)
-            TI.tweener.Play();
-    }
-    public void PauseTweens(params TweeningInfo[] tweeningInfos)
-    {
-        foreach (var TI in tweeningInfos)
-            TI.tweener.Pause();
-    }
-    public void TryKillTweens(params TweeningInfo[] tweeningInfos)
-    {
-        foreach (var TI in tweeningInfos)
-            TryKillTween(TI);
     }
     public void InvokeFunc(string methodName, GameObject go)
     {

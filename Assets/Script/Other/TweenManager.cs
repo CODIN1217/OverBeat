@@ -54,6 +54,52 @@ namespace TweenManager
         public static explicit operator TweenerInfo<Vector2>(TweeningInfo tweeningInfo) { if (tweeningInfo.tweenerInfosVector2 != null) return tweeningInfo.tweenerInfosVector2.tweenerInfo; return null; }
         public static explicit operator TweenerInfo<Vector3>(TweeningInfo tweeningInfo) { if (tweeningInfo.tweenerInfosVector3 != null) return tweeningInfo.tweenerInfosVector3.tweenerInfo; return null; }
         public static explicit operator TweenerInfo<Color>(TweeningInfo tweeningInfo) { if (tweeningInfo.tweenerInfosColor != null) return tweeningInfo.tweenerInfosColor.tweenerInfo; return null; }
+        public TweeningInfo SetForWardTweener()
+        {
+            bool isPlaying = tweener.IsPlaying();
+            tweener.PlayForward();
+            if (!isPlaying)
+                tweener.Pause();
+            return this;
+        }
+        public TweeningInfo SetBackWardTweener()
+        {
+            bool isPlaying = tweener.IsPlaying();
+            tweener.PlayBackwards();
+            if (!isPlaying)
+                tweener.Pause();
+            return this;
+        }
+        public TweeningInfo Append(TweeningInfo tweeningInfo)
+        {
+            tweener.Append(tweeningInfo.tweener);
+            return this;
+        }
+        public TweeningInfo AppendInterval(float interval)
+        {
+            tweener.AppendInterval(interval);
+            return this;
+        }
+        public TweeningInfo Play()
+        {
+            tweener.Play();
+            return this;
+        }
+        public TweeningInfo Pause()
+        {
+            tweener.Pause();
+            return this;
+        }
+        public TweeningInfo OnUpdate(Action action)
+        {
+            tweener.OnUpdate(() => action());
+            return this;
+        }
+        public TweeningInfo OnComplete(Action action)
+        {
+            tweener.OnComplete(() => action());
+            return this;
+        }
     }
     class TweenerInfos<T>
     {
@@ -113,6 +159,40 @@ namespace TweenManager
             .Append(DOTween.To(() => tweenInfo.startValue, (v) => tweenerInfoTemp.curValue = v, tweenInfo.endValue, duration)
             .SetEase(tweenInfo.ease));
             return tweenerInfoTemp;
+        }
+        public static bool IsInfoNull(TweeningInfo tweeningInfo)
+        {
+            if (tweeningInfo != null)
+                if (tweeningInfo.tweener != null)
+                    return false;
+            return true;
+        }
+        public static void PlayTweens(params TweeningInfo[] tweeningInfos)
+        {
+            foreach (var TI in tweeningInfos)
+                TI.Play();
+        }
+        public static void PauseTweens(params TweeningInfo[] tweeningInfos)
+        {
+            foreach (var TI in tweeningInfos)
+                TI.Pause();
+        }
+        public static void TryKillTween(TweeningInfo tweeningInfo, bool isComplete = true)
+        {
+            if (tweeningInfo != null)
+            {
+                if (tweeningInfo.tweener != null)
+                {
+                    tweeningInfo.tweener.Kill(isComplete);
+                    tweeningInfo.tweener = null;
+                    tweeningInfo = null;
+                }
+            }
+        }
+        public static void TryKillTweens(params TweeningInfo[] tweeningInfos)
+        {
+            foreach (var TI in tweeningInfos)
+                TryKillTween(TI);
         }
     }
 }

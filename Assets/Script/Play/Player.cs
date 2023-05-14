@@ -48,60 +48,51 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
         playerSideRenderer = playerSide.GetComponent<SpriteRenderer>();
         playerCenterRenderer = playerCenter.GetComponent<SpriteRenderer>();
 
-        handy.TryKillTween(sideClickScaleInfo);
+        TweenMethod.TryKillTween(sideClickScaleInfo);
         sideClickScaleInfo = new TweeningInfo(new TweenInfo<float>(1f, 0.8f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.15f);
-
-        // PM.initTweenEvent += InitTween;
-        // PM.playHoldTweenEvent += PlayHoldTween;
     }
     void Update()
     {
-        // UpdateTweenValue();
         if (PM.isPause)
             return;
 
         if (PM.GetIsKeyDown(playerIndex))
         {
-            handy.StartCoroutine(SetSideClickScaleTweener(false));
+            SetSideClickScaleTweener(false);
         }
         else if (!PM.GetIsKeyPress(playerIndex) && PM.GetIsKeyUp(playerIndex))
         {
-            handy.StartCoroutine(SetSideClickScaleTweener(true));
+            SetSideClickScaleTweener(true);
         }
     }
-    /* void LateUpdate()
-    {
-        UpdateTransform();
-        UpdateRenderer();
-    } */
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
 
         playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
 
-        handy.TryKillTween(radiusInfo);
+        TweenMethod.TryKillTween(radiusInfo);
         radiusInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].radiusTween, PM.GetHoldNoteSecs(worldInfo));
 
-        handy.TryKillTween(degInfo);
+        TweenMethod.TryKillTween(degInfo);
         degInfo = new TweeningInfo(PM.CorrectDegTween(worldInfo.playerInfo[playerIndex].degTween, worldInfo.playerInfo[playerIndex].degDir), PM.GetHoldNoteSecs(worldInfo));
 
-        handy.TryKillTween(rotationInfo);
+        TweenMethod.TryKillTween(rotationInfo);
         rotationInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].rotationTween, PM.GetHoldNoteSecs(worldInfo));
 
-        handy.TryKillTween(totalScaleInfo);
+        TweenMethod.TryKillTween(totalScaleInfo);
         totalScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].totalScaleTween, PM.GetHoldNoteSecs(worldInfo));
 
-        handy.TryKillTween(sideScaleInfo);
+        TweenMethod.TryKillTween(sideScaleInfo);
         sideScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideScaleTween, PM.GetHoldNoteSecs(worldInfo));
 
-        handy.TryKillTween(centerScaleInfo);
+        TweenMethod.TryKillTween(centerScaleInfo);
         centerScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerScaleTween, PM.GetHoldNoteSecs(worldInfo));
 
-        handy.TryKillTween(sideColorInfo);
+        TweenMethod.TryKillTween(sideColorInfo);
         sideColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideColorTween, PM.GetHoldNoteSecs(worldInfo));
 
-        handy.TryKillTween(centerColorInfo);
+        TweenMethod.TryKillTween(centerColorInfo);
         centerColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerColorTween, PM.GetHoldNoteSecs(worldInfo));
     }
     public void UpdateTweenValue()
@@ -119,7 +110,7 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
-        handy.PlayTweens(
+        TweenMethod.PlayTweens(
             radiusInfo,
             degInfo,
             rotationInfo,
@@ -143,7 +134,10 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
         playerSideRenderer.color = sideColor;
         playerCenterRenderer.color = centerColor;
     }
-    public IEnumerator SetSideClickScaleTweener(bool IsBackwards)
+    public void SetSideClickScaleTweener(bool IsBackwards){
+        PM.StartCoroutine(SetSideClickScaleTweenerCo(IsBackwards));
+    }
+    IEnumerator SetSideClickScaleTweenerCo(bool IsBackwards)
     {
         yield return new WaitUntil(() => !sideClickScaleInfo.tweener.IsPlaying());
         if (IsBackwards)

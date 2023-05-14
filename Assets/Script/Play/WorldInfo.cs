@@ -69,7 +69,7 @@ public class WorldInfo : MonoBehaviour
         public string sideImageName;
         public TweenInfo<float> waitDeltaRadiusTween;
         public TweenInfo<float> holdDeltaRadiusTween;
-        public TweenInfo<float> appearanceTween;
+        public TweenInfo<float> fadeTween;
         public TweenInfo<float> totalRotationTween;
         public TweenInfo<float> startRotationTween;
         public TweenInfo<float> endRotationTween;
@@ -86,7 +86,7 @@ public class WorldInfo : MonoBehaviour
             sideImageName = "Basic";
             waitDeltaRadiusTween = new TweenInfo<float>(3.5f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             holdDeltaRadiusTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
-            appearanceTween = new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0, 0, 1, 1));
+            fadeTween = new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0, 0, 1, 1));
             totalRotationTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             startRotationTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             endRotationTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
@@ -132,7 +132,7 @@ public class WorldInfo : MonoBehaviour
         public JudgmentInfo()
         {
             range = 0.5f;
-            judgmentColors = new Color[]{new Color(100, 255, 65) / 255f, new Color(255, 235, 0) / 255f, new Color(160, 0, 140) / 255f, new Color(215, 0, 15) / 255f};
+            judgmentColors = new Color[] { new Color(100, 255, 65) / 255f, new Color(255, 235, 0) / 255f, new Color(160, 0, 140) / 255f, new Color(215, 0, 15) / 255f };
         }
     }
     [Serializable]

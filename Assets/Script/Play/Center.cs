@@ -25,32 +25,22 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
         handy = Handy.Property;
         centerImage = GetComponent<Image>();
         PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
-        // PM.initTweenEvent += InitTween;
-        // PM.playHoldTweenEvent += PlayHoldTween;
     }
     void Update()
     {
-        // UpdateTweenValue();
         centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, PM.HP01, Time.deltaTime * 4f);
     }
-    /* void LateUpdate()
-    {
-        if (PM.worldInfoIndex == 0)
-            return;
-        UpdateTransform();
-        UpdateRenderer();
-    } */
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
 
-        handy.TryKillTween(scaleInfo);
+        TweenMethod.TryKillTween(scaleInfo);
         scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        handy.TryKillTween(posInfo);
+        TweenMethod.TryKillTween(posInfo);
         posInfo = new TweeningInfo(worldInfo.centerInfo.posTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        handy.TryKillTween(colorInfo);
+        TweenMethod.TryKillTween(colorInfo);
         colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
@@ -62,7 +52,7 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
-        handy.PlayTweens(scaleInfo, posInfo, colorInfo);
+        TweenMethod.PlayTweens(scaleInfo, posInfo, colorInfo);
     }
     public void UpdateTransform()
     {

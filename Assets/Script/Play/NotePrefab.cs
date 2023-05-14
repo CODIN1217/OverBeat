@@ -11,7 +11,7 @@ using TweenManager;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInPlay, IGameObject
+public class NotePrefab : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
 {
     public int myWorldInfoIndex;
     public int myNoteIndex;
@@ -29,7 +29,8 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
     public float toleranceSecsAwake;
     public float toleranceSecsEndWait;
 
-    float dottedLineLength;
+    float pathPosesLength;
+    float processPathPosesLength;
 
     bool isAwake;
     public bool isInputted;
@@ -37,7 +38,6 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
     public bool isDisable;
     public bool isStop;
     public bool isNeedInput;
-    // public bool isInput;
 
     public Sprite startNoteSprite;
     public Sprite endNoteSprite;
@@ -53,13 +53,14 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
     GameObject nextNote;
     NotePrefab nextNoteScript;
     List<Vector3> pathPoses;
+    List<Vector3> processPathPoses;
 
     public float waitDeltaRadius;
     public float holdDeltaRadius;
     public float totalRotation;
     public float startRotation;
     public float endRotation;
-    public float appearance;
+    public float fade;
     public Color startColor;
     public Color processStartColor;
     public Color processEndColor;
@@ -70,7 +71,7 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
     public TweeningInfo totalRotationInfo;
     public TweeningInfo startRotationInfo;
     public TweeningInfo endRotationInfo;
-    public TweeningInfo appearanceInfo;
+    public TweeningInfo fadeInfo;
     public TweeningInfo startColorInfo;
     public TweeningInfo processStartColorInfo;
     public TweeningInfo processEndColorInfo;
@@ -99,7 +100,6 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
     }
     void Update()
     {
-        InfoViewer.Property.SetInfo(this.name, nameof(transform.position), () => transform.position, tarPlayerIndex);
         if (PM.isPause)
             return;
         if (myWorldInfoIndex == 0)
@@ -116,7 +116,7 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
         UpdateNoteTweenValue();
         UpdateElapsedSecs01();
         myElapsedTime.Start();
-        if (!isNeedInput/*  && !isInput */)
+        if (!isNeedInput)
         {
             waitElapsedSecs = toleranceSecsAwake + myElapsedTime.ElapsedMilliseconds * 0.001f;
             if (waitElapsedSecs >= noteWaitSecs)
@@ -152,13 +152,6 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
             }
         }
     }
-    /* void LateUpdate()
-    {
-        if (myWorldInfoIndex == 0)
-            return;
-        UpdateTransform();
-        UpdateRenderer();
-    } */
     public void InitNote()
     {
         worldInfo = PM.GetWorldInfo(myWorldInfoIndex);
@@ -176,7 +169,7 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
         if (myWorldInfoIndex == 0)
             return;
         waitDeltaRadiusInfo = new TweeningInfo(worldInfo.noteInfo.waitDeltaRadiusTween, PM.GetNoteWaitSecs(myWorldInfoIndex));
-        appearanceInfo = new TweeningInfo(worldInfo.noteInfo.appearanceTween, PM.GetNoteWaitSecs(myWorldInfoIndex) * 0.3f);
+        fadeInfo = new TweeningInfo(worldInfo.noteInfo.fadeTween, PM.GetNoteWaitSecs(myWorldInfoIndex) * 0.3f);
 
         holdDeltaRadiusInfo = new TweeningInfo(worldInfo.noteInfo.holdDeltaRadiusTween, PM.GetHoldNoteSecs(myWorldInfoIndex));
         totalRotationInfo = new TweeningInfo(worldInfo.noteInfo.totalRotationTween, PM.GetHoldNoteSecs(myWorldInfoIndex));
@@ -192,7 +185,7 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
         if (myWorldInfoIndex == 0)
             return;
         waitDeltaRadius = ((TweenerInfo<float>)waitDeltaRadiusInfo).curValue;
-        appearance = isDisable ? 0f : ((TweenerInfo<float>)appearanceInfo).curValue;
+        fade = isDisable ? 0f : ((TweenerInfo<float>)fadeInfo).curValue;
 
         holdDeltaRadius = ((TweenerInfo<float>)holdDeltaRadiusInfo).curValue;
         totalRotation = handy.CorrectDegMaxIs0(-(((TweenerInfo<float>)totalRotationInfo).curValue));
@@ -207,15 +200,15 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
     {
         if (myWorldInfoIndex == 0)
             return;
-        handy.PlayTweens(
+        TweenMethod.PlayTweens(
             waitDeltaRadiusInfo,
-            appearanceInfo);
+            fadeInfo);
     }
     public void PlayHoldTween()
     {
         if (myWorldInfoIndex == 0)
             return;
-        handy.PlayTweens(
+        TweenMethod.PlayTweens(
             holdDeltaRadiusInfo,
             totalRotationInfo,
             startRotationInfo,
@@ -237,25 +230,16 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
         else
             holdElapsedSecs01 = Mathf.Clamp01(Mathf.Clamp(holdElapsedSecs, 0f, PM.GetNoteWaitSecs(tarPlayerIndex, myNoteIndex + 1)) / PM.GetNoteWaitSecs(tarPlayerIndex, myNoteIndex + 1));
     }
-    public /* async */ void EndWaiting()
+    public void EndWaiting()
     {
         PM.worldInfoIndex = myWorldInfoIndex;
 
-        handy.TryKillTweens(
-            appearanceInfo,
+        TweenMethod.TryKillTweens(
+            fadeInfo,
             waitDeltaRadiusInfo);
         PM.InitTweenAll();
         PM.PlayHoldTweenAll();
-        // handy.InvokeFuncAllObj(PlayManager.MethodNameToInvoke.InitTween);
-        // handy.InvokeFuncAllObj(PlayManager.MethodNameToInvoke.PlayHoldTween);
-        // PM.initTweenEvent();
-        // PM.playHoldTweenEvent();
         PlayHoldTween();
-
-        // isInput = true;
-
-        /* if (noteWaitSecs > waitElapsedSecs)
-            await Task.Delay((int)((noteWaitSecs - waitElapsedSecs) * 1000f)); */
 
         waitElapsedSecs = noteWaitSecs;
         toleranceSecsEndWait = waitElapsedSecs - noteWaitSecs;
@@ -265,35 +249,6 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
 
         isNeedInput = true;
     }
-    /* void UpdateNoteTransform()
-    {
-        transform.position = handy.GetCircularPos(tarPlayerScript.curDeg, waitRadius + (tarPlayerScript.curRadius - worldInfo.playerInfo[tarPlayerIndex].radiusTween.startValue), PM.centerScript.pos);
-        startNote.transform.localScale = tarPlayerScript.playerSide.transform.localScale;
-        endNote.transform.localScale = tarPlayerScript.playerSide.transform.localScale;
-        transform.rotation = Quaternion.Euler(0f, 0f, totalRotation);
-    }
-    void UpdateNotePartsTransform()
-    {
-        pathPoses.Clear();
-        dottedLineLength = 0f;
-        for (int i = (int)(holdElapsedSecs01 * (float)posCount); i < posCount; i++)
-        {
-            float curProgress = (float)i / (float)posCount;
-            Vector2 pathPos = handy.GetCircularPos(TweenMethod.GetTweenValue(PM.CorrectDegTween(worldInfo.playerInfo[tarPlayerIndex].degTween, worldInfo.playerInfo[tarPlayerIndex].degDir), curProgress),
-            TweenMethod.GetTweenValue(worldInfo.playerInfo[tarPlayerIndex].radiusTween, curProgress)
-            + TweenMethod.GetTweenValue(worldInfo.noteInfo.holdRadiusTween, curProgress));
-
-            pathPoses.Add(GetNotePos(pathPos));
-            dottedLineLength += Vector2.Distance(pathPoses[handy.GetBeforeIndex(pathPoses.Count - 1)], pathPoses[pathPoses.Count - 1]);
-        }
-        processNoteDottedLine.poses = pathPoses;
-        processNoteDottedLine.SetRepeatCount(dottedLineLength * 2.444f);
-        if (pathPoses.Count > 0)
-            endNote.transform.position = pathPoses[pathPoses.Count - 1];
-
-        startNote.transform.rotation = Quaternion.Euler(0f, 0f, startRotation);
-        endNote.transform.rotation = Quaternion.Euler(0f, 0f, endRotation);
-    } */
     public void UpdateTransform()
     {
         transform.position = handy.GetCircularPos(tarPlayerScript.curDeg, waitDeltaRadius + tarPlayerScript.curRadius, PM.centerScript.pos);
@@ -303,9 +258,10 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
 
 
         UpdatePathPoses();
+        UpdateProcessPathPoses();
 
-        processNoteDottedLine.poses = pathPoses;
-        processNoteDottedLine.SetRepeatCount(dottedLineLength * 2.444f);
+        processNoteDottedLine.poses = processPathPoses;
+        processNoteDottedLine.SetRepeatCount(processPathPosesLength * 2.45f);
 
         if (pathPoses.Count > 0)
             endNote.transform.position = pathPoses[pathPoses.Count - 1];
@@ -321,12 +277,12 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
         processNoteRenderer.startColor = processStartColor;
         processNoteRenderer.endColor = processEndColor;
         endNoteRenderer.color = endColor;
-        ChangeNoteAlpha(appearance);
+        ChangeNoteAlpha(fade);
     }
     void UpdatePathPoses()
     {
         pathPoses.Clear();
-        dottedLineLength = 0f;
+        pathPosesLength = 0f;
         for (int i = (int)(holdElapsedSecs01 * (float)posCount); i < posCount; i++)
         {
             float curProgress = (float)i / (float)posCount;
@@ -335,11 +291,41 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
             + TweenMethod.GetTweenValue(worldInfo.noteInfo.holdDeltaRadiusTween, curProgress));
 
             pathPoses.Add(GetNotePos(pathPos));
-            dottedLineLength += Vector2.Distance(pathPoses[handy.GetBeforeIndex(pathPoses.Count - 1)], pathPoses[pathPoses.Count - 1]);
-            /* if (!handy.CheckColliding(pathPos, Vector2.one * 0.2f, Vector2.one * 100f, transform.position, transform.localScale, handy.GetSpritePixels(startNoteSprite))
-            && !handy.CheckColliding(pathPos, Vector2.one * 0.2f, Vector2.one * 100f, handy.GetCircularPos(worldInfo.playerInfo[tarPlayerIndex].degTween.endValue, worldInfo.playerInfo[tarPlayerIndex].radiusTween.endValue), worldInfo.playerInfo[tarPlayerIndex].sideScaleTween.endValue, handy.GetSpritePixels(endNoteSprite)))
+            pathPosesLength += Vector2.Distance(pathPoses[handy.GetBeforeIndex(pathPoses.Count - 1)], pathPoses[pathPoses.Count - 1]);
+        }
+    }
+    void UpdateProcessPathPoses()
+    {
+        processPathPoses = new List<Vector3>(pathPoses);
+        processPathPosesLength = pathPosesLength;
+        float startRemoveLength = 0f;
+        int startRemoveCount = 0;
+        for (int i = 0; i < pathPoses.Count; i++)
+        {
+            startRemoveLength += Vector2.Distance(pathPoses[handy.GetBeforeIndex(i)], pathPoses[i]);
+            if (startRemoveLength >= pathPosesLength * 0.2f)
             {
-            } */
+                startRemoveCount = i + 1;
+                processPathPosesLength -= startRemoveLength;
+                break;
+            }
+        }
+        float endRemoveLength = 0f;
+        int endRemoveCount = 0;
+        for (int i = pathPoses.Count - 1; i >= 0; i--)
+        {
+            endRemoveLength += Vector2.Distance(pathPoses[handy.CorrectIndex(i + 1, pathPoses.Count - 1)], pathPoses[i]);
+            if (endRemoveLength >= pathPosesLength * 0.2f)
+            {
+                endRemoveCount = pathPoses.Count - i;
+                processPathPosesLength -= endRemoveLength;
+                break;
+            }
+        }
+        if (processPathPoses.Count >= startRemoveCount + endRemoveCount)
+        {
+            processPathPoses.RemoveRange(0, startRemoveCount);
+            processPathPoses.RemoveRange(processPathPoses.Count - endRemoveCount, endRemoveCount);
         }
     }
     Vector2 GetNotePos(Vector2 pathPos)
@@ -367,7 +353,7 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
             PM.InputCount++;
             PM.SetAccuracy01();
         }
-        handy.TryKillTweens(
+        TweenMethod.TryKillTweens(
             holdDeltaRadiusInfo,
             totalRotationInfo,
             startRotationInfo,
@@ -376,7 +362,7 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
             processStartColorInfo,
             processEndColorInfo,
             endColorInfo);
-        handy.StartCoroutine(tarPlayerScript.SetSideClickScaleTweener(true));
+        tarPlayerScript.SetSideClickScaleTweener(true);
         myElapsedTime.Stop();
         holdElapsedSecs = holdNoteSecs;
         DisableMe();
@@ -385,9 +371,9 @@ public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInP
     }
     public void ChangeNoteAlpha(float alpha)
     {
-        handy.Fade(startNoteRenderer, alpha);
-        handy.Fade(processNoteRenderer, holdNoteSecs == 0f ? 0f : alpha);
-        handy.Fade(endNoteRenderer, holdNoteSecs == 0f ? 0f : alpha);
+        handy.FadeColor(startNoteRenderer, alpha);
+        handy.FadeColor(processNoteRenderer, holdNoteSecs == 0f ? 0f : alpha);
+        handy.FadeColor(endNoteRenderer, holdNoteSecs == 0f ? 0f : alpha);
     }
     void DisableMe()
     {

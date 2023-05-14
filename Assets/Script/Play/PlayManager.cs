@@ -58,30 +58,17 @@ public class PlayManager : MonoBehaviour
     public int totalNoteCount;
     Stopwatch totalElapsedTime;
     public float totalElapsedSecs;
-    // float totalGamePlaySecs;
     List<ITweener> tweenerGOs;
     List<ITweenerInPlay> tweenerInPlayGOs;
     List<IGameObject> GOs;
     public PlayManager AddTweenerGO(ITweener tweenerGO) { tweenerGOs.Add(tweenerGO); return this; }
     public PlayManager AddTweenerInPlayGO(ITweenerInPlay tweenerInPlayGO) { tweenerInPlayGOs.Add(tweenerInPlayGO); return this; }
     public PlayManager AddGO(IGameObject GO) { GOs.Add(GO); return this; }
-    // public delegate void TweenEvent();
     public interface ITweenerInPlay
     {
         void PlayWaitTween();
         void PlayHoldTween();
     }
-    /* public static class MethodNameToInvoke
-    {
-        public const string InitTween = nameof(ITweener.InitTween);
-        public const string UpdateTweenValue = nameof(ITweener.UpdateTweenValue);
-        public const string PlayWaitTween = nameof(ITweenerInPlay.PlayWaitTween);
-        public const string PlayHoldTween = nameof(ITweenerInPlay.PlayHoldTween);
-        public const string UpdateTransform = nameof(IGameObject.UpdateTransform);
-        public const string UpdateRenderer = nameof(IGameObject.UpdateRenderer);
-    } */
-    // public TweenEvent initTweenEvent;
-    // public TweenEvent playHoldTweenEvent;
     void Awake()
     {
         instance = this;
@@ -102,11 +89,10 @@ public class PlayManager : MonoBehaviour
         closestNotes = new GameObject[GetMaxPlayerCount()];
         closestNoteScripts = new NotePrefab[GetMaxPlayerCount()];
         isBeforeAwake = true;
+        isAutoPlay = false;
         tweenerGOs = new List<ITweener>();
         tweenerInPlayGOs = new List<ITweenerInPlay>();
         GOs = new List<IGameObject>();
-        // initTweenEvent = () => { };
-        // playHoldTweenEvent = () => { };
     }
     void Update()
     {
@@ -142,17 +128,10 @@ public class PlayManager : MonoBehaviour
         {
             InitTweenAll();
             PlayHoldTweenAll();
-            // handy.InvokeFuncAllObj(MethodNameToInvoke.InitTween);
-            // handy.InvokeFuncAllObj(MethodNameToInvoke.PlayHoldTween);
-            // initTweenEvent();
-            // playHoldTweenEvent();
             for (int i = 0; i < GetMaxPlayerCount(); i++)
             {
                 totalNoteCount += GetNoteCount(i);
             }
-            /* WorldInfo lastWorldInfo = GetWorldInfo(GetMaxWorldInfoIndex());
-            NotePrefab lastNoteScript = GetNoteScript(lastWorldInfo.noteInfo.tarPlayerIndex, lastWorldInfo.noteInfo.eachNoteIndex);
-            totalGamePlaySecs = lastWorldInfo.noteInfo.awakeSecs + lastNoteScript.noteWaitSecs + lastNoteScript.holdNoteSecs; */
             isBeforeAwake = false;
         }
         progress01 = Mathf.Clamp01((float)stopedNoteIndex / (float)GetMaxWorldInfoIndex());
@@ -190,6 +169,30 @@ public class PlayManager : MonoBehaviour
         }
         if (isAutoPlay)
         {
+            for (int i = 0; i < GetMaxPlayerCount(); i++)
+            {
+                if (GetPlayer(i).activeSelf)
+                {
+                    for (int j = 0; j < GetNoteCount(i); j++)
+                    {
+                        if (GetNote(i, j).activeSelf)
+                        {
+                            WorldInfo curWorldInfo = GetWorldInfo(i, j);
+                            if (curWorldInfo.noteInfo.awakeSecs + GetNoteWaitSecs(curWorldInfo) <= totalElapsedSecs)
+                            {
+                                if (!closestNoteScripts[i].isInputted)
+                                {
+                                    KeyDown(i, 0);
+                                }
+                                if (GetHoldNoteSecs(curWorldInfo) != 0f)
+                                {
+                                    KeyPress(i, 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         else
         {
@@ -199,17 +202,15 @@ public class PlayManager : MonoBehaviour
                 {
                     if (Input.GetKeyDown(canInputKeys[i][j]))
                     {
-                        isKeyDowns[i][j] = true;
-                        InputCount++;
-                        closestNoteScripts[i].isInputted = true;
+                        KeyDown(i, j);
                     }
                     if (Input.GetKey(canInputKeys[i][j]))
                     {
-                        isKeyPresses[i][j] = true;
+                        KeyPress(i, j);
                     }
                     if (Input.GetKeyUp(canInputKeys[i][j]))
                     {
-                        isKeyUps[i][j] = true;
+                        KeyUp(i, j);
                     }
                 }
             }
@@ -238,9 +239,24 @@ public class PlayManager : MonoBehaviour
             isPause = true;
         }
     }
-    void LateUpdate() {
+    void LateUpdate()
+    {
         UpdateTransformAll();
         UpdateRendererAll();
+    }
+    void KeyDown(int playerIndex, int keyIndex)
+    {
+        isKeyDowns[playerIndex][keyIndex] = true;
+        InputCount++;
+        closestNoteScripts[playerIndex].isInputted = true;
+    }
+    void KeyPress(int playerIndex, int keyIndex)
+    {
+        isKeyPresses[playerIndex][keyIndex] = true;
+    }
+    void KeyUp(int playerIndex, int keyIndex)
+    {
+        isKeyUps[playerIndex][keyIndex] = true;
     }
     public JudgmentType GetJudgment(int playerIndex, float judgmentValue, Action codeOnJudgBad = null, Action codeOnJudgGood = null, Action codeOnStart = null)
     {
@@ -322,15 +338,6 @@ public class PlayManager : MonoBehaviour
         }
         return false;
     }
-    /* public bool isBreakUpdate()
-    {
-        if (isPause)
-        {
-            if (!isClearWorld && !isGameOver)
-                return true;
-        }
-        return false;
-    } */
     public void UpdateJudgmentRange()
     {
         for (int i = 0; i < GetMaxPlayerCount(); i++)

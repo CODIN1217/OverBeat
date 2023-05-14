@@ -41,9 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: BaseLayer
-    uniqueID: 3656026465
-    locked: 0
   - name: NoteLayer
     uniqueID: 2834324279
+    locked: 0
+  - name: BaseLayer
+    uniqueID: 3656026465
     locked: 0

@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 79f8d585f42ec9041aef410a84b421f1, type: 3}
-  m_Color: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
+  m_Color: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -200,7 +200,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 79f8d585f42ec9041aef410a84b421f1, type: 3}
-  m_Color: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
+  m_Color: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -257,26 +257,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1b22cb4098d95546a8ba5d44093f044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isInputted: 0
   myWorldInfoIndex: 0
   myNoteIndex: 0
   tarPlayerIndex: 0
-  stdRadius: 0
-  tarRadius: 0
   holdElapsedSecs: 0
   waitElapsedSecs: 0
   waitElapsedSecs01: 0
   holdElapsedSecs01: 0
   noteWaitSecs: 0
   holdNoteSecs: 0
-  toleranceSecsWhenAwake: 0
+  toleranceSecsAwake: 0
   toleranceSecsEndWait: 0
+  isInputted: 0
   isDisable: 0
   isStop: 0
   isNeedInput: 0
   startNoteSprite: {fileID: 0}
   endNoteSprite: {fileID: 0}
-  waitRadius: 0
+  waitDeltaRadius: 0
+  holdDeltaRadius: 0
   totalRotation: 0
   startRotation: 0
   endRotation: 0
@@ -418,6 +417,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: m_Parameters.colorGradient.key0.b
       value: 1
       objectReference: {fileID: 0}
@@ -430,6 +433,10 @@ PrefabInstance:
       value: 0.50980395
       objectReference: {fileID: 0}
     - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_Parameters.colorGradient.key1.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: m_Parameters.colorGradient.key1.b
       value: 1
       objectReference: {fileID: 0}
@@ -440,6 +447,10 @@ PrefabInstance:
     - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: m_Parameters.colorGradient.key1.r
       value: 0.50980395
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_Parameters.colorGradient.m_Mode
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
