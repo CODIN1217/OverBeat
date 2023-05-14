@@ -53,14 +53,35 @@ public class PlayManager : MonoBehaviour
     public readonly int MaxHPCount;
     public Handy handy;
     public int[] closestNoteIndex;
+    public int stopedNoteIndex;
     public int worldInfoIndex;
     public int totalNoteCount;
     Stopwatch totalElapsedTime;
     public float totalElapsedSecs;
-    float totalGamePlaySecs;
-    public delegate void TweenEvent();
-    public TweenEvent initTweenEvent;
-    public TweenEvent playHoldTweenEvent;
+    // float totalGamePlaySecs;
+    List<ITweener> tweenerGOs;
+    List<ITweenerInPlay> tweenerInPlayGOs;
+    List<IGameObject> GOs;
+    public PlayManager AddTweenerGO(ITweener tweenerGO) { tweenerGOs.Add(tweenerGO); return this; }
+    public PlayManager AddTweenerInPlayGO(ITweenerInPlay tweenerInPlayGO) { tweenerInPlayGOs.Add(tweenerInPlayGO); return this; }
+    public PlayManager AddGO(IGameObject GO) { GOs.Add(GO); return this; }
+    // public delegate void TweenEvent();
+    public interface ITweenerInPlay
+    {
+        void PlayWaitTween();
+        void PlayHoldTween();
+    }
+    /* public static class MethodNameToInvoke
+    {
+        public const string InitTween = nameof(ITweener.InitTween);
+        public const string UpdateTweenValue = nameof(ITweener.UpdateTweenValue);
+        public const string PlayWaitTween = nameof(ITweenerInPlay.PlayWaitTween);
+        public const string PlayHoldTween = nameof(ITweenerInPlay.PlayHoldTween);
+        public const string UpdateTransform = nameof(IGameObject.UpdateTransform);
+        public const string UpdateRenderer = nameof(IGameObject.UpdateRenderer);
+    } */
+    // public TweenEvent initTweenEvent;
+    // public TweenEvent playHoldTweenEvent;
     void Awake()
     {
         instance = this;
@@ -81,8 +102,11 @@ public class PlayManager : MonoBehaviour
         closestNotes = new GameObject[GetMaxPlayerCount()];
         closestNoteScripts = new NotePrefab[GetMaxPlayerCount()];
         isBeforeAwake = true;
-        initTweenEvent = () => { };
-        playHoldTweenEvent = () => { };
+        tweenerGOs = new List<ITweener>();
+        tweenerInPlayGOs = new List<ITweenerInPlay>();
+        GOs = new List<IGameObject>();
+        // initTweenEvent = () => { };
+        // playHoldTweenEvent = () => { };
     }
     void Update()
     {
@@ -116,21 +140,26 @@ public class PlayManager : MonoBehaviour
         }
         if (isBeforeAwake)
         {
-            initTweenEvent();
-            playHoldTweenEvent();
+            InitTweenAll();
+            PlayHoldTweenAll();
+            // handy.InvokeFuncAllObj(MethodNameToInvoke.InitTween);
+            // handy.InvokeFuncAllObj(MethodNameToInvoke.PlayHoldTween);
+            // initTweenEvent();
+            // playHoldTweenEvent();
             for (int i = 0; i < GetMaxPlayerCount(); i++)
             {
                 totalNoteCount += GetNoteCount(i);
             }
-            WorldInfo lastWorldInfo = GetWorldInfo(GetMaxWorldInfoIndex());
+            /* WorldInfo lastWorldInfo = GetWorldInfo(GetMaxWorldInfoIndex());
             NotePrefab lastNoteScript = GetNoteScript(lastWorldInfo.noteInfo.tarPlayerIndex, lastWorldInfo.noteInfo.eachNoteIndex);
-            totalGamePlaySecs = lastWorldInfo.noteInfo.awakeSecs + lastNoteScript.noteWaitSecs + lastNoteScript.holdNoteSecs;
+            totalGamePlaySecs = lastWorldInfo.noteInfo.awakeSecs + lastNoteScript.noteWaitSecs + lastNoteScript.holdNoteSecs; */
             isBeforeAwake = false;
         }
-        progress01 = Mathf.Clamp01(totalElapsedSecs / totalGamePlaySecs);
+        progress01 = Mathf.Clamp01((float)stopedNoteIndex / (float)GetMaxWorldInfoIndex());
         MaxMissCount = (int)Mathf.Clamp(Mathf.Floor((float)totalNoteCount * 0.4f), 1f, (float)MaxHPCount);
         HP01 = 1f - (float)missCount / MaxMissCount;
         totalElapsedTime.Stop();
+        UpdateTweenValueAll();
         if (isPause)
         {
             return;
@@ -209,6 +238,10 @@ public class PlayManager : MonoBehaviour
             isPause = true;
         }
     }
+    void LateUpdate() {
+        UpdateTransformAll();
+        UpdateRendererAll();
+    }
     public JudgmentType GetJudgment(int playerIndex, float judgmentValue, Action codeOnJudgBad = null, Action codeOnJudgGood = null, Action codeOnStart = null)
     {
         if (codeOnStart == null)
@@ -219,7 +252,7 @@ public class PlayManager : MonoBehaviour
             codeOnJudgGood = () => { };
         codeOnStart();
         JudgmentType judgmentType = JudgmentType.Perfect;
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex());
         if (judgmentValue > bestJudgmentRange[playerIndex] * 1.25f && judgmentValue <= bestJudgmentRange[playerIndex] * 2.75f)
         {
             judgmentType = JudgmentType.Good;
@@ -255,7 +288,7 @@ public class PlayManager : MonoBehaviour
     }
     public bool GetIsKeyDown(int playerIndex)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex());
         for (int i = 0; i < isKeyDowns[playerIndex].Count; i++)
         {
             if (isKeyDowns[playerIndex][i])
@@ -267,7 +300,7 @@ public class PlayManager : MonoBehaviour
     }
     public bool GetIsKeyPress(int playerIndex)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex());
         for (int i = 0; i < isKeyPresses[playerIndex].Count; i++)
         {
             if (isKeyPresses[playerIndex][i])
@@ -279,7 +312,7 @@ public class PlayManager : MonoBehaviour
     }
     public bool GetIsKeyUp(int playerIndex)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex());
         for (int i = 0; i < isKeyUps[playerIndex].Count; i++)
         {
             if (isKeyUps[playerIndex][i])
@@ -311,12 +344,12 @@ public class PlayManager : MonoBehaviour
     }
     public WorldInfo GetWorldInfo(int worldInfoIndex)
     {
-        return worldReaderScript.worldInfos[handy.GetCorrectIndex(worldInfoIndex, GetMaxWorldInfoIndex())];
+        return worldReaderScript.worldInfos[handy.CorrectIndex(worldInfoIndex, GetMaxWorldInfoIndex())];
     }
     public WorldInfo GetWorldInfo(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
-        eachNoteIndex = handy.GetCorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex));
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex());
+        eachNoteIndex = handy.CorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex));
         for (int i = 1; i < GetWorldInfoCount(); i++)
         {
             WorldInfo curWorldInfo = GetWorldInfo(i);
@@ -327,14 +360,14 @@ public class PlayManager : MonoBehaviour
     }
     public float GetNoteWaitSecs(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
-        eachNoteIndex = handy.GetCorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
+        eachNoteIndex = handy.CorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
         return playerIndex == -1 && eachNoteIndex == -1 ? 0f : noteGeneratorScript.notesWaitSecs[playerIndex][eachNoteIndex];
     }
     public float GetHoldNoteSecs(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
-        eachNoteIndex = handy.GetCorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
+        eachNoteIndex = handy.CorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
         return playerIndex == -1 && eachNoteIndex == -1 ? countDownScript.totalCountDownSecs : noteGeneratorScript.notesLengthSecs[playerIndex][eachNoteIndex];
     }
     public float GetNoteWaitSecs(int worldInfoIndex)
@@ -355,14 +388,14 @@ public class PlayManager : MonoBehaviour
     }
     public GameObject GetNote(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
-        eachNoteIndex = handy.GetCorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
+        eachNoteIndex = handy.CorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
         return playerIndex == -1 && eachNoteIndex == -1 ? noteGeneratorScript.startNote : noteGeneratorScript.notes[playerIndex][eachNoteIndex];
     }
     public NotePrefab GetNoteScript(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
-        eachNoteIndex = handy.GetCorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
+        eachNoteIndex = handy.CorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
         return playerIndex == -1 && eachNoteIndex == -1 ? noteGeneratorScript.startNoteScript : noteGeneratorScript.noteScripts[playerIndex][eachNoteIndex];
     }
     public float GetJudgmentValue(int playerIndex, float? waitElapsedSecs01 = null, float? holdElapsedSecs01 = null)
@@ -414,7 +447,7 @@ public class PlayManager : MonoBehaviour
     }
     public int GetMaxNoteIndex(int playerIndex)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex());
         return GetNoteCount(playerIndex) - 1;
     }
     public int GetActivePlayerCount()
@@ -429,27 +462,27 @@ public class PlayManager : MonoBehaviour
     }
     public GameObject GetPlayer(int playerIndex)
     {
-        return playerControllerScript.players[handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex())];
+        return playerControllerScript.players[handy.CorrectIndex(playerIndex, GetMaxPlayerIndex())];
     }
     public Player GetPlayerScript(int playerIndex)
     {
-        return playerControllerScript.playerScripts[handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex())];
+        return playerControllerScript.playerScripts[handy.CorrectIndex(playerIndex, GetMaxPlayerIndex())];
     }
     public GameObject GetPlayerSide(int playerIndex)
     {
-        return playerControllerScript.playerSides[handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex())];
+        return playerControllerScript.playerSides[handy.CorrectIndex(playerIndex, GetMaxPlayerIndex())];
     }
     public SpriteRenderer GetPlayerSideRend(int playerIndex)
     {
-        return playerControllerScript.playerSideRends[handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex())];
+        return playerControllerScript.playerSideRends[handy.CorrectIndex(playerIndex, GetMaxPlayerIndex())];
     }
     public GameObject GetPlayerCenter(int playerIndex)
     {
-        return playerControllerScript.playerCenters[handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex())];
+        return playerControllerScript.playerCenters[handy.CorrectIndex(playerIndex, GetMaxPlayerIndex())];
     }
     public SpriteRenderer GetPlayerCenterRend(int playerIndex)
     {
-        return playerControllerScript.playerCenterRends[handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex())];
+        return playerControllerScript.playerCenterRends[handy.CorrectIndex(playerIndex, GetMaxPlayerIndex())];
     }
     public Color GetColor01WithPlayerIndex(Color color01, int playerIndex)
     {
@@ -464,14 +497,14 @@ public class PlayManager : MonoBehaviour
     }
     public float GetWaitElapsedSecs01(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex());
         if (GetNoteScript(playerIndex, eachNoteIndex) != null)
             return GetNoteScript(playerIndex, eachNoteIndex).waitElapsedSecs01;
         return 0f;
     }
     public float GetHoldElapsedSecs01(int playerIndex, int eachNoteIndex)
     {
-        playerIndex = handy.GetCorrectIndex(playerIndex, GetMaxPlayerIndex());
+        playerIndex = handy.CorrectIndex(playerIndex, GetMaxPlayerIndex());
         if (GetNoteScript(playerIndex, eachNoteIndex) != null)
             return GetNoteScript(playerIndex, eachNoteIndex).holdElapsedSecs01;
         return 0f;
@@ -482,6 +515,72 @@ public class PlayManager : MonoBehaviour
         dir = (int)handy.GetSign0Is0(dir);
         degTweenTemp.endValue += dir * degTweenTemp.startValue > dir * degTweenTemp.endValue ? dir * 360f : 0f;
         return degTweenTemp;
+    }
+    public void InitTween(ITweener tweenerGO)
+    {
+        tweenerGO.InitTween();
+    }
+    public void UpdateTweenValue(ITweener tweenerGO)
+    {
+        tweenerGO.UpdateTweenValue();
+    }
+    public void PlayWaitTween(ITweenerInPlay tweenerInPlayGO)
+    {
+        tweenerInPlayGO.PlayWaitTween();
+    }
+    public void PlayHoldTween(ITweenerInPlay tweenerInPlayGO)
+    {
+        tweenerInPlayGO.PlayHoldTween();
+    }
+    public void UpdateTransform(IGameObject GO)
+    {
+        GO.UpdateTransform();
+    }
+    public void UpdateRenderer(IGameObject GO)
+    {
+        GO.UpdateRenderer();
+    }
+    public void InitTweenAll()
+    {
+        foreach (var TGO in tweenerGOs)
+        {
+            TGO.InitTween();
+        }
+    }
+    public void UpdateTweenValueAll()
+    {
+        foreach (var TGO in tweenerGOs)
+        {
+            TGO.UpdateTweenValue();
+        }
+    }
+    public void PlayWaitTweenAll()
+    {
+        foreach (var TPGO in tweenerInPlayGOs)
+        {
+            TPGO.PlayWaitTween();
+        }
+    }
+    public void PlayHoldTweenAll()
+    {
+        foreach (var TPGO in tweenerInPlayGOs)
+        {
+            TPGO.PlayHoldTween();
+        }
+    }
+    public void UpdateTransformAll()
+    {
+        foreach (var GO in GOs)
+        {
+            GO.UpdateTransform();
+        }
+    }
+    public void UpdateRendererAll()
+    {
+        foreach (var GO in GOs)
+        {
+            GO.UpdateRenderer();
+        }
     }
     PlayManager()
     {

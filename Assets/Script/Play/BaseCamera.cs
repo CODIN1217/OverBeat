@@ -4,7 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using TweenManager;
 
-public class BaseCamera : MonoBehaviour, ITweenerInfo, IGameObject
+public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
 {
     Camera baseCamera;
     public readonly float stdSize;
@@ -26,17 +26,18 @@ public class BaseCamera : MonoBehaviour, ITweenerInfo, IGameObject
         PM = PlayManager.Property;
         handy = Handy.Property;
         baseCamera = Camera.main;
-        PM.initTweenEvent += InitTween;
-        PM.playHoldTweenEvent += PlayHoldTween;
+        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+        // PM.initTweenEvent += InitTween;
+        // PM.playHoldTweenEvent += PlayHoldTween;
     }
-    void Update()
+    /* void Update()
     {
         UpdateTweenValue();
     }
     void LateUpdate() {
         UpdateTransform();
         UpdateRenderer();
-    }
+    } */
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
@@ -57,7 +58,7 @@ public class BaseCamera : MonoBehaviour, ITweenerInfo, IGameObject
     {
         orthoSize = stdSize * ((TweenerInfo<float>)orthoSizeInfo).curValue;
         BGColor = ((TweenerInfo<Color>)BGColorInfo).curValue;
-        rotation = handy.GetCorrectDegMaxIs0(-((TweenerInfo<float>)rotationInfo).curValue);
+        rotation = handy.CorrectDegMaxIs0(-((TweenerInfo<float>)rotationInfo).curValue);
         pos = ((TweenerInfo<Vector2>)posInfo).curValue;
     }
     public void PlayWaitTween() { }

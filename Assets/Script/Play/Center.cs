@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TweenManager;
 
-public class Center : MonoBehaviour, ITweenerInfo, IGameObject
+public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
 {
     Image centerImage;
     WorldInfo worldInfo;
@@ -24,23 +24,22 @@ public class Center : MonoBehaviour, ITweenerInfo, IGameObject
         PM = PlayManager.Property;
         handy = Handy.Property;
         centerImage = GetComponent<Image>();
-        PM.initTweenEvent += InitTween;
-        PM.playHoldTweenEvent += PlayHoldTween;
+        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+        // PM.initTweenEvent += InitTween;
+        // PM.playHoldTweenEvent += PlayHoldTween;
     }
     void Update()
     {
-        UpdateTweenValue();
-        if (PM.isPause)
-            return;
+        // UpdateTweenValue();
         centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, PM.HP01, Time.deltaTime * 4f);
     }
-    void LateUpdate()
+    /* void LateUpdate()
     {
         if (PM.worldInfoIndex == 0)
             return;
         UpdateTransform();
         UpdateRenderer();
-    }
+    } */
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);

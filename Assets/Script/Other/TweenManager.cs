@@ -6,12 +6,10 @@ using System;
 
 namespace TweenManager
 {
-    public interface ITweenerInfo
+    public interface ITweener
     {
         void InitTween();
         void UpdateTweenValue();
-        void PlayWaitTween();
-        void PlayHoldTween();
     }
     [Serializable]
     public class TweenInfo<T> : IDeepCopy<TweenInfo<T>>

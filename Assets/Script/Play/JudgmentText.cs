@@ -35,7 +35,7 @@ public class JudgmentText : MonoBehaviour
             stdPlayerPos = PM.GetPlayer(playerIndex).transform.position;
             stdPlayerScale = PM.GetPlayer(playerIndex).transform.localScale;
             judgmentText_TMP.color = worldInfo.judgmentInfo.judgmentColors[(int)judgmentType];
-            handy.ChangeAlpha(judgmentText_TMP, 0f);
+            handy.Fade(judgmentText_TMP, 0f);
             FadeTweener = DOTween.Sequence()
             .Append(judgmentText_TMP.DOFade(1f, 0.05f))
             .AppendInterval(0.2f)

@@ -67,7 +67,7 @@ public class Handy : MonoBehaviour
             return false;
         }
     }
-    public float GetCorrectDegMaxIs0(float deg)
+    public float CorrectDegMaxIs0(float deg)
     {
         if (deg < 0f || deg >= 360f)
         {
@@ -75,7 +75,7 @@ public class Handy : MonoBehaviour
         }
         return deg;
     }
-    public float GetCorrectDegMaxIs360(float deg)
+    public float CorrectDegMaxIs360(float deg)
     {
         if (deg <= 0f || deg > 360f)
         {
@@ -86,18 +86,18 @@ public class Handy : MonoBehaviour
     public float GetDegDistance(float tarDeg, float curDeg, bool maxIs360, int direction)
     {
         float distanceDeg = (tarDeg - curDeg) * direction;
-        return maxIs360 ? GetCorrectDegMaxIs360(distanceDeg) : GetCorrectDegMaxIs0(distanceDeg);
+        return maxIs360 ? CorrectDegMaxIs360(distanceDeg) : CorrectDegMaxIs0(distanceDeg);
     }
-    public void ChangeAlpha(Renderer renderer, float alpha)
+    public void Fade(Renderer renderer, float alpha)
     {
         renderer.material.color = new Color(renderer.material.color.r, renderer.material.color.g, renderer.material.color.b, alpha);
     }
-    public void ChangeAlpha(LineRenderer renderer, float alpha)
+    public void Fade(LineRenderer renderer, float alpha)
     {
         renderer.startColor = new Color(renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, alpha);
         renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, alpha);
     }
-    public void ChangeAlpha(TextMeshProUGUI renderer, float alpha)
+    public void Fade(TextMeshProUGUI renderer, float alpha)
     {
         renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, alpha);
     }
@@ -194,7 +194,7 @@ public class Handy : MonoBehaviour
             return Mathf.Sign(value);
         return 0f;
     }
-    public int GetCorrectIndex(int index, int maxIndex = int.MaxValue, int minIndex = 0)
+    public int CorrectIndex(int index, int maxIndex = int.MaxValue, int minIndex = 0)
     {
         return (int)Mathf.Clamp(index, minIndex, maxIndex);
     }
@@ -314,17 +314,14 @@ public class Handy : MonoBehaviour
         foreach (var TI in tweeningInfos)
             TryKillTween(TI);
     }
-    /* public object GetTweenValue(TweeningInfo tweeningInfo, float progress01)
+    public void InvokeFunc(string methodName, GameObject go)
     {
-        float curduration = tweeningInfo.tweener.Elapsed();
-
-        tweeningInfo.tweener.Goto(progress01 * tweeningInfo.tweener.Duration(), true);
-        tweeningInfo.tweener.ManualUpdate(Time.deltaTime, Time.unscaledDeltaTime);
-        object tweenValueTemp = tweeningInfo.curValue;
-
-        tweeningInfo.tweener.Goto(curduration, true);
-        tweeningInfo.tweener.ManualUpdate(Time.deltaTime, Time.unscaledDeltaTime);
-
-        return tweenValueTemp;
-    } */
+        go.SendMessage(methodName, SendMessageOptions.DontRequireReceiver);
+    }
+    public void InvokeFuncAllObj(string methodName)
+    {
+        GameObject[] GOs = FindObjectsOfType<GameObject>();
+        foreach (var GO in GOs)
+            InvokeFunc(methodName, GO);
+    }
 }

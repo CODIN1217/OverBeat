@@ -11,7 +11,7 @@ using TweenManager;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class NotePrefab : MonoBehaviour, ITweenerInfo, IGameObject
+public class NotePrefab : MonoBehaviour/* , ITweener */, PlayManager.ITweenerInPlay, IGameObject
 {
     public int myWorldInfoIndex;
     public int myNoteIndex;
@@ -99,19 +99,21 @@ public class NotePrefab : MonoBehaviour, ITweenerInfo, IGameObject
     }
     void Update()
     {
+        InfoViewer.Property.SetInfo(this.name, nameof(transform.position), () => transform.position, tarPlayerIndex);
         if (PM.isPause)
             return;
         if (myWorldInfoIndex == 0)
             return;
         if (isAwake)
         {
-            InitTween();
-            PlayWaitTween();
+            PM.AddGO(this).AddTweenerInPlayGO(this);
+            InitNoteTween();
+            PM.PlayWaitTweenAll();
             myElapsedTime.Reset();
             myElapsedTime.Stop();
             isAwake = false;
         }
-        UpdateTweenValue();
+        UpdateNoteTweenValue();
         UpdateElapsedSecs01();
         myElapsedTime.Start();
         if (!isNeedInput/*  && !isInput */)
@@ -132,7 +134,6 @@ public class NotePrefab : MonoBehaviour, ITweenerInfo, IGameObject
         }
         if (isDisable)
         {
-            appearance = 0f;
             if (!isStop)
             {
                 if (holdElapsedSecs01 > PM.judgmentRange[tarPlayerIndex])
@@ -151,13 +152,13 @@ public class NotePrefab : MonoBehaviour, ITweenerInfo, IGameObject
             }
         }
     }
-    void LateUpdate()
+    /* void LateUpdate()
     {
         if (myWorldInfoIndex == 0)
             return;
         UpdateTransform();
         UpdateRenderer();
-    }
+    } */
     public void InitNote()
     {
         worldInfo = PM.GetWorldInfo(myWorldInfoIndex);
@@ -170,8 +171,10 @@ public class NotePrefab : MonoBehaviour, ITweenerInfo, IGameObject
 
         posCount = 100;
     }
-    public void InitTween()
+    public void InitNoteTween()
     {
+        if (myWorldInfoIndex == 0)
+            return;
         waitDeltaRadiusInfo = new TweeningInfo(worldInfo.noteInfo.waitDeltaRadiusTween, PM.GetNoteWaitSecs(myWorldInfoIndex));
         appearanceInfo = new TweeningInfo(worldInfo.noteInfo.appearanceTween, PM.GetNoteWaitSecs(myWorldInfoIndex) * 0.3f);
 
@@ -184,15 +187,17 @@ public class NotePrefab : MonoBehaviour, ITweenerInfo, IGameObject
         processEndColorInfo = new TweeningInfo(worldInfo.noteInfo.processEndColorTween, PM.GetHoldNoteSecs(myWorldInfoIndex));
         endColorInfo = new TweeningInfo(worldInfo.noteInfo.endColorTween, PM.GetHoldNoteSecs(myWorldInfoIndex));
     }
-    public void UpdateTweenValue()
+    public void UpdateNoteTweenValue()
     {
+        if (myWorldInfoIndex == 0)
+            return;
         waitDeltaRadius = ((TweenerInfo<float>)waitDeltaRadiusInfo).curValue;
-        appearance = ((TweenerInfo<float>)appearanceInfo).curValue;
+        appearance = isDisable ? 0f : ((TweenerInfo<float>)appearanceInfo).curValue;
 
         holdDeltaRadius = ((TweenerInfo<float>)holdDeltaRadiusInfo).curValue;
-        totalRotation = handy.GetCorrectDegMaxIs0(-(((TweenerInfo<float>)totalRotationInfo).curValue));
-        startRotation = handy.GetCorrectDegMaxIs0(-(((TweenerInfo<float>)startRotationInfo).curValue + tarPlayerScript.curDeg));
-        endRotation = handy.GetCorrectDegMaxIs0(-(((TweenerInfo<float>)endRotationInfo).curValue + worldInfo.playerInfo[tarPlayerIndex].degTween.endValue));
+        totalRotation = handy.CorrectDegMaxIs0(-(((TweenerInfo<float>)totalRotationInfo).curValue));
+        startRotation = handy.CorrectDegMaxIs0(-(((TweenerInfo<float>)startRotationInfo).curValue + tarPlayerScript.curDeg));
+        endRotation = handy.CorrectDegMaxIs0(-(((TweenerInfo<float>)endRotationInfo).curValue + worldInfo.playerInfo[tarPlayerIndex].degTween.endValue));
         startColor = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)startColorInfo).curValue, tarPlayerIndex);
         processStartColor = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)processStartColorInfo).curValue, tarPlayerIndex);
         processEndColor = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)processEndColorInfo).curValue, tarPlayerIndex);
@@ -200,12 +205,16 @@ public class NotePrefab : MonoBehaviour, ITweenerInfo, IGameObject
     }
     public void PlayWaitTween()
     {
+        if (myWorldInfoIndex == 0)
+            return;
         handy.PlayTweens(
             waitDeltaRadiusInfo,
             appearanceInfo);
     }
     public void PlayHoldTween()
     {
+        if (myWorldInfoIndex == 0)
+            return;
         handy.PlayTweens(
             holdDeltaRadiusInfo,
             totalRotationInfo,
@@ -230,14 +239,17 @@ public class NotePrefab : MonoBehaviour, ITweenerInfo, IGameObject
     }
     public /* async */ void EndWaiting()
     {
-        PM.worldInfoIndex++;
+        PM.worldInfoIndex = myWorldInfoIndex;
 
         handy.TryKillTweens(
             appearanceInfo,
             waitDeltaRadiusInfo);
-
-        PM.initTweenEvent();
-        PM.playHoldTweenEvent();
+        PM.InitTweenAll();
+        PM.PlayHoldTweenAll();
+        // handy.InvokeFuncAllObj(PlayManager.MethodNameToInvoke.InitTween);
+        // handy.InvokeFuncAllObj(PlayManager.MethodNameToInvoke.PlayHoldTween);
+        // PM.initTweenEvent();
+        // PM.playHoldTweenEvent();
         PlayHoldTween();
 
         // isInput = true;
@@ -368,13 +380,14 @@ public class NotePrefab : MonoBehaviour, ITweenerInfo, IGameObject
         myElapsedTime.Stop();
         holdElapsedSecs = holdNoteSecs;
         DisableMe();
+        PM.stopedNoteIndex = myWorldInfoIndex;
         isStop = true;
     }
     public void ChangeNoteAlpha(float alpha)
     {
-        handy.ChangeAlpha(startNoteRenderer, alpha);
-        handy.ChangeAlpha(processNoteRenderer, holdNoteSecs == 0f ? 0f : alpha);
-        handy.ChangeAlpha(endNoteRenderer, holdNoteSecs == 0f ? 0f : alpha);
+        handy.Fade(startNoteRenderer, alpha);
+        handy.Fade(processNoteRenderer, holdNoteSecs == 0f ? 0f : alpha);
+        handy.Fade(endNoteRenderer, holdNoteSecs == 0f ? 0f : alpha);
     }
     void DisableMe()
     {

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TweenManager;
 
-public class Boundary : MonoBehaviour, ITweenerInfo, IGameObject
+public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
 {
     Handy handy;
     WorldInfo worldInfo;
@@ -30,10 +30,11 @@ public class Boundary : MonoBehaviour, ITweenerInfo, IGameObject
     {
         PM = PlayManager.Property;
         handy = Handy.Property;
-        PM.initTweenEvent += InitTween;
-        PM.playHoldTweenEvent += PlayHoldTween;
+        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+        // PM.initTweenEvent += InitTween;
+        // PM.playHoldTweenEvent += PlayHoldTween;
     }
-    void Update()
+    /* void Update()
     {
         UpdateTweenValue();
     }
@@ -42,7 +43,7 @@ public class Boundary : MonoBehaviour, ITweenerInfo, IGameObject
             return;
         UpdateTransform();
         UpdateRenderer();
-    }
+    } */
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);

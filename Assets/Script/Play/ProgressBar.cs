@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class ProgressBar : MonoBehaviour
 {
+    float progress01;
     public GameObject PBBGImage;
     public GameObject PBVertex0;
     public GameObject PBVertex1;
@@ -20,10 +21,11 @@ public class ProgressBar : MonoBehaviour
     }
     void Update()
     {
+        progress01 = Mathf.Lerp(progress01, PM.progress01, Time.unscaledDeltaTime * 5f);
         Vector2 PBBGImagePixels = handy.GetSpritePixels(PBBGImageRend.sprite);
         Vector2 PBBGVertex0Pixels = handy.GetSpritePixels(PBVertexRend0.sprite);
         Vector2 PBBGVertex1Pixels = handy.GetSpritePixels(PBVertexRend1.sprite);
-        PBBGImageRect.sizeDelta = new Vector2(PBBGImagePixels.x * PM.progress01, PBBGImagePixels.y);
+        PBBGImageRect.sizeDelta = new Vector2(PBBGImagePixels.x * progress01, PBBGImagePixels.y);
         PBBGImageRect.localPosition = new Vector2((PBBGImageRect.sizeDelta.x - PBBGImagePixels.x) * 0.5f, 0f);
         PBVertexRend0.transform.localPosition = new Vector2((PBBGVertex0Pixels.x - PBBGImagePixels.x) * 0.5f, 0f);
         PBVertexRend1.transform.localPosition = new Vector2((PBBGImagePixels.x - PBBGVertex1Pixels.x) * 0.5f, 0f);

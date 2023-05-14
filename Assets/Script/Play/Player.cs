@@ -5,7 +5,7 @@ using System;
 using DG.Tweening;
 using TweenManager;
 
-public class Player : MonoBehaviour, ITweenerInfo, IGameObject
+public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
 {
     public int playerIndex;
     public GameObject playerSide;
@@ -37,22 +37,26 @@ public class Player : MonoBehaviour, ITweenerInfo, IGameObject
     Handy handy;
     PlayManager PM;
 
-    void OnEnable()
+    void Awake()
     {
         PM = PlayManager.Property;
         handy = Handy.Property;
+        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+    }
+    void OnEnable()
+    {
         playerSideRenderer = playerSide.GetComponent<SpriteRenderer>();
         playerCenterRenderer = playerCenter.GetComponent<SpriteRenderer>();
 
         handy.TryKillTween(sideClickScaleInfo);
         sideClickScaleInfo = new TweeningInfo(new TweenInfo<float>(1f, 0.8f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.15f);
 
-        PM.initTweenEvent += InitTween;
-        PM.playHoldTweenEvent += PlayHoldTween;
+        // PM.initTweenEvent += InitTween;
+        // PM.playHoldTweenEvent += PlayHoldTween;
     }
     void Update()
     {
-        UpdateTweenValue();
+        // UpdateTweenValue();
         if (PM.isPause)
             return;
 
@@ -65,15 +69,15 @@ public class Player : MonoBehaviour, ITweenerInfo, IGameObject
             handy.StartCoroutine(SetSideClickScaleTweener(true));
         }
     }
-    void LateUpdate()
+    /* void LateUpdate()
     {
         UpdateTransform();
         UpdateRenderer();
-    }
+    } */
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
-        
+
         playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
 
         handy.TryKillTween(radiusInfo);
@@ -102,8 +106,8 @@ public class Player : MonoBehaviour, ITweenerInfo, IGameObject
     }
     public void UpdateTweenValue()
     {
-        curDeg = handy.GetCorrectDegMaxIs0(((TweenerInfo<float>)degInfo).curValue);
-        rotation = handy.GetCorrectDegMaxIs0(-(((TweenerInfo<float>)rotationInfo).curValue + curDeg));
+        curDeg = handy.CorrectDegMaxIs0(((TweenerInfo<float>)degInfo).curValue);
+        rotation = handy.CorrectDegMaxIs0(-(((TweenerInfo<float>)rotationInfo).curValue + curDeg));
         curRadius = ((TweenerInfo<float>)radiusInfo).curValue;
         totalScale = ((TweenerInfo<Vector2>)totalScaleInfo).curValue;
         sideClickScale = ((TweenerInfo<float>)sideClickScaleInfo).curValue;
