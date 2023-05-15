@@ -18,42 +18,41 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public float curDeg;
     public float rotation;
     public float curRadius;
-    public float sideClickScale;
     public Vector2 totalScale;
     public Vector2 sideScale;
     public Vector2 centerScale;
     public Color sideColor;
     public Color centerColor;
+
     public TweeningInfo degInfo;
     public TweeningInfo rotationInfo;
     public TweeningInfo radiusInfo;
     public TweeningInfo totalScaleInfo;
-    public TweeningInfo sideClickScaleInfo;
     public TweeningInfo sideScaleInfo;
     public TweeningInfo centerScaleInfo;
     public TweeningInfo sideColorInfo;
     public TweeningInfo centerColorInfo;
 
-    Handy handy;
+    public float sideClickScale;
+
+    public TweeningInfo sideClickScaleInfo;
+
     PlayManager PM;
 
     void Awake()
     {
         PM = PlayManager.Property;
-        handy = Handy.Property;
-        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+        InitGameObjectScript();
+        playerSideRenderer = playerSide.GetComponent<SpriteRenderer>();
+        playerCenterRenderer = playerCenter.GetComponent<SpriteRenderer>();
     }
     void OnEnable()
     {
-        playerSideRenderer = playerSide.GetComponent<SpriteRenderer>();
-        playerCenterRenderer = playerCenter.GetComponent<SpriteRenderer>();
-
-        TweenMethod.TryKillTween(sideClickScaleInfo);
-        sideClickScaleInfo = new TweeningInfo(new TweenInfo<float>(1f, 0.8f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.15f);
+        InitSideClickScaleInfo();
     }
     void Update()
     {
-        if (PM.isPause)
+        if (PM.isStop || PM.isPause)
             return;
 
         if (PM.GetIsKeyDown(playerIndex))
@@ -71,34 +70,34 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
 
         playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
 
-        TweenMethod.TryKillTween(radiusInfo);
+        // TweenMethod.TryKillTween(radiusInfo);
         radiusInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].radiusTween, PM.GetHoldNoteSecs(worldInfo));
 
-        TweenMethod.TryKillTween(degInfo);
+        // TweenMethod.TryKillTween(degInfo);
         degInfo = new TweeningInfo(PM.CorrectDegTween(worldInfo.playerInfo[playerIndex].degTween, worldInfo.playerInfo[playerIndex].degDir), PM.GetHoldNoteSecs(worldInfo));
 
-        TweenMethod.TryKillTween(rotationInfo);
+        // TweenMethod.TryKillTween(rotationInfo);
         rotationInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].rotationTween, PM.GetHoldNoteSecs(worldInfo));
 
-        TweenMethod.TryKillTween(totalScaleInfo);
+        // TweenMethod.TryKillTween(totalScaleInfo);
         totalScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].totalScaleTween, PM.GetHoldNoteSecs(worldInfo));
 
-        TweenMethod.TryKillTween(sideScaleInfo);
+        // TweenMethod.TryKillTween(sideScaleInfo);
         sideScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideScaleTween, PM.GetHoldNoteSecs(worldInfo));
 
-        TweenMethod.TryKillTween(centerScaleInfo);
+        // TweenMethod.TryKillTween(centerScaleInfo);
         centerScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerScaleTween, PM.GetHoldNoteSecs(worldInfo));
 
-        TweenMethod.TryKillTween(sideColorInfo);
+        // TweenMethod.TryKillTween(sideColorInfo);
         sideColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideColorTween, PM.GetHoldNoteSecs(worldInfo));
 
-        TweenMethod.TryKillTween(centerColorInfo);
+        // TweenMethod.TryKillTween(centerColorInfo);
         centerColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerColorTween, PM.GetHoldNoteSecs(worldInfo));
     }
     public void UpdateTweenValue()
     {
-        curDeg = handy.CorrectDegMaxIs0(((TweenerInfo<float>)degInfo).curValue);
-        rotation = handy.CorrectDegMaxIs0(-(((TweenerInfo<float>)rotationInfo).curValue + curDeg));
+        curDeg = Handy.Math.DegMethod.CorrectDegMaxIs0(((TweenerInfo<float>)degInfo).curValue);
+        rotation = Handy.Math.DegMethod.CorrectDegMaxIs0(-(((TweenerInfo<float>)rotationInfo).curValue + curDeg));
         curRadius = ((TweenerInfo<float>)radiusInfo).curValue;
         totalScale = ((TweenerInfo<Vector2>)totalScaleInfo).curValue;
         sideClickScale = ((TweenerInfo<float>)sideClickScaleInfo).curValue;
@@ -120,9 +119,24 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
             sideColorInfo,
             centerColorInfo);
     }
+    public void TryKillTween()
+    {
+        TweenMethod.TryKillTweens(radiusInfo,
+        degInfo,
+        rotationInfo,
+        totalScaleInfo,
+        sideScaleInfo,
+        centerScaleInfo,
+        sideColorInfo,
+        centerColorInfo);
+    }
+    public void InitGameObjectScript()
+    {
+        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+    }
     public void UpdateTransform()
     {
-        transform.position = handy.GetCircularPos(curDeg, curRadius, PM.centerScript.pos);
+        transform.position = Handy.Transform.PosMethod.GetCircularPos(curDeg, curRadius, PM.centerScript.pos);
         transform.rotation = Quaternion.Euler(0, 0, rotation);
         transform.localScale = totalScale;
         playerSide.transform.localScale = sideScale * sideClickScale;
@@ -134,19 +148,26 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
         playerSideRenderer.color = sideColor;
         playerCenterRenderer.color = centerColor;
     }
-    public void SetSideClickScaleTweener(bool IsBackwards){
+    public void InitSideClickScaleInfo()
+    {
+        TweenMethod.TryKillTween(sideClickScaleInfo);
+        sideClickScaleInfo = new TweeningInfo(new TweenInfo<float>(1f, 0.8f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.15f);
+    }
+    public void SetSideClickScaleTweener(bool IsBackwards)
+    {
         PM.StartCoroutine(SetSideClickScaleTweenerCo(IsBackwards));
     }
     IEnumerator SetSideClickScaleTweenerCo(bool IsBackwards)
     {
-        yield return new WaitUntil(() => !sideClickScaleInfo.tweener.IsPlaying());
+        yield return new WaitUntil(() => !sideClickScaleInfo.IsPlaying());
         if (IsBackwards)
         {
-            sideClickScaleInfo.tweener.PlayBackwards();
+            sideClickScaleInfo.SetBackward();
         }
         else
         {
-            sideClickScaleInfo.tweener.PlayForward();
+            sideClickScaleInfo.SetForward();
         }
+        sideClickScaleInfo.Play();
     }
 }

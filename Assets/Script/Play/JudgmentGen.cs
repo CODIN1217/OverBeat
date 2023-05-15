@@ -5,12 +5,10 @@ using UnityEngine;
 public class JudgmentGen : MonoBehaviour
 {
     public GameObject judgmentTextPrefab;
-    Handy handy;
     PlayManager PM;
     void Awake()
     {
         PM = PlayManager.Property;
-        handy = Handy.Property;
     }
     public void SetJudgmentText(int playerIndex, JudgmentType judgmentType)
     {

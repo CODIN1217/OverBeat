@@ -8,7 +8,6 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
 {
     Camera baseCamera;
     public readonly float stdSize;
-    Handy handy;
     WorldInfo worldInfo;
     PlayManager PM;
 
@@ -24,37 +23,44 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     void Awake()
     {
         PM = PlayManager.Property;
-        handy = Handy.Property;
-        baseCamera = Camera.main;
-        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+        InitGameObjectScript();
     }
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
 
-        TweenMethod.TryKillTween(orthoSizeInfo);
+        // TweenMethod.TryKillTween(orthoSizeInfo);
         orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        TweenMethod.TryKillTween(BGColorInfo);
+        // TweenMethod.TryKillTween(BGColorInfo);
         BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        TweenMethod.TryKillTween(rotationInfo);
+        // TweenMethod.TryKillTween(rotationInfo);
         rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        TweenMethod.TryKillTween(posInfo);
+        // TweenMethod.TryKillTween(posInfo);
         posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
     {
         orthoSize = stdSize * ((TweenerInfo<float>)orthoSizeInfo).curValue;
         BGColor = ((TweenerInfo<Color>)BGColorInfo).curValue;
-        rotation = handy.CorrectDegMaxIs0(-((TweenerInfo<float>)rotationInfo).curValue);
+        rotation = Handy.Math.DegMethod.CorrectDegMaxIs0(-((TweenerInfo<float>)rotationInfo).curValue);
         pos = ((TweenerInfo<Vector2>)posInfo).curValue;
     }
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
         TweenMethod.PlayTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
+    }
+    public void TryKillTween()
+    {
+        TweenMethod.TryKillTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
+    }
+    public void InitGameObjectScript()
+    {
+        baseCamera = Camera.main;
+        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
     }
     public void UpdateTransform()
     {

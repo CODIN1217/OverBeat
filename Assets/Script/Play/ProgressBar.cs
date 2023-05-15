@@ -13,18 +13,18 @@ public class ProgressBar : MonoBehaviour
     public Image PBVertexRend0;
     public Image PBVertexRend1;
     public RectTransform PBBGImageRect;
-    Handy handy;
     PlayManager PM;
     void Awake() {
-        handy = Handy.Property;
         PM = PlayManager.Property;
     }
     void Update()
     {
+        if (PM.isPause)
+            return;
         progress01 = Mathf.Lerp(progress01, PM.progress01, Time.unscaledDeltaTime * 5f);
-        Vector2 PBBGImagePixels = handy.GetSpritePixels(PBBGImageRend.sprite);
-        Vector2 PBBGVertex0Pixels = handy.GetSpritePixels(PBVertexRend0.sprite);
-        Vector2 PBBGVertex1Pixels = handy.GetSpritePixels(PBVertexRend1.sprite);
+        Vector2 PBBGImagePixels = Handy.Renderer.SpriteMethod.GetSpritePixels(PBBGImageRend.sprite);
+        Vector2 PBBGVertex0Pixels = Handy.Renderer.SpriteMethod.GetSpritePixels(PBVertexRend0.sprite);
+        Vector2 PBBGVertex1Pixels = Handy.Renderer.SpriteMethod.GetSpritePixels(PBVertexRend1.sprite);
         PBBGImageRect.sizeDelta = new Vector2(PBBGImagePixels.x * progress01, PBBGImagePixels.y);
         PBBGImageRect.localPosition = new Vector2((PBBGImageRect.sizeDelta.x - PBBGImagePixels.x) * 0.5f, 0f);
         PBVertexRend0.transform.localPosition = new Vector2((PBBGVertex0Pixels.x - PBBGImagePixels.x) * 0.5f, 0f);

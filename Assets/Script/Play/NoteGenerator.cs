@@ -13,11 +13,9 @@ public class NoteGenerator : MonoBehaviour
     public GameObject startNote;
     public NotePrefab startNoteScript;
     public int[] eachNoteCount;
-    Handy handy;
     PlayManager PM;
     void Awake()
     {
-        handy = Handy.Property;
         PM = PlayManager.Property;
         notesWaitSecs = new List<float>[PM.GetMaxPlayerCount()];
         notesLengthSecs = new List<float>[PM.GetMaxPlayerCount()];

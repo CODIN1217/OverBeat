@@ -17,7 +17,8 @@ public class DottedLine : MonoBehaviour
             float curvVert01 = curvVert01s.Count == 1 ? curvVert01s[0] : 1f;
             curvVert01s = new List<float>() { curvVert01, curvVert01 };
         }
-        if(curvVertMultiplier < 0f){
+        if (curvVertMultiplier < 0f)
+        {
             curvVertMultiplier = 0f;
         }
         poses = new List<Vector3>();

@@ -7,15 +7,16 @@ public class Accuracy : MonoBehaviour
 {
     float accuracy01;
     TextMeshProUGUI accuracyTMP;
-    Handy handy;
     PlayManager PM;
-    void Awake() {
-        handy = Handy.Property;
+    void Awake()
+    {
         PM = PlayManager.Property;
         accuracyTMP = GetComponent<TextMeshProUGUI>();
     }
     void Update()
     {
+        if (PM.isPause)
+            return;
         accuracy01 = PM.accuracy01;
         accuracyTMP.text = accuracy01.ToString("0%");
     }

@@ -15,15 +15,11 @@ public class CountDown : MonoBehaviour
     float countDownSecs;
     TextMeshProUGUI countDownTMP;
     WorldInfo worldInfo;
-    Handy handy;
     PlayManager PM;
-    Stopwatch countDowner;
     void Awake()
     {
         PM = PlayManager.Property;
-        handy = Handy.Property;
         countDownTMP = GetComponent<TextMeshProUGUI>();
-        countDowner = new Stopwatch();
     }
     void OnEnable()
     {
@@ -31,10 +27,9 @@ public class CountDown : MonoBehaviour
     }
     void Update()
     {
-        if (PM.isPause && !isCountDown)
+        if (PM.isPause || !isCountDown)
             return;
-        countDowner.Start();
-        countDownSecs = countDowner.ElapsedMilliseconds * 0.001f;
+        countDownSecs += Time.deltaTime;
         if (countDownSecs < totalCountDownSecs - intervalOfCountDownTick)
         {
             countDownTMP.text = ((float)numberOfCountDownTick - Mathf.Floor(countDownSecs / intervalOfCountDownTick) - 1).ToString();
@@ -47,8 +42,8 @@ public class CountDown : MonoBehaviour
         {
             countDownTMP.text = "";
             isCountDown = false;
-            PM.isPause = false;
-            gameObject.SetActive(false);
+            PM.isStop = false;
+            Handy.Renderer.ColorMethod.FadeColor(countDownTMP, 0f);
         }
     }
 
@@ -66,8 +61,9 @@ public class CountDown : MonoBehaviour
         else
             this.intervalOfCountDownTick = (float)intervalOfCountDownTick;
         totalCountDownSecs = this.numberOfCountDownTick * this.intervalOfCountDownTick;
+        countDownSecs = 0f;
         isCountDown = true;
-        countDowner.Reset();
-        countDowner.Stop();
+        PM.isStop = true;
+        Handy.Renderer.ColorMethod.FadeColor(countDownTMP, 1f);
     }
 }

@@ -7,7 +7,6 @@ using TweenManager;
 
 public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
 {
-    Handy handy;
     WorldInfo worldInfo;
     public GameObject boundaryLine;
     public GameObject boundaryCover;
@@ -29,23 +28,22 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
     void Awake()
     {
         PM = PlayManager.Property;
-        handy = Handy.Property;
-        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+        InitGameObjectScript();
     }
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
-        
-        TweenMethod.TryKillTween(coverColorInfo);
+
+        // TweenMethod.TryKillTween(coverColorInfo);
         coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.BGColor */);
 
-        TweenMethod.TryKillTween(posInfo);
+        // TweenMethod.TryKillTween(posInfo);
         posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, PM.GetHoldNoteSecs(PM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.pos */);
 
-        TweenMethod.TryKillTween(lineColorInfo);
+        // TweenMethod.TryKillTween(lineColorInfo);
         lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        TweenMethod.TryKillTween(scaleInfo);
+        // TweenMethod.TryKillTween(scaleInfo);
         scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
@@ -55,16 +53,26 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
         scale = ((TweenerInfo<Vector2>)scaleInfo).curValue;
         pos = ((TweenerInfo<Vector2>)posInfo).curValue;
     }
-    public void PlayWaitTween(){}
+    public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
         TweenMethod.PlayTweens(coverColorInfo, lineColorInfo, scaleInfo, posInfo);
     }
-    public void UpdateTransform(){
+    public void TryKillTween()
+    {
+        TweenMethod.TryKillTweens(coverColorInfo, posInfo, lineColorInfo, scaleInfo);
+    }
+    public void InitGameObjectScript()
+    {
+        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+    }
+    public void UpdateTransform()
+    {
         transform.localScale = scale; boundaryCover.transform.localScale = new Vector2(1f / scale.x, 1f / scale.y);
         transform.localPosition = pos; boundaryCover.transform.localPosition = -pos;
     }
-    public void UpdateRenderer(){
+    public void UpdateRenderer()
+    {
         boundaryCoverImage.color = coverColor;
         boundaryLineImage.color = lineColor;
     }

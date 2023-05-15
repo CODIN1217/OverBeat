@@ -9,7 +9,6 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
 {
     Image centerImage;
     WorldInfo worldInfo;
-    Handy handy;
     PlayManager PM;
 
     public Vector2 scale;
@@ -22,25 +21,26 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     void Awake()
     {
         PM = PlayManager.Property;
-        handy = Handy.Property;
         centerImage = GetComponent<Image>();
-        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+        InitGameObjectScript();
     }
     void Update()
     {
+        if (PM.isPause)
+            return;
         centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, PM.HP01, Time.deltaTime * 4f);
     }
     public void InitTween()
     {
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
 
-        TweenMethod.TryKillTween(scaleInfo);
+        // TweenMethod.TryKillTween(scaleInfo);
         scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        TweenMethod.TryKillTween(posInfo);
+        // TweenMethod.TryKillTween(posInfo);
         posInfo = new TweeningInfo(worldInfo.centerInfo.posTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
 
-        TweenMethod.TryKillTween(colorInfo);
+        // TweenMethod.TryKillTween(colorInfo);
         colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
@@ -53,6 +53,14 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public void PlayHoldTween()
     {
         TweenMethod.PlayTweens(scaleInfo, posInfo, colorInfo);
+    }
+    public void TryKillTween()
+    {
+        TweenMethod.TryKillTweens(scaleInfo, posInfo, colorInfo);
+    }
+    public void InitGameObjectScript()
+    {
+        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
     }
     public void UpdateTransform()
     {

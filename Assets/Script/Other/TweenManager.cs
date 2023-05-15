@@ -10,6 +10,9 @@ namespace TweenManager
     {
         void InitTween();
         void UpdateTweenValue();
+        void TryKillTween();
+        // void Play();
+        // void Pause();
     }
     [Serializable]
     public class TweenInfo<T> : IDeepCopy<TweenInfo<T>>
@@ -54,7 +57,7 @@ namespace TweenManager
         public static explicit operator TweenerInfo<Vector2>(TweeningInfo tweeningInfo) { if (tweeningInfo.tweenerInfosVector2 != null) return tweeningInfo.tweenerInfosVector2.tweenerInfo; return null; }
         public static explicit operator TweenerInfo<Vector3>(TweeningInfo tweeningInfo) { if (tweeningInfo.tweenerInfosVector3 != null) return tweeningInfo.tweenerInfosVector3.tweenerInfo; return null; }
         public static explicit operator TweenerInfo<Color>(TweeningInfo tweeningInfo) { if (tweeningInfo.tweenerInfosColor != null) return tweeningInfo.tweenerInfosColor.tweenerInfo; return null; }
-        public TweeningInfo SetForWardTweener()
+        public TweeningInfo SetForward()
         {
             bool isPlaying = tweener.IsPlaying();
             tweener.PlayForward();
@@ -62,7 +65,7 @@ namespace TweenManager
                 tweener.Pause();
             return this;
         }
-        public TweeningInfo SetBackWardTweener()
+        public TweeningInfo SetBackward()
         {
             bool isPlaying = tweener.IsPlaying();
             tweener.PlayBackwards();
@@ -90,6 +93,14 @@ namespace TweenManager
             tweener.Pause();
             return this;
         }
+        public TweeningInfo OnStart(Action action){
+            tweener.OnStart(() => action());
+            return this;
+        }
+        public TweeningInfo OnPlay(Action action){
+            tweener.OnPlay(() => action());
+            return this;
+        }
         public TweeningInfo OnUpdate(Action action)
         {
             tweener.OnUpdate(() => action());
@@ -99,6 +110,21 @@ namespace TweenManager
         {
             tweener.OnComplete(() => action());
             return this;
+        }
+        public bool IsActive(){
+            return tweener.IsActive();
+        }
+        public bool IsBackwards(){
+            return tweener.IsBackwards();
+        }
+        public bool IsComplete(){
+            return tweener.IsComplete();
+        }
+        public bool IsInitialized(){
+            return tweener.IsInitialized();
+        }
+        public bool IsPlaying(){
+            return tweener.IsPlaying();
         }
     }
     class TweenerInfos<T>

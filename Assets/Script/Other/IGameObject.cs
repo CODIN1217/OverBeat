@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IGameObject
 {
+    void InitGameObjectScript();
     void UpdateTransform();
     void UpdateRenderer();
 }
