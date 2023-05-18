@@ -122,7 +122,12 @@ namespace Handy
     {
         public static class WaitCodeMethod
         {
-            public static IEnumerator WaitCodeUntilUpdateEndCo(Action PlayCode)
+            public static IEnumerator WaitCodeWaitForFixedUpdateCo(Action PlayCode)
+            {
+                yield return new WaitForFixedUpdate();
+                PlayCode();
+            }
+            public static IEnumerator WaitCodeWaitForUpdateCo(Action PlayCode)
             {
                 yield return null;
                 PlayCode();
@@ -232,6 +237,10 @@ namespace Handy
         public static int GetBeforeIndex(int index, int initIndex = 0)
         {
             return index <= initIndex ? initIndex : index - 1;
+        }
+        public static int GetNextIndex(int index, int maxIndex = int.MaxValue)
+        {
+            return index >= maxIndex ? maxIndex : index + 1;
         }
         public static int CorrectIndex(int index, int maxIndex = int.MaxValue, int minIndex = 0)
         {

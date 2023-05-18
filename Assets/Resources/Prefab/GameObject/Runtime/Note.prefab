@@ -221,7 +221,7 @@ GameObject:
   - component: {fileID: 6953654910098136416}
   - component: {fileID: 1162815439338916094}
   m_Layer: 6
-  m_Name: NotePrefab
+  m_Name: Note
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

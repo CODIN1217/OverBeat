@@ -9,9 +9,9 @@ public class NoteGenerator : MonoBehaviour
     public List<float>[] notesWaitSecs;
     public List<float>[] notesLengthSecs;
     public List<GameObject>[] notes;
-    public List<NotePrefab>[] noteScripts;
+    public List<Note>[] noteScripts;
     public GameObject startNote;
-    public NotePrefab startNoteScript;
+    public Note startNoteScript;
     public int[] eachNoteCount;
     PlayManager PM;
     void Awake()
@@ -20,13 +20,13 @@ public class NoteGenerator : MonoBehaviour
         notesWaitSecs = new List<float>[PM.GetMaxPlayerCount()];
         notesLengthSecs = new List<float>[PM.GetMaxPlayerCount()];
         notes = new List<GameObject>[PM.GetMaxPlayerCount()];
-        noteScripts = new List<NotePrefab>[PM.GetMaxPlayerCount()];
+        noteScripts = new List<Note>[PM.GetMaxPlayerCount()];
         for (int i = 0; i < PM.GetMaxPlayerCount(); i++)
         {
             notesWaitSecs[i] = new List<float>();
             notesLengthSecs[i] = new List<float>();
             notes[i] = new List<GameObject>();
-            noteScripts[i] = new List<NotePrefab>();
+            noteScripts[i] = new List<Note>();
         }
         eachNoteCount = new int[PM.GetMaxPlayerCount()];
 
@@ -46,7 +46,7 @@ public class NoteGenerator : MonoBehaviour
     void SetNotePrefab(int worldInfoIndex)
     {
         GameObject newNote = Instantiate(notePrefab, transform);
-        NotePrefab newNoteScript = newNote.GetComponent<NotePrefab>();
+        Note newNoteScript = newNote.GetComponent<Note>();
 
         WorldInfo worldInfo = PM.GetWorldInfo(worldInfoIndex);
         int playerIndex = worldInfo.noteInfo.tarPlayerIndex;

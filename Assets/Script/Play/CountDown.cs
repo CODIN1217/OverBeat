@@ -44,6 +44,9 @@ public class CountDown : MonoBehaviour
             isCountDown = false;
             PM.isStop = false;
             Handy.Renderer.ColorMethod.FadeColor(countDownTMP, 0f);
+            /* foreach(var CNS in PM.closestNoteScripts){
+                CNS.Active();
+            } */
         }
     }
 

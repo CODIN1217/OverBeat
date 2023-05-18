@@ -67,6 +67,7 @@ public class WorldInfo : MonoBehaviour
         public float awakeSecs;
         public float speed;
         public string sideImageName;
+        public bool isCheckPoint;
         public TweenInfo<float> waitDeltaRadiusTween;
         public TweenInfo<float> holdDeltaRadiusTween;
         public TweenInfo<float> fadeTween;
@@ -84,6 +85,7 @@ public class WorldInfo : MonoBehaviour
             awakeSecs = 0f;
             speed = 1f;
             sideImageName = "Basic";
+            isCheckPoint = false;
             waitDeltaRadiusTween = new TweenInfo<float>(3.5f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             holdDeltaRadiusTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             fadeTween = new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0, 0, 1, 1));

@@ -30,7 +30,7 @@ public class PlayManager : MonoBehaviour
 
 
     public GameObject[] closestNotes;
-    public NotePrefab[] closestNoteScripts;
+    public Note[] closestNoteScripts;
     public float[] judgmentRange;
     public float[] bestJudgmentRange;
     public int InputCount;
@@ -50,14 +50,17 @@ public class PlayManager : MonoBehaviour
     public float sumNoteAccuracy01;
     public float progress01;
     public float accuracy01;
+    public float checkPointAccuracy01;
     public float HP01;
     public int MaxMissCount;
     public readonly int MaxHPCount;
+    public int notePathPosesCount;
     public int[] closestNoteIndex;
     public int stopedNoteIndex;
     public int worldInfoIndex;
     public int totalNoteCount;
-    public int CheckPointIndex;
+    public int checkPointIndex;
+    public int tryCount;
     public float totalElapsedSecs;
     List<ITweener> tweenerGOs;
     List<ITweenerInPlay> tweenerInPlayGOs;
@@ -80,12 +83,14 @@ public class PlayManager : MonoBehaviour
         judgmentRange = new float[GetMaxPlayerCount()];
         bestJudgmentRange = new float[GetMaxPlayerCount()];
         closestNotes = new GameObject[GetMaxPlayerCount()];
-        closestNoteScripts = new NotePrefab[GetMaxPlayerCount()];
-        CheckPointIndex = 1;
+        closestNoteScripts = new Note[GetMaxPlayerCount()];
+        checkPointIndex = 0;
+        checkPointAccuracy01 = 1f;
         isAutoPlay = false;
         isBeforeAwake = true;
+        tryCount = 1;
 
-        InitPlayManagerScript();
+        InitPlayManagerScript(0);
 
         Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => InfoViewer.Property.SetInfo(this.name, nameof(closestNoteIndex), () => closestNoteIndex[i], i), closestNoteIndex.Length);
         InfoViewer.Property.SetInfo(this.name, nameof(worldInfoIndex), () => worldInfoIndex);
@@ -98,18 +103,33 @@ public class PlayManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            Restart(accuracy01);
+            Restart(0);
         }
-
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            Restart(Handy.IndexMethod.GetBeforeIndex(worldInfoIndex, 0));
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            Restart(Handy.IndexMethod.GetNextIndex(worldInfoIndex, GetMaxWorldInfoIndex()));
+        }
         PauseTweensOnPause();
         if (isPause)
             return;
+        notePathPosesCount = 100;
+
         UpdateJudgmentRange();
         ClearIsKeyInput();
 
         if (isBeforeEnable)
         {
             InitTweenAll();
+
+            if (tryCount > 1)
+            {
+                GotoTweenAll(Mathf.Clamp(GetNoteHoldSecs(worldInfoIndex) - countDownScript.totalCountDownSecs, 0f, GetNoteHoldSecs(worldInfoIndex)));
+                PlayHoldTweenAll();
+            }
 
             isBeforeEnable = false;
         }
@@ -157,7 +177,7 @@ public class PlayManager : MonoBehaviour
                                 {
                                     KeyDown(i, 0);
                                 }
-                                if (GetHoldNoteSecs(curWorldInfo) != 0f)
+                                if (GetNoteHoldSecs(curWorldInfo) != 0f)
                                 {
                                     KeyPress(i, 0);
                                 }
@@ -253,24 +273,28 @@ public class PlayManager : MonoBehaviour
         tweenerInPlayGOs = new List<ITweenerInPlay>();
         GOs = new List<IGameObject>();
     } */
-    public void InitPlayManagerScript(float? accuracy01 = null)
+    public void InitPlayManagerScript(int startWorldInfoIndex)
     {
-        bool isCheckPoint = true;
-        if (accuracy01 == null)
+        for (int i = 0; i < startWorldInfoIndex; i++)
         {
-            accuracy01 = 1f;
-            isCheckPoint = false;
+            Note curNoteScript = GetNoteScript(GetPlayerIndex(i), GetEachNoteIndex(i));
+            curNoteScript.InitNoteTween();
+            curNoteScript.UpdateNoteTweenValue();
+            curNoteScript.TryKillWaitTweens();
+            curNoteScript.TryKillHoldTweens();
         }
-        stopedNoteIndex = isCheckPoint ? CheckPointIndex : 0;
-        worldInfoIndex = isCheckPoint ? CheckPointIndex : 0;
-        InputCount = isCheckPoint ? worldInfoIndex : 0;
+        if (startWorldInfoIndex == 0)
+            checkPointAccuracy01 = 1f;
+        worldInfoIndex = startWorldInfoIndex;
+        stopedNoteIndex = worldInfoIndex;
+        InputCount = worldInfoIndex;
         missCount = 0;
 
-        this.accuracy01 = (float)accuracy01;
-        sumNoteAccuracy01 = isCheckPoint ? (float)accuracy01 * (float)InputCount : 0f;
+        accuracy01 = checkPointAccuracy01;
+        sumNoteAccuracy01 = (float)accuracy01 * (float)InputCount;
         progress01 = Mathf.Clamp01((float)stopedNoteIndex / (float)GetMaxWorldInfoIndex());
         HP01 = 1f;
-        totalElapsedSecs = isCheckPoint ? GetWorldInfo(worldInfoIndex).noteInfo.awakeSecs : 0f;
+        totalElapsedSecs = GetWorldInfo(worldInfoIndex).noteInfo.awakeSecs;
 
         isStop = true;
         isPause = false;
@@ -281,22 +305,16 @@ public class PlayManager : MonoBehaviour
         closestNoteIndex = new int[GetMaxPlayerCount()];
         if (worldInfoIndex != 0)
         {
-            for (int i = 0; i < GetMaxPlayerCount(); i++)
+            List<int> playerIndexList = new List<int>();
+            for (int i = worldInfoIndex; i < GetWorldInfoCount(); i++)
             {
-                closestNoteIndex[i] = GetEachNoteIndex(worldInfoIndex);
-                // if (i == GetPlayerIndex(worldInfoIndex))
-                //     closestNoteIndex[i]++;
+                if (!playerIndexList.Contains(GetPlayerIndex(i)))
+                {
+                    closestNoteIndex[GetPlayerIndex(i)] = GetEachNoteIndex(i);
+                    playerIndexList.Add(GetPlayerIndex(i));
+                }
             }
         }
-        /* List<int> playerIndexList = new List<int>();
-        for (int i = worldInfoIndex; i >= 1; i--)
-        {
-            if (!playerIndexList.Contains(GetPlayerIndex(i)))
-            {
-                closestNoteIndex[GetPlayerIndex(i)] = GetEachNoteIndex(i);
-                playerIndexList.Add(GetPlayerIndex(i));
-            }
-        } */
 
         tweenerGOs = new List<ITweener>();
         tweenerInPlayGOs = new List<ITweenerInPlay>();
@@ -307,24 +325,31 @@ public class PlayManager : MonoBehaviour
         if (isPause)
             StartCoroutine(PauseTweensOnPauseCo());
     }
-    void Restart(float? accuracy01 = null)
+    void Restart(int startWorldInfoIndex)
     {
+        float SignDeltaWorldInfoIndex;
+        SignDeltaWorldInfoIndex = Handy.Math.SignMethod.GetSign0IsZero((float)(startWorldInfoIndex - worldInfoIndex));
+
         List<IGameObject> GOsTemp = new List<IGameObject>(GOs);
-        InitPlayManagerScript(accuracy01);
+        InitPlayManagerScript(startWorldInfoIndex);
         InitGameObjectScriptAll(GOsTemp);
         TryKillTweenAll();
         for (int i = 0; i < GetMaxPlayerCount(); i++)
         {
             GetPlayerScript(i).InitSideClickScaleInfo();
         }
-        for (int i = worldInfoIndex; i < GetWorldInfoCount(); i++)
+        for (int i = 0; i < GetWorldInfoCount(); i++)
         {
-            NotePrefab curNoteScript = GetNoteScript(GetPlayerIndex(i), GetEachNoteIndex(i));
+            Note curNoteScript = GetNoteScript(GetPlayerIndex(i), GetEachNoteIndex(i));
             curNoteScript.TryKillWaitTweens();
             curNoteScript.TryKillHoldTweens();
             curNoteScript.TryStopCheckHoldingKeyCo();
             curNoteScript.gameObject.SetActive(false);
+            StartCoroutine(Handy.ProcessCode.WaitCodeMethod.WaitCodeWaitForFixedUpdateCo(() => { curNoteScript.InitGameObjectScript(); if (i < startWorldInfoIndex) curNoteScript.EndNoteScript(); }));
         }
+        tryCount++;
+        if (worldInfoIndex > 0)
+            worldInfoIndex -= (int)Mathf.Clamp01(-SignDeltaWorldInfoIndex);
         countDownScript.PlayCountDown();
     }
     IEnumerator PauseTweensOnPauseCo()
@@ -353,18 +378,16 @@ public class PlayManager : MonoBehaviour
     }
     void ActiveNote()
     {
-        for (int i = 1; i < GetWorldInfoCount(); i++)
+        for (int i = worldInfoIndex; i < GetWorldInfoCount(); i++)
         {
-            GameObject curNote = GetNote(GetWorldInfo(i).noteInfo.tarPlayerIndex, GetWorldInfo(i).noteInfo.eachNoteIndex);
-            NotePrefab curNoteScript = GetNoteScript(GetWorldInfo(i).noteInfo.tarPlayerIndex, GetWorldInfo(i).noteInfo.eachNoteIndex);
+            Note curNoteScript = GetNoteScript(GetPlayerIndex(i), GetEachNoteIndex(i));
             if (!curNoteScript.isStop)
             {
-                if (!curNote.activeSelf)
+                if (!curNoteScript.gameObject.activeSelf)
                 {
                     if (GetWorldInfo(i).noteInfo.awakeSecs <= totalElapsedSecs)
                     {
-                        curNote.SetActive(true);
-                        curNoteScript.toleranceSecsAwake = totalElapsedSecs - GetWorldInfo(i).noteInfo.awakeSecs;
+                        curNoteScript.Active();
                     }
                 }
             }
@@ -535,7 +558,7 @@ public class PlayManager : MonoBehaviour
         eachNoteIndex = Handy.IndexMethod.CorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
         return playerIndex == -1 && eachNoteIndex == -1 ? 0f : noteGeneratorScript.notesWaitSecs[playerIndex][eachNoteIndex];
     }
-    public float GetHoldNoteSecs(int playerIndex, int eachNoteIndex)
+    public float GetNoteHoldSecs(int playerIndex, int eachNoteIndex)
     {
         playerIndex = Handy.IndexMethod.CorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
         eachNoteIndex = Handy.IndexMethod.CorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
@@ -545,7 +568,7 @@ public class PlayManager : MonoBehaviour
     {
         return worldInfoIndex == 0 ? 0f : noteGeneratorScript.notesWaitSecs[GetWorldInfo(worldInfoIndex).noteInfo.tarPlayerIndex][GetWorldInfo(worldInfoIndex).noteInfo.eachNoteIndex];
     }
-    public float GetHoldNoteSecs(int worldInfoIndex)
+    public float GetNoteHoldSecs(int worldInfoIndex)
     {
         return worldInfoIndex == 0 ? countDownScript.totalCountDownSecs : noteGeneratorScript.notesLengthSecs[GetWorldInfo(worldInfoIndex).noteInfo.tarPlayerIndex][GetWorldInfo(worldInfoIndex).noteInfo.eachNoteIndex];
     }
@@ -553,7 +576,7 @@ public class PlayManager : MonoBehaviour
     {
         return worldInfo.noteInfo.tarPlayerIndex == -1 && worldInfo.noteInfo.eachNoteIndex == -1 ? 0f : noteGeneratorScript.notesWaitSecs[worldInfo.noteInfo.tarPlayerIndex][worldInfo.noteInfo.eachNoteIndex];
     }
-    public float GetHoldNoteSecs(WorldInfo worldInfo)
+    public float GetNoteHoldSecs(WorldInfo worldInfo)
     {
         return worldInfo.noteInfo.tarPlayerIndex == -1 && worldInfo.noteInfo.eachNoteIndex == -1 ? countDownScript.totalCountDownSecs : noteGeneratorScript.notesLengthSecs[worldInfo.noteInfo.tarPlayerIndex][worldInfo.noteInfo.eachNoteIndex];
     }
@@ -563,7 +586,7 @@ public class PlayManager : MonoBehaviour
         eachNoteIndex = Handy.IndexMethod.CorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
         return playerIndex == -1 && eachNoteIndex == -1 ? noteGeneratorScript.startNote : noteGeneratorScript.notes[playerIndex][eachNoteIndex];
     }
-    public NotePrefab GetNoteScript(int playerIndex, int eachNoteIndex)
+    public Note GetNoteScript(int playerIndex, int eachNoteIndex)
     {
         playerIndex = Handy.IndexMethod.CorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
         eachNoteIndex = Handy.IndexMethod.CorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
@@ -699,6 +722,10 @@ public class PlayManager : MonoBehaviour
     {
         tweenerGO.TryKillTween();
     }
+    public void GotoTween(float toSecs, ITweener tweenerGO)
+    {
+        tweenerGO.GotoTween(toSecs);
+    }
     public void PlayWaitTween(ITweenerInPlay tweenerInPlayGO)
     {
         tweenerInPlayGO.PlayWaitTween();
@@ -744,6 +771,15 @@ public class PlayManager : MonoBehaviour
         foreach (var TGO in tweenerGOs)
         {
             TGO.TryKillTween();
+        }
+    }
+    public void GotoTweenAll(float toSecs, List<ITweener> tweenerGOs = null)
+    {
+        if (tweenerGOs == null)
+            tweenerGOs = this.tweenerGOs;
+        foreach (var TGO in tweenerGOs)
+        {
+            TGO.GotoTween(toSecs);
         }
     }
     public void PlayWaitTweenAll(List<ITweenerInPlay> tweenerInPlayGOs = null)

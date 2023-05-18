@@ -7,6 +7,7 @@ using TweenManager;
 
 public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
 {
+    public bool isInit;
     Image centerImage;
     WorldInfo worldInfo;
     PlayManager PM;
@@ -32,16 +33,18 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     }
     public void InitTween()
     {
+        isInit = true;
+
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
 
         // TweenMethod.TryKillTween(scaleInfo);
-        scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
+        scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
 
         // TweenMethod.TryKillTween(posInfo);
-        posInfo = new TweeningInfo(worldInfo.centerInfo.posTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
+        posInfo = new TweeningInfo(worldInfo.centerInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
 
         // TweenMethod.TryKillTween(colorInfo);
-        colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
+        colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
     {
@@ -57,6 +60,17 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public void TryKillTween()
     {
         TweenMethod.TryKillTweens(scaleInfo, posInfo, colorInfo);
+        
+        isInit = false;
+    }
+    public void GotoTween(float toSecs)
+    {
+        if (isInit)
+        {
+            scaleInfo.Goto(toSecs);
+            posInfo.Goto(toSecs);
+            colorInfo.Goto(toSecs);
+        }
     }
     public void InitGameObjectScript()
     {

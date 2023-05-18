@@ -8,6 +8,7 @@ using TweenManager;
 public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
 {
     public int playerIndex;
+    public bool isInit;
     public GameObject playerSide;
     public GameObject playerCenter;
     public SpriteRenderer playerSideRenderer;
@@ -66,33 +67,35 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     }
     public void InitTween()
     {
+        isInit = true;
+
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
 
         playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
 
         // TweenMethod.TryKillTween(radiusInfo);
-        radiusInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].radiusTween, PM.GetHoldNoteSecs(worldInfo));
+        radiusInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].radiusTween, PM.GetNoteHoldSecs(worldInfo));
 
         // TweenMethod.TryKillTween(degInfo);
-        degInfo = new TweeningInfo(PM.CorrectDegTween(worldInfo.playerInfo[playerIndex].degTween, worldInfo.playerInfo[playerIndex].degDir), PM.GetHoldNoteSecs(worldInfo));
+        degInfo = new TweeningInfo(PM.CorrectDegTween(worldInfo.playerInfo[playerIndex].degTween, worldInfo.playerInfo[playerIndex].degDir), PM.GetNoteHoldSecs(worldInfo));
 
         // TweenMethod.TryKillTween(rotationInfo);
-        rotationInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].rotationTween, PM.GetHoldNoteSecs(worldInfo));
+        rotationInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].rotationTween, PM.GetNoteHoldSecs(worldInfo));
 
         // TweenMethod.TryKillTween(totalScaleInfo);
-        totalScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].totalScaleTween, PM.GetHoldNoteSecs(worldInfo));
+        totalScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].totalScaleTween, PM.GetNoteHoldSecs(worldInfo));
 
         // TweenMethod.TryKillTween(sideScaleInfo);
-        sideScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideScaleTween, PM.GetHoldNoteSecs(worldInfo));
+        sideScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideScaleTween, PM.GetNoteHoldSecs(worldInfo));
 
         // TweenMethod.TryKillTween(centerScaleInfo);
-        centerScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerScaleTween, PM.GetHoldNoteSecs(worldInfo));
+        centerScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerScaleTween, PM.GetNoteHoldSecs(worldInfo));
 
         // TweenMethod.TryKillTween(sideColorInfo);
-        sideColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideColorTween, PM.GetHoldNoteSecs(worldInfo));
+        sideColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideColorTween, PM.GetNoteHoldSecs(worldInfo));
 
         // TweenMethod.TryKillTween(centerColorInfo);
-        centerColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerColorTween, PM.GetHoldNoteSecs(worldInfo));
+        centerColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerColorTween, PM.GetNoteHoldSecs(worldInfo));
     }
     public void UpdateTweenValue()
     {
@@ -129,6 +132,21 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
         centerScaleInfo,
         sideColorInfo,
         centerColorInfo);
+        
+        isInit = false;
+    }
+    public void GotoTween(float toSecs)
+    {
+        if (isInit)
+        {
+            degInfo.Goto(toSecs);
+            rotationInfo.Goto(toSecs);
+            totalScaleInfo.Goto(toSecs);
+            sideScaleInfo.Goto(toSecs);
+            centerScaleInfo.Goto(toSecs);
+            sideColorInfo.Goto(toSecs);
+            centerColorInfo.Goto(toSecs);
+        }
     }
     public void InitGameObjectScript()
     {

@@ -6,8 +6,9 @@ using TweenManager;
 
 public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
 {
-    Camera baseCamera;
     public readonly float stdSize;
+    public bool isInit;
+    Camera baseCamera;
     WorldInfo worldInfo;
     PlayManager PM;
 
@@ -27,19 +28,21 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     }
     public void InitTween()
     {
+        isInit = true;
+
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
 
         // TweenMethod.TryKillTween(orthoSizeInfo);
-        orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
+        orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
 
         // TweenMethod.TryKillTween(BGColorInfo);
-        BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
+        BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
 
         // TweenMethod.TryKillTween(rotationInfo);
-        rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
+        rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
 
         // TweenMethod.TryKillTween(posInfo);
-        posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
+        posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
     {
@@ -56,6 +59,18 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     public void TryKillTween()
     {
         TweenMethod.TryKillTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
+        
+        isInit = false;
+    }
+    public void GotoTween(float toSecs)
+    {
+        if (isInit)
+        {
+            orthoSizeInfo.Goto(toSecs);
+            BGColorInfo.Goto(toSecs);
+            rotationInfo.Goto(toSecs);
+            posInfo.Goto(toSecs);
+        }
     }
     public void InitGameObjectScript()
     {

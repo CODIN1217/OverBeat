@@ -11,6 +11,7 @@ namespace TweenManager
         void InitTween();
         void UpdateTweenValue();
         void TryKillTween();
+        void GotoTween(float toSecs);
         // void Play();
         // void Pause();
     }
@@ -93,11 +94,18 @@ namespace TweenManager
             tweener.Pause();
             return this;
         }
-        public TweeningInfo OnStart(Action action){
+        public TweeningInfo Complete()
+        {
+            tweener.Complete();
+            return this;
+        }
+        public TweeningInfo OnStart(Action action)
+        {
             tweener.OnStart(() => action());
             return this;
         }
-        public TweeningInfo OnPlay(Action action){
+        public TweeningInfo OnPlay(Action action)
+        {
             tweener.OnPlay(() => action());
             return this;
         }
@@ -111,20 +119,31 @@ namespace TweenManager
             tweener.OnComplete(() => action());
             return this;
         }
-        public bool IsActive(){
+        public bool IsActive()
+        {
             return tweener.IsActive();
         }
-        public bool IsBackwards(){
+        public bool IsBackwards()
+        {
             return tweener.IsBackwards();
         }
-        public bool IsComplete(){
+        public bool IsComplete()
+        {
             return tweener.IsComplete();
         }
-        public bool IsInitialized(){
+        public bool IsInitialized()
+        {
             return tweener.IsInitialized();
         }
-        public bool IsPlaying(){
+        public bool IsPlaying()
+        {
             return tweener.IsPlaying();
+        }
+        public TweeningInfo Goto(float toSecs)
+        {
+            bool isPlaying = tweener.IsPlaying();
+            tweener.Goto(toSecs, isPlaying);
+            return this;
         }
     }
     class TweenerInfos<T>

@@ -7,6 +7,7 @@ using TweenManager;
 
 public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
 {
+    public bool isInit;
     WorldInfo worldInfo;
     public GameObject boundaryLine;
     public GameObject boundaryCover;
@@ -32,19 +33,21 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
     }
     public void InitTween()
     {
+        isInit = true;
+
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
 
         // TweenMethod.TryKillTween(coverColorInfo);
-        coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.BGColor */);
+        coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.BGColor */);
 
         // TweenMethod.TryKillTween(posInfo);
-        posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, PM.GetHoldNoteSecs(PM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.pos */);
+        posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.pos */);
 
         // TweenMethod.TryKillTween(lineColorInfo);
-        lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
+        lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
 
         // TweenMethod.TryKillTween(scaleInfo);
-        scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween, PM.GetHoldNoteSecs(PM.worldInfoIndex));
+        scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
     {
@@ -61,6 +64,18 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
     public void TryKillTween()
     {
         TweenMethod.TryKillTweens(coverColorInfo, posInfo, lineColorInfo, scaleInfo);
+        
+        isInit = false;
+    }
+    public void GotoTween(float toSecs)
+    {
+        if (isInit)
+        {
+            coverColorInfo.Goto(toSecs);
+            posInfo.Goto(toSecs);
+            lineColorInfo.Goto(toSecs);
+            scaleInfo.Goto(toSecs);
+        }
     }
     public void InitGameObjectScript()
     {
