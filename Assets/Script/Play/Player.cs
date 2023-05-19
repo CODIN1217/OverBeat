@@ -42,7 +42,7 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
 
     void Awake()
     {
-        PM = PlayManager.Property;
+        PM = PlayManager.Member;
         InitGameObjectScript();
         playerSideRenderer = playerSide.GetComponent<SpriteRenderer>();
         playerCenterRenderer = playerCenter.GetComponent<SpriteRenderer>();

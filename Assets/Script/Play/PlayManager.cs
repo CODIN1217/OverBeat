@@ -92,8 +92,8 @@ public class PlayManager : MonoBehaviour
 
         InitPlayManagerScript(0);
 
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => InfoViewer.Property.SetInfo(this.name, nameof(closestNoteIndex), () => closestNoteIndex[i], i), closestNoteIndex.Length);
-        InfoViewer.Property.SetInfo(this.name, nameof(worldInfoIndex), () => worldInfoIndex);
+        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => DevTool.Member.infoViewer.SetInfo(Handy.ReflectionMethod.GetPredicateName(Handy.ArrayMethod.GetParams<string>(this.name, nameof(closestNoteIndex)), i), () => closestNoteIndex[i]), closestNoteIndex.Length);
+        DevTool.Member.infoViewer.SetInfo(Handy.ReflectionMethod.GetPredicateName(Handy.ArrayMethod.GetParams<string>(this.name, nameof(worldInfoIndex))), () => worldInfoIndex);
     }
     void Update()
     {
@@ -465,7 +465,7 @@ public class PlayManager : MonoBehaviour
         }
         return judgmentType;
     }
-    public static PlayManager Property
+    public static PlayManager Member
     {
         get
         {

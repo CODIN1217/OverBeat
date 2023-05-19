@@ -21,7 +21,7 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public TweeningInfo colorInfo;
     void Awake()
     {
-        PM = PlayManager.Property;
+        PM = PlayManager.Member;
         centerImage = GetComponent<Image>();
         InitGameObjectScript();
     }

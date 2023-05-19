@@ -18,7 +18,7 @@ public class CountDown : MonoBehaviour
     PlayManager PM;
     void Awake()
     {
-        PM = PlayManager.Property;
+        PM = PlayManager.Member;
         countDownTMP = GetComponent<TextMeshProUGUI>();
     }
     void OnEnable()

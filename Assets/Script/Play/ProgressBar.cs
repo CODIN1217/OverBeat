@@ -15,7 +15,7 @@ public class ProgressBar : MonoBehaviour
     public RectTransform PBBGImageRect;
     PlayManager PM;
     void Awake() {
-        PM = PlayManager.Property;
+        PM = PlayManager.Member;
     }
     void Update()
     {

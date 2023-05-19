@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PlayerJudgLine
-  m_Shader: {fileID: 4800000, guid: 51b017337c98b4d40ad17ad0e4a6f4d2, type: 3}
+  m_Name: NoteProcess
+  m_Shader: {fileID: 4800000, guid: 1cb0bade096ff8349a496a91edc1fded, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _ALPHABLEND_ON

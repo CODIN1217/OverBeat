@@ -9,6 +9,7 @@ using DG.Tweening;
 using TweenManager;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
+using System.Linq;
 
 namespace Handy
 {
@@ -220,6 +221,29 @@ namespace Handy
                     return null;
                 return new Vector2(Mathf.Clamp(((Vector2)XY).x, minXY, maxXY), Mathf.Clamp(((Vector2)XY).y, minXY, maxXY));
             }
+            public static float GetDistance(List<Vector2> poses)
+            {
+                float length = 0f;
+                for (int i = 0; i < poses.Count; i++)
+                {
+                    length += Vector2.Distance(poses[Handy.IndexMethod.GetBeforeIndex(i)], poses[i]);
+                }
+                return length;
+            }
+            public static List<Vector3> ConvertListVector(List<Vector2> vector2s)
+            {
+                List<Vector3> vector3s = new List<Vector3>();
+                foreach (var vector2 in vector2s)
+                    vector3s.Add(vector2);
+                return vector3s;
+            }
+            public static List<Vector2> ConvertListVector(List<Vector3> vector3s)
+            {
+                List<Vector2> vector2s = new List<Vector2>();
+                foreach (var vector3 in vector3s)
+                    vector2s.Add(vector3);
+                return vector2s;
+            }
         }
     }
     public static class LogMethod
@@ -245,6 +269,32 @@ namespace Handy
         public static int CorrectIndex(int index, int maxIndex = int.MaxValue, int minIndex = 0)
         {
             return (int)Mathf.Clamp(index, minIndex, maxIndex);
+        }
+    }
+    public static class ArrayMethod
+    {
+        public static T[] GetParams<T>(params T[] parms) => parms;
+    }
+    public static class ReflectionMethod
+    {
+        public static string GetPredicateName(string[] predicateNames, int? index = null)
+        {
+            StringBuilder predicateName = new StringBuilder();
+            for (int i = 0; i < predicateNames.Length; i++)
+            {
+                predicateName.Append(predicateNames[i] + (i == predicateNames.Length - 1 ? null : " / "));
+            }
+            if (index != null)
+                predicateName.Append($" ( Index : {index} )");
+            return predicateName.ToString();
+        }
+    }
+    public static class LineRendMethod
+    {
+        public static void SetDottedLine(DottedLine dottedLine, List<Vector2> poses, float? posesLength = null)
+        {
+            dottedLine.poses = Handy.Math.VectorMethod.ConvertListVector(poses);
+            dottedLine.SetRepeatCount((posesLength == null ? Handy.Math.VectorMethod.GetDistance(poses) : (float)posesLength) * 2.44f);
         }
     }
 }

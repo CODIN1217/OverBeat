@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     public int maxPlayerIndex;
     PlayManager PM;
     void Awake() {
-        PM = PlayManager.Property;
+        PM = PlayManager.Member;
         players = new List<GameObject>();
         playerScripts = new List<Player>();
         playerSides = new List<GameObject>();

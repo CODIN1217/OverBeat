@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: NoteProcess
-  m_Shader: {fileID: 4800000, guid: bd2b46f15355c934995606e1b937bada, type: 3}
+  m_Name: TestDottedLine
+  m_Shader: {fileID: 4800000, guid: 1cb0bade096ff8349a496a91edc1fded, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _ALPHABLEND_ON

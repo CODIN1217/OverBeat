@@ -21,7 +21,7 @@ public class JudgmentText : MonoBehaviour
     bool isAwake;
     void Awake()
     {
-        PM = PlayManager.Property;
+        PM = PlayManager.Member;
         isAwake = true;
     }
     void Update()
@@ -32,7 +32,7 @@ public class JudgmentText : MonoBehaviour
         {
             judgmentText_TMP = GetComponent<TextMeshProUGUI>();
             judgmentText_rect = GetComponent<RectTransform>();
-            PM = PlayManager.Property;
+            PM = PlayManager.Member;
             worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
             judgmentText_TMP.text = judgmentType.ToString();
             stdPlayerPos = (Vector2)PM.GetPlayer(playerIndex).transform.position * 100f;

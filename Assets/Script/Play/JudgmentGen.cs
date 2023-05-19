@@ -8,7 +8,7 @@ public class JudgmentGen : MonoBehaviour
     PlayManager PM;
     void Awake()
     {
-        PM = PlayManager.Property;
+        PM = PlayManager.Member;
     }
     public void SetJudgmentText(int playerIndex, JudgmentType judgmentType)
     {

@@ -23,7 +23,7 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     public TweeningInfo posInfo;
     void Awake()
     {
-        PM = PlayManager.Property;
+        PM = PlayManager.Member;
         InitGameObjectScript();
     }
     public void InitTween()

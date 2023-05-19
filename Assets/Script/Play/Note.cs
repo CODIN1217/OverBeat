@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
 {
     public int myWorldInfoIndex;
-    public int myNoteIndex;
+    public int myEachNoteIndex;
     public int tarPlayerIndex;
 
     float myElapsedSecs;
@@ -52,8 +52,8 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     Player tarPlayerScript;
     GameObject nextNote;
     Note nextNoteScript;
-    List<Vector3> pathPoses;
-    List<Vector3> processPathPoses;
+    List<Vector2> pathPoses;
+    List<Vector2> processPathPoses;
 
     public float waitDeltaRadius;
     public float holdDeltaRadius;
@@ -80,10 +80,12 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     public WorldInfo worldInfo;
     PlayManager PM;
     Coroutine checkHoldingKeyCo;
+
+    List<Vector2> endNotePoses;
     void Awake()
     {
-        PM = PlayManager.Property;
-        pathPoses = new List<Vector3>();
+        PM = PlayManager.Member;
+        pathPoses = new List<Vector2>();
 
         startNote = transform.GetChild(0).gameObject;
         processNote = transform.GetChild(1).gameObject;
@@ -92,6 +94,8 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         processNoteRenderer = processNote.GetComponent<LineRenderer>();
         processNoteDottedLine = processNote.GetComponent<DottedLine>();
         endNoteRenderer = endNote.transform.GetChild(0).GetComponent<SpriteRenderer>();
+
+        endNotePoses = new List<Vector2>();
     }
     void OnEnable()
     {
@@ -103,6 +107,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             return;
         if (isAwake)
         {
+            DevTool.Member.SetDottedLine(Handy.ReflectionMethod.GetPredicateName(Handy.ArrayMethod.GetParams<string>(this.name, nameof(endNotePoses)), myWorldInfoIndex), () => endNotePoses);
             PM.AddGO(this).AddTweenerInPlayGO(this);
             InitNoteTween();
             PM.PlayWaitTweenAll();
@@ -152,8 +157,8 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         worldInfo = PM.GetWorldInfo(myWorldInfoIndex);
         tarPlayer = PM.GetPlayer(tarPlayerIndex);
         tarPlayerScript = PM.GetPlayerScript(tarPlayerIndex);
-        nextNote = PM.GetNote(tarPlayerIndex, myNoteIndex + 1);
-        nextNoteScript = PM.GetNoteScript(tarPlayerIndex, myNoteIndex + 1);
+        nextNote = PM.GetNote(tarPlayerIndex, myEachNoteIndex + 1);
+        nextNoteScript = PM.GetNoteScript(tarPlayerIndex, myEachNoteIndex + 1);
         startNoteSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
         endNoteSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
     }
@@ -219,7 +224,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         if (holdNoteSecs != 0f)
             holdElapsedSecs01 = Mathf.Clamp01(Mathf.Clamp(holdElapsedSecs, 0f, holdNoteSecs) / holdNoteSecs);
         else
-            holdElapsedSecs01 = Mathf.Clamp01(Mathf.Clamp(holdElapsedSecs, 0f, PM.GetNoteWaitSecs(tarPlayerIndex, myNoteIndex + 1)) / PM.GetNoteWaitSecs(tarPlayerIndex, myNoteIndex + 1));
+            holdElapsedSecs01 = Mathf.Clamp01(Mathf.Clamp(holdElapsedSecs, 0f, PM.GetNoteWaitSecs(tarPlayerIndex, myEachNoteIndex + 1)) / PM.GetNoteWaitSecs(tarPlayerIndex, myEachNoteIndex + 1));
     }
     public void EndWaiting()
     {
@@ -293,14 +298,19 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         UpdatePathPoses();
         UpdateProcessPathPoses();
 
-        processNoteDottedLine.poses = processPathPoses;
-        processNoteDottedLine.SetRepeatCount(processPathPosesLength * 2.45f);
+        Handy.LineRendMethod.SetDottedLine(processNoteDottedLine, processPathPoses, pathPosesLength);
+
+        // processNoteDottedLine.poses = processPathPoses;
+        // processNoteDottedLine.SetRepeatCount(processPathPosesLength * 2.45f);
 
         if (pathPoses.Count > 0)
             endNote.transform.position = pathPoses[pathPoses.Count - 1];
 
         startNote.transform.rotation = Quaternion.Euler(0f, 0f, startRotation);
         endNote.transform.rotation = Quaternion.Euler(0f, 0f, endRotation);
+
+
+        endNotePoses.Add(endNote.transform.position);
     }
     public void UpdateRenderer()
     {
@@ -315,7 +325,6 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     void UpdatePathPoses()
     {
         pathPoses.Clear();
-        pathPosesLength = 0f;
         for (int i = (int)(holdElapsedSecs01 * (float)PM.notePathPosesCount); i < PM.notePathPosesCount; i++)
         {
             float curProgress = (float)i / (float)PM.notePathPosesCount;
@@ -324,8 +333,8 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             + TweenMethod.GetTweenValue(worldInfo.noteInfo.holdDeltaRadiusTween, curProgress));
 
             pathPoses.Add(GetNotePos(pathPos));
-            pathPosesLength += Vector2.Distance(pathPoses[Handy.IndexMethod.GetBeforeIndex(pathPoses.Count - 1)], pathPoses[pathPoses.Count - 1]);
         }
+        pathPosesLength = Handy.Math.VectorMethod.GetDistance(pathPoses);
     }
     void UpdateProcessPathPoses()
     {
@@ -337,7 +346,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         float stdRadiusDistance = Mathf.Abs(TweenMethod.GetTweenValue(worldInfo.noteInfo.holdDeltaRadiusTween, 1f) - TweenMethod.GetTweenValue(worldInfo.noteInfo.holdDeltaRadiusTween, 0f));
         float removeLength = pathPosesLength * 0.2f / (stdDegDistance / 90f) / stdRadiusDistance;
 
-        processPathPoses = new List<Vector3>(pathPoses);
+        processPathPoses = new List<Vector2>(pathPoses);
         processPathPosesLength = pathPosesLength;
         float startRemoveLength = 0f;
         int startRemoveCount = 0;
@@ -347,7 +356,6 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             if (startRemoveLength >= removeLength)
             {
                 startRemoveCount = i + 1;
-                processPathPosesLength -= startRemoveLength;
                 break;
             }
         }
@@ -359,10 +367,10 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             if (endRemoveLength >= removeLength)
             {
                 endRemoveCount = pathPoses.Count - i;
-                processPathPosesLength -= endRemoveLength;
                 break;
             }
         }
+        processPathPosesLength -= startRemoveLength + endRemoveLength;
         if (processPathPoses.Count >= startRemoveCount + endRemoveCount)
         {
             processPathPoses.RemoveRange(0, startRemoveCount);
@@ -372,6 +380,8 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     Vector2 GetNotePos(Vector2 pathPos)
     {
         return pathPos
+        // + Handy.Transform.PosMethod.GetCircularPos(TweenMethod.GetTweenValue(worldInfo.playerInfo[tarPlayerIndex].degTween, 0f), waitDeltaRadius)
+        // - Handy.Transform.PosMethod.GetCircularPos(TweenMethod.GetTweenValue(worldInfo.playerInfo[tarPlayerIndex].degTween, 1f), holdDeltaRadius)
         + Handy.Transform.PosMethod.GetCircularPos(tarPlayerScript.curDeg, waitDeltaRadius - holdDeltaRadius)
         // - Handy.Transform.PosMethod.GetCircularPos(worldInfo.playerInfo[tarPlayerIndex].degTween.endValue, holdDeltaRadius)
         + PM.centerScript.pos;

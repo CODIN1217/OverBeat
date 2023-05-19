@@ -21,7 +21,6 @@ public class DottedLine : MonoBehaviour
         {
             curvVertMultiplier = 0f;
         }
-        poses = new List<Vector3>();
         lineRenderer = GetComponent<LineRenderer>();
         aniCurv = new AnimationCurve();
         for (int i = 0; i < curvVert01s.Count; i++)
@@ -33,7 +32,8 @@ public class DottedLine : MonoBehaviour
     }
     void Update()
     {
-        lineRenderer.positionCount = poses.Count;
+        if (poses != null)
+            lineRenderer.positionCount = poses.Count;
         lineRenderer.SetPositions(poses.Cast<Vector3>().ToArray());
     }
     public void SetRepeatCount(float repeatCount)

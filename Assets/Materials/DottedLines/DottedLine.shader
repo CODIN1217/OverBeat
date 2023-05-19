@@ -1,4 +1,4 @@
-﻿Shader "TNTC/PlayerPosesLine"{
+﻿Shader "TNTC/DottedLine"{
     Properties{
         _Rep("Repeat Count", float) = 5
         _Spacing("Spacing", float) = 0.5

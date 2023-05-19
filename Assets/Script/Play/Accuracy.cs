@@ -10,7 +10,7 @@ public class Accuracy : MonoBehaviour
     PlayManager PM;
     void Awake()
     {
-        PM = PlayManager.Property;
+        PM = PlayManager.Member;
         accuracyTMP = GetComponent<TextMeshProUGUI>();
     }
     void Update()

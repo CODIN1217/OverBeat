@@ -16,7 +16,7 @@ public class NoteGenerator : MonoBehaviour
     PlayManager PM;
     void Awake()
     {
-        PM = PlayManager.Property;
+        PM = PlayManager.Member;
         notesWaitSecs = new List<float>[PM.GetMaxPlayerCount()];
         notesLengthSecs = new List<float>[PM.GetMaxPlayerCount()];
         notes = new List<GameObject>[PM.GetMaxPlayerCount()];
@@ -74,7 +74,7 @@ public class NoteGenerator : MonoBehaviour
         }
 
         newNoteScript.myWorldInfoIndex = worldInfoIndex;
-        newNoteScript.myNoteIndex = eachNoteIndex;
+        newNoteScript.myEachNoteIndex = eachNoteIndex;
         newNoteScript.tarPlayerIndex = playerIndex;
         if (playerIndex != -1)
             eachNoteCount[playerIndex]++;

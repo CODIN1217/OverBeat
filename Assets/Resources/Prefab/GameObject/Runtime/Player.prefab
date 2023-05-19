@@ -77,7 +77,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -638940831
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 79f8d585f42ec9041aef410a84b421f1, type: 3}
   m_Color: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
@@ -169,7 +169,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -638940831
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 06f74f070c25a1a47a3c44598e248b40, type: 3}
   m_Color: {r: 0.25490198, g: 0.078431375, b: 0.7254902, a: 1}
@@ -194,7 +194,7 @@ GameObject:
   - component: {fileID: 4548750123946651606}
   m_Layer: 6
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -228,13 +228,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f98a748f4612f3c4b8b87ddb183e8f03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myPlayerIndex: 0
-  stdDeg: 0
-  curDeg: 0
-  tarDeg: 0
-  stdRadius: 0
-  curRadius: 0
-  tarRadius: 0
+  playerIndex: 0
+  isInit: 0
   playerSide: {fileID: 3064592025090090499}
   playerCenter: {fileID: 4189195751195765722}
+  playerSideRenderer: {fileID: 0}
+  playerCenterRenderer: {fileID: 0}
   playerSideSprite: {fileID: 0}
+  curDeg: 0
+  rotation: 0
+  curRadius: 0
+  totalScale: {x: 0, y: 0}
+  sideScale: {x: 0, y: 0}
+  centerScale: {x: 0, y: 0}
+  sideColor: {r: 0, g: 0, b: 0, a: 0}
+  centerColor: {r: 0, g: 0, b: 0, a: 0}
+  sideClickScale: 0

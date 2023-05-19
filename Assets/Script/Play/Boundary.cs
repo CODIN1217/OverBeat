@@ -28,7 +28,7 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
     public TweeningInfo posInfo;
     void Awake()
     {
-        PM = PlayManager.Property;
+        PM = PlayManager.Member;
         InitGameObjectScript();
     }
     public void InitTween()

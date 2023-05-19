@@ -11,52 +11,39 @@ public class InfoViewer : MonoBehaviour
     TextMeshProUGUI infoViewer_TMP;
     Dictionary<string, Func<object>> infos;
     List<string> names;
-    static InfoViewer instance = null;
-    public static InfoViewer Property
+    /* static InfoViewer instance = null;
+    public static InfoViewer Member
     {
         get
         {
             return instance;
         }
-    }
+    } */
     void Awake()
     {
-        instance = this;
+        // instance = this;
         infoViewer_TMP = GetComponent<TextMeshProUGUI>();
         infos = new Dictionary<string, Func<object>>();
         names = new List<string>();
-        StartCoroutine(UpdateOnEndOfFrame());
     }
-    IEnumerator UpdateOnEndOfFrame()
+    public void UpdateInfo()
     {
-        while (true)
+        StringBuilder content = new StringBuilder("< Info >");
+        for (int i = 0; i < infos.Count; i++)
         {
-            yield return new WaitForEndOfFrame();
-            StringBuilder content = new StringBuilder("<Info>");
-            for (int i = 0; i < infos.Count; i++)
-            {
-                content.AppendLine().Append(names[i]).AppendLine().Append("= ").Append(infos[names[i]]().ToString());
-            }
-            infoViewer_TMP.text = content.ToString();
+            content.AppendLine().Append(names[i]).AppendLine().Append("= ").Append(infos[names[i]]().ToString());
         }
+        infoViewer_TMP.text = content.ToString();
     }
-    public void SetInfo(string parentsName, string varName, Func<object> infoFunc, int? index = null)
+    public void SetInfo(string predicateName, Func<object> infoFunc)
     {
-        string fullName = $"{parentsName} / {varName}" + (index != null ? $" ( Index : {index} )" : "");
-        if (infos.ContainsKey(fullName) && names.Contains(fullName))
-            infos[fullName] = infoFunc;
-        else if (infos.ContainsKey(fullName) && !names.Contains(fullName))
-        {
-            names.Add(fullName);
-        }
-        else if (!infos.ContainsKey(fullName) && names.Contains(fullName))
-        {
-            infos.Add(fullName, infoFunc);
-        }
+        if (infos.ContainsKey(predicateName))
+            infos[predicateName] = infoFunc;
         else
         {
-            names.Add(fullName);
-            infos.Add(fullName, infoFunc);
+            if (!names.Contains(predicateName))
+                names.Add(predicateName);
+            infos.Add(predicateName, infoFunc);
         }
     }
 }
