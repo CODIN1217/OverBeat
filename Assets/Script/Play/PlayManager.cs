@@ -248,31 +248,6 @@ public class PlayManager : MonoBehaviour
         else
             isPause = false;
     }
-    /* public void InitPlayManagerScript()
-    {
-        stopedNoteIndex = 0;
-        worldInfoIndex = 0;
-        InputCount = 0;
-        missCount = 0;
-
-        accuracy01 = 1f;
-        sumNoteAccuracy01 = 0f;
-        progress01 = 0f;
-        HP01 = 1f;
-        totalElapsedSecs = 0f;
-
-        isStop = true;
-        isPause = false;
-        isGameOver = false;
-        isClearWorld = false;
-        isBeforeAwake = true;
-
-        closestNoteIndex = new int[GetMaxPlayerCount()];
-
-        tweenerGOs = new List<ITweener>();
-        tweenerInPlayGOs = new List<ITweenerInPlay>();
-        GOs = new List<IGameObject>();
-    } */
     public void InitPlayManagerScript(int startWorldInfoIndex)
     {
         for (int i = 0; i < startWorldInfoIndex; i++)
@@ -591,6 +566,18 @@ public class PlayManager : MonoBehaviour
         playerIndex = Handy.IndexMethod.CorrectIndex(playerIndex, GetMaxPlayerIndex(), -1);
         eachNoteIndex = Handy.IndexMethod.CorrectIndex(eachNoteIndex, GetMaxNoteIndex(playerIndex), -1);
         return playerIndex == -1 && eachNoteIndex == -1 ? noteGeneratorScript.startNoteScript : noteGeneratorScript.noteScripts[playerIndex][eachNoteIndex];
+    }
+    public GameObject GetNote(int worldInfoIndex)
+    {
+        int playerIndex = Handy.IndexMethod.CorrectIndex(GetPlayerIndex(worldInfoIndex), GetMaxPlayerIndex(), -1);
+        int eachNoteIndex = Handy.IndexMethod.CorrectIndex(GetEachNoteIndex(worldInfoIndex), GetMaxNoteIndex(playerIndex), -1);
+        return GetNote(playerIndex, eachNoteIndex);
+    }
+    public Note GetNoteScript(int worldInfoIndex)
+    {
+        int playerIndex = Handy.IndexMethod.CorrectIndex(GetPlayerIndex(worldInfoIndex), GetMaxPlayerIndex(), -1);
+        int eachNoteIndex = Handy.IndexMethod.CorrectIndex(GetEachNoteIndex(worldInfoIndex), GetMaxNoteIndex(playerIndex), -1);
+        return GetNoteScript(playerIndex, eachNoteIndex);
     }
     public float GetJudgmentValue(int playerIndex, float? waitElapsedSecs01 = null, float? holdElapsedSecs01 = null)
     {

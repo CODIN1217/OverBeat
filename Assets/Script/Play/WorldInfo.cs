@@ -59,43 +59,52 @@ public class WorldInfo : MonoBehaviour
             centerScaleTween = new TweenInfo<Vector2>(Vector2.one, Vector2.one, AnimationCurve.Linear(0, 0, 1, 1));
         }
     }
+    public class NotePreInfo
+    {
+        public int noteCount;
+        public NotePreInfo()
+        {
+            noteCount = 2;
+        }
+    }
     [Serializable]
-    public class NoteInfo
+    public class NoteInfo : NotePreInfo
     {
         public int eachNoteIndex;
         public int tarPlayerIndex;
         public float awakeSecs;
         public float speed;
+        public float[] noteHitTiming01s;
         public string sideImageName;
         public bool isCheckPoint;
         public TweenInfo<float> waitDeltaRadiusTween;
         public TweenInfo<float> holdDeltaRadiusTween;
         public TweenInfo<float> fadeTween;
-        public TweenInfo<float> totalRotationTween;
-        public TweenInfo<float> startRotationTween;
-        public TweenInfo<float> endRotationTween;
-        public TweenInfo<Color> startColorTween;
+        public TweenInfo<float>[] rotationTweens;
+        public TweenInfo<Color>[] colorTweens;
         public TweenInfo<Color> processStartColorTween;
         public TweenInfo<Color> processEndColorTween;
-        public TweenInfo<Color> endColorTween;
-        public NoteInfo()
+        public NoteInfo() : base()
         {
             eachNoteIndex = 0;
             tarPlayerIndex = 0;
+            
             awakeSecs = 0f;
             speed = 1f;
+            noteHitTiming01s = new float[noteCount];
             sideImageName = "Basic";
             isCheckPoint = false;
             waitDeltaRadiusTween = new TweenInfo<float>(3.5f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             holdDeltaRadiusTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             fadeTween = new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0, 0, 1, 1));
-            totalRotationTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
-            startRotationTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
-            endRotationTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
-            startColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, AnimationCurve.Linear(0, 0, 1, 1));
+            
+            rotationTweens = new TweenInfo<float>[noteCount];
+            Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => { rotationTweens[i] = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1)); }, noteCount);
+            
+            colorTweens = new TweenInfo<Color>[noteCount];
+            Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => { colorTweens[i] = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, AnimationCurve.Linear(0, 0, 1, 1)); }, noteCount);
             processStartColorTween = new TweenInfo<Color>(new Color(130, 80, 255, 255) / 255f, new Color(130, 80, 255, 255) / 255f, AnimationCurve.Linear(0, 0, 1, 1));
             processEndColorTween = new TweenInfo<Color>(new Color(130, 80, 255, 255) / 255f, new Color(130, 80, 255, 255) / 255f, AnimationCurve.Linear(0, 0, 1, 1));
-            endColorTween = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, AnimationCurve.Linear(0, 0, 1, 1));
         }
     }
     [Serializable]

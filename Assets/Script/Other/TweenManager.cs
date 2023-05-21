@@ -12,8 +12,6 @@ namespace TweenManager
         void UpdateTweenValue();
         void TryKillTween();
         void GotoTween(float toSecs);
-        // void Play();
-        // void Pause();
     }
     [Serializable]
     public class TweenInfo<T> : IDeepCopy<TweenInfo<T>>

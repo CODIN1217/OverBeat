@@ -36,14 +36,11 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
         isInit = true;
 
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
-
-        // TweenMethod.TryKillTween(scaleInfo);
+        
         scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-
-        // TweenMethod.TryKillTween(posInfo);
+        
         posInfo = new TweeningInfo(worldInfo.centerInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-
-        // TweenMethod.TryKillTween(colorInfo);
+        
         colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()

@@ -36,17 +36,13 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
         isInit = true;
 
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
-
-        // TweenMethod.TryKillTween(coverColorInfo);
-        coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.BGColor */);
-
-        // TweenMethod.TryKillTween(posInfo);
-        posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex)/* , null, () => playGM.baseCameraScript.pos */);
-
-        // TweenMethod.TryKillTween(lineColorInfo);
+        
+        coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        
+        posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        
         lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-
-        // TweenMethod.TryKillTween(scaleInfo);
+        
         scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()

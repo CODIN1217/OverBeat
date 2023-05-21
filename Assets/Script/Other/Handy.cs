@@ -146,18 +146,32 @@ namespace Handy
         }
         public static class RepeatCodeMethod
         {
-            public static void RepeatCode(Action code, int count)
+            public static void RepeatCode(Action code, int count, int initIndex = 0)
             {
-                for (int i = 0; i < count; i++)
+                for (int i = initIndex; i < count; i++)
                 {
                     code();
                 }
             }
-            public static void RepeatCode(Action<int> code, int count)
+            public static void RepeatCode(Action<int> code, int count, int initIndex = 0)
             {
-                for (int i = 0; i < count; i++)
+                for (int i = initIndex; i < count; i++)
                 {
                     code(i);
+                }
+            }
+            public static void RepeatCode<T>(Action<int, T> code, List<T> list, int initIndex = 0)
+            {
+                for (int i = initIndex; i < list.Count; i++)
+                {
+                    code(i, list[i]);
+                }
+            }
+            public static void RepeatCode<T>(Action<T> code, List<T> list, int initIndex = 0)
+            {
+                for (int i = initIndex; i < list.Count; i++)
+                {
+                    code(list[i]);
                 }
             }
         }

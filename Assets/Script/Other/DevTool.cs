@@ -8,9 +8,10 @@ public class DevTool : MonoBehaviour
 {
     [SerializeField]
     GameObject testDottedLine;
-    Dictionary<string, DottedLine> testDottedLines;
-    Dictionary<string, Func<List<Vector2>>> testDottedLinePoses;
     List<string> predicateNames;
+    Dictionary<string, DottedLine> testDottedLines;
+    Dictionary<string, List<Vector2>> testDottedLinePoses;
+    Dictionary<string, ValueN<Color>> dottedLineColors;
     [SerializeField]
     InfoViewer _infoViewer;
     public InfoViewer infoViewer { get { return _infoViewer; } }
@@ -20,8 +21,9 @@ public class DevTool : MonoBehaviour
     {
         instance = this;
         testDottedLines = new Dictionary<string, DottedLine>();
-        testDottedLinePoses = new Dictionary<string, Func<List<Vector2>>>();
+        testDottedLinePoses = new Dictionary<string, List<Vector2>>();
         predicateNames = new List<string>();
+        dottedLineColors = new Dictionary<string, ValueN<Color>>();
         StartCoroutine(UpdateOnEndOfFrame());
     }
     IEnumerator UpdateOnEndOfFrame()
@@ -33,27 +35,30 @@ public class DevTool : MonoBehaviour
             UpdateDottedLine();
         }
     }
-    public void SetDottedLine(string predicateName, Func<List<Vector2>> poses)
+    public void AddDottedLinePos(string predicateName, Vector2 pos, Color startColor, Color endColor)
     {
         if (!testDottedLines.ContainsKey(predicateName))
             testDottedLines.Add(predicateName, Instantiate<GameObject>(testDottedLine, transform).GetComponent<DottedLine>());
 
+        if (!predicateNames.Contains(predicateName))
+            predicateNames.Add(predicateName);
+
         if (testDottedLinePoses.ContainsKey(predicateName))
-        {
-            testDottedLinePoses[predicateName] = poses;
-        }
+            testDottedLinePoses[predicateName].Add(pos);
         else
-        {
-            if (!predicateNames.Contains(predicateName))
-                predicateNames.Add(predicateName);
-            testDottedLinePoses.Add(predicateName, poses);
-        }
+            testDottedLinePoses.Add(predicateName, new List<Vector2>(){pos});
+
+        if (dottedLineColors.ContainsKey(predicateName))
+            dottedLineColors[predicateName] = new ValueN<Color>(startColor, endColor);
+        else
+            dottedLineColors.Add(predicateName, new ValueN<Color>(startColor, endColor));
     }
     public void UpdateDottedLine()
     {
         foreach (var PN in predicateNames)
         {
-            Handy.LineRendMethod.SetDottedLine(testDottedLines[PN], testDottedLinePoses[PN]());
+            Handy.LineRendMethod.SetDottedLine(testDottedLines[PN], testDottedLinePoses[PN]);
+            testDottedLines[PN].SetColor(dottedLineColors[PN][0], dottedLineColors[PN][1]);
         }
     }
 }

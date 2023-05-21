@@ -31,17 +31,13 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
         isInit = true;
 
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
-
-        // TweenMethod.TryKillTween(orthoSizeInfo);
+        
         orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-
-        // TweenMethod.TryKillTween(BGColorInfo);
+        
         BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-
-        // TweenMethod.TryKillTween(rotationInfo);
+        
         rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-
-        // TweenMethod.TryKillTween(posInfo);
+        
         posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()

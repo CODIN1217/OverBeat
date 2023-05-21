@@ -11,17 +11,8 @@ public class InfoViewer : MonoBehaviour
     TextMeshProUGUI infoViewer_TMP;
     Dictionary<string, Func<object>> infos;
     List<string> names;
-    /* static InfoViewer instance = null;
-    public static InfoViewer Member
-    {
-        get
-        {
-            return instance;
-        }
-    } */
     void Awake()
     {
-        // instance = this;
         infoViewer_TMP = GetComponent<TextMeshProUGUI>();
         infos = new Dictionary<string, Func<object>>();
         names = new List<string>();
@@ -40,10 +31,9 @@ public class InfoViewer : MonoBehaviour
         if (infos.ContainsKey(predicateName))
             infos[predicateName] = infoFunc;
         else
-        {
-            if (!names.Contains(predicateName))
-                names.Add(predicateName);
             infos.Add(predicateName, infoFunc);
-        }
+
+        if (!names.Contains(predicateName))
+            names.Add(predicateName);
     }
 }

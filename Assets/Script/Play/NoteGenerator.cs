@@ -35,12 +35,9 @@ public class NoteGenerator : MonoBehaviour
             SetNotePrefab(j);
         }
 
-        for (int i = 0; i < PM.GetMaxPlayerCount(); i++)
+        for (int i = 1; i < PM.GetWorldInfoCount(); i++)
         {
-            for (int j = 0; j < PM.GetNoteCount(i); j++)
-            {
-                PM.GetNoteScript(i, j).InitNote();
-            }
+            PM.GetNoteScript(i).InitNote();
         }
     }
     void SetNotePrefab(int worldInfoIndex)
