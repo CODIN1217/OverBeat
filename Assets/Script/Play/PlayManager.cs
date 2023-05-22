@@ -250,7 +250,7 @@ public class PlayManager : MonoBehaviour
     }
     public void InitPlayManagerScript(int startWorldInfoIndex)
     {
-        for (int i = 0; i < startWorldInfoIndex; i++)
+        for (int i = 1; i <= startWorldInfoIndex; i++)
         {
             Note curNoteScript = GetNoteScript(GetPlayerIndex(i), GetEachNoteIndex(i));
             curNoteScript.InitNoteTween();

@@ -72,21 +72,21 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
 
         playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
-        
+
         radiusInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].radiusTween, PM.GetNoteHoldSecs(worldInfo));
-        
+
         degInfo = new TweeningInfo(PM.CorrectDegTween(worldInfo.playerInfo[playerIndex].degTween, worldInfo.playerInfo[playerIndex].degDir), PM.GetNoteHoldSecs(worldInfo));
-        
+
         rotationInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].rotationTween, PM.GetNoteHoldSecs(worldInfo));
-        
+
         totalScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].totalScaleTween, PM.GetNoteHoldSecs(worldInfo));
-        
+
         sideScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideScaleTween, PM.GetNoteHoldSecs(worldInfo));
-        
+
         centerScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerScaleTween, PM.GetNoteHoldSecs(worldInfo));
 
         sideColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideColorTween, PM.GetNoteHoldSecs(worldInfo));
-        
+
         centerColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerColorTween, PM.GetNoteHoldSecs(worldInfo));
     }
     public void UpdateTweenValue()
@@ -116,15 +116,16 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     }
     public void TryKillTween()
     {
-        TweenMethod.TryKillTweens(radiusInfo,
-        degInfo,
-        rotationInfo,
-        totalScaleInfo,
-        sideScaleInfo,
-        centerScaleInfo,
-        sideColorInfo,
-        centerColorInfo);
-        
+        TweenMethod.TryKillTweens(
+            radiusInfo,
+            degInfo,
+            rotationInfo,
+            totalScaleInfo,
+            sideScaleInfo,
+            centerScaleInfo,
+            sideColorInfo,
+            centerColorInfo);
+
         isInit = false;
     }
     public void GotoTween(float toSecs)

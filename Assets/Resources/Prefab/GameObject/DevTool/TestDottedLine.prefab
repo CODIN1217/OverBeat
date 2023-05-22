@@ -8,6 +8,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1916510506998039991, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: widthMultiplier
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916510506998039991, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: curvVertMultiplier
       value: 0.1
       objectReference: {fileID: 0}
@@ -71,5 +75,21 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: d7c7eb915a7997545a7938a25773431a, type: 2}
+    - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_Parameters.numCapVertices
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_Parameters.numCornerVertices
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}

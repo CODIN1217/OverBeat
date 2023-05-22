@@ -78,6 +78,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 6953654910098136416}
     m_Modifications:
     - target: {fileID: 1916510506998039991, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: widthMultiplier
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916510506998039991, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: curvVertMultiplier
       value: 0.2
       objectReference: {fileID: 0}
@@ -151,12 +155,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: m_Parameters.shadowBias
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 63f20aa9609f72d4ca6a3f470565ca1a, type: 2}
+    - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_Parameters.numCapVertices
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: m_Positions.Array.data[0].x
       value: 0
@@ -167,6 +175,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: m_Positions.Array.data[1].y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_Parameters.numCornerVertices
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3033177732098317239, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}

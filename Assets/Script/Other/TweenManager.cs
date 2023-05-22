@@ -84,12 +84,14 @@ namespace TweenManager
         }
         public TweeningInfo Play()
         {
-            tweener.Play();
+            if (tweener != null)
+                tweener.Play();
             return this;
         }
         public TweeningInfo Pause()
         {
-            tweener.Pause();
+            if (tweener != null)
+                tweener.Pause();
             return this;
         }
         public TweeningInfo Complete()
@@ -210,15 +212,25 @@ namespace TweenManager
                     return false;
             return true;
         }
+        public static void PlayTween(TweeningInfo tweeningInfos)
+        {
+            if (tweeningInfos != null)
+                tweeningInfos.Play();
+        }
         public static void PlayTweens(params TweeningInfo[] tweeningInfos)
         {
             foreach (var TI in tweeningInfos)
-                TI.Play();
+                PlayTween(TI);
+        }
+        public static void PauseTween(TweeningInfo tweeningInfos)
+        {
+            if (tweeningInfos != null)
+                tweeningInfos.Pause();
         }
         public static void PauseTweens(params TweeningInfo[] tweeningInfos)
         {
             foreach (var TI in tweeningInfos)
-                TI.Pause();
+                PauseTween(TI);
         }
         public static void TryKillTween(TweeningInfo tweeningInfo, bool isComplete = true)
         {

@@ -288,6 +288,18 @@ namespace Handy
     public static class ArrayMethod
     {
         public static T[] GetParams<T>(params T[] parms) => parms;
+        public static int TryGetLength<T>(T[] array)
+        {
+            if (array != null)
+                return array.Length;
+            return 0;
+        }
+        /* public static int TryGetCount<T>(List<T> list)
+        {
+            if (list != null)
+                return list.Count;
+            return 0;
+        } */
     }
     public static class ReflectionMethod
     {
@@ -308,7 +320,7 @@ namespace Handy
         public static void SetDottedLine(DottedLine dottedLine, List<Vector2> poses, float? posesLength = null)
         {
             dottedLine.poses = Handy.Math.VectorMethod.ConvertListVector(poses);
-            dottedLine.SetRepeatCount((posesLength == null ? Handy.Math.VectorMethod.GetDistance(poses) : (float)posesLength) * 2.44f);
+            // dottedLine.SetRepeatCount((posesLength == null ? Handy.Math.VectorMethod.GetDistance(poses) : (float)posesLength) * 2.44f);
         }
     }
 }
