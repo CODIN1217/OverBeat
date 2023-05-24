@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IGameObject
+public interface IScript
 {
-    void UpdateTransform();
-    void UpdateRenderer();
+    void InitScript();
 }

@@ -5,7 +5,7 @@ using System;
 using DG.Tweening;
 using TweenManager;
 
-public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
+public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject, IScript
 {
     public int playerIndex;
     public bool isInit;
@@ -43,7 +43,7 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     void Awake()
     {
         PM = PlayManager.Member;
-        InitGameObjectScript();
+        InitScript();
         playerSideRenderer = playerSide.GetComponent<SpriteRenderer>();
         playerCenterRenderer = playerCenter.GetComponent<SpriteRenderer>();
     }
@@ -141,9 +141,9 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
             centerColorInfo.Goto(toSecs);
         }
     }
-    public void InitGameObjectScript()
+    public void InitScript()
     {
-        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this).AddScript(this);
     }
     public void UpdateTransform()
     {

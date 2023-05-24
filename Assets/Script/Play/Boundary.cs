@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TweenManager;
 
-public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
+public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject, IScript
 {
     public bool isInit;
     WorldInfo worldInfo;
@@ -29,20 +29,20 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
     void Awake()
     {
         PM = PlayManager.Member;
-        InitGameObjectScript();
+        InitScript();
     }
     public void InitTween()
     {
         isInit = true;
 
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
-        
+
         coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-        
+
         posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-        
+
         lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-        
+
         scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
@@ -60,7 +60,7 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
     public void TryKillTween()
     {
         TweenMethod.TryKillTweens(coverColorInfo, posInfo, lineColorInfo, scaleInfo);
-        
+
         isInit = false;
     }
     public void GotoTween(float toSecs)
@@ -73,9 +73,9 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
             scaleInfo.Goto(toSecs);
         }
     }
-    public void InitGameObjectScript()
+    public void InitScript()
     {
-        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this).AddScript(this);
     }
     public void UpdateTransform()
     {

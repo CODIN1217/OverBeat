@@ -65,9 +65,11 @@ public class PlayManager : MonoBehaviour
     List<ITweener> tweenerGOs;
     List<ITweenerInPlay> tweenerInPlayGOs;
     List<IGameObject> GOs;
+    List<IScript> scripts;
     public PlayManager AddTweenerGO(ITweener tweenerGO) { tweenerGOs.Add(tweenerGO); return this; }
     public PlayManager AddTweenerInPlayGO(ITweenerInPlay tweenerInPlayGO) { tweenerInPlayGOs.Add(tweenerInPlayGO); return this; }
     public PlayManager AddGO(IGameObject GO) { GOs.Add(GO); return this; }
+    public PlayManager AddScript(IScript script) { scripts.Add(script); return this; }
     public interface ITweenerInPlay
     {
         void PlayWaitTween();
@@ -92,8 +94,8 @@ public class PlayManager : MonoBehaviour
 
         InitPlayManagerScript(0);
 
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => DevTool.Member.infoViewer.SetInfo(Handy.ReflectionMethod.GetPredicateName(Handy.ArrayMethod.GetParams<string>(this.name, nameof(closestNoteIndex)), i), () => closestNoteIndex[i]), closestNoteIndex.Length);
-        DevTool.Member.infoViewer.SetInfo(Handy.ReflectionMethod.GetPredicateName(Handy.ArrayMethod.GetParams<string>(this.name, nameof(worldInfoIndex))), () => worldInfoIndex);
+        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => DevTool.Member.infoViewer.SetInfo(Handy.ReflectionMethod.GetPredicateName(Handy.ArrayMethod.GetParams(this.name, nameof(closestNoteIndex)), i), () => closestNoteIndex[i]), closestNoteIndex.Length);
+        DevTool.Member.infoViewer.SetInfo(Handy.ReflectionMethod.GetPredicateName(Handy.ArrayMethod.GetParams(this.name, nameof(worldInfoIndex))), () => worldInfoIndex);
     }
     void Update()
     {
@@ -111,12 +113,12 @@ public class PlayManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            Restart(Handy.IndexMethod.GetNextIndex(worldInfoIndex, GetMaxWorldInfoIndex()));
+            Restart(Handy.IndexMethod.GetNextIndex(worldInfoIndex + 1, GetMaxWorldInfoIndex()));
         }
         PauseTweensOnPause();
         if (isPause)
             return;
-        notePathPosesCount = 100;
+        notePathPosesCount = 360;
 
         UpdateJudgmentRange();
         ClearIsKeyInput();
@@ -238,6 +240,7 @@ public class PlayManager : MonoBehaviour
     {
         if (isPause)
             return;
+        // Handy.LogMethod.WriteLog("aaa");
         UpdateTransformAll();
         UpdateRendererAll();
     }
@@ -250,14 +253,14 @@ public class PlayManager : MonoBehaviour
     }
     public void InitPlayManagerScript(int startWorldInfoIndex)
     {
-        for (int i = 1; i <= startWorldInfoIndex; i++)
+        /* for (int i = 1; i <= startWorldInfoIndex; i++)
         {
-            Note curNoteScript = GetNoteScript(GetPlayerIndex(i), GetEachNoteIndex(i));
+            Note curNoteScript = GetNoteScript(i);
             curNoteScript.InitNoteTween();
             curNoteScript.UpdateNoteTweenValue();
             curNoteScript.TryKillWaitTweens();
             curNoteScript.TryKillHoldTweens();
-        }
+        } */
         if (startWorldInfoIndex == 0)
             checkPointAccuracy01 = 1f;
         worldInfoIndex = startWorldInfoIndex;
@@ -294,6 +297,7 @@ public class PlayManager : MonoBehaviour
         tweenerGOs = new List<ITweener>();
         tweenerInPlayGOs = new List<ITweenerInPlay>();
         GOs = new List<IGameObject>();
+        scripts = new List<IScript>();
     }
     void PauseTweensOnPause()
     {
@@ -302,12 +306,10 @@ public class PlayManager : MonoBehaviour
     }
     void Restart(int startWorldInfoIndex)
     {
-        float SignDeltaWorldInfoIndex;
-        SignDeltaWorldInfoIndex = Handy.Math.SignMethod.GetSign0IsZero((float)(startWorldInfoIndex - worldInfoIndex));
-
         List<IGameObject> GOsTemp = new List<IGameObject>(GOs);
+        List<IScript> scriptsTemp = new List<IScript>(scripts);
         InitPlayManagerScript(startWorldInfoIndex);
-        InitGameObjectScriptAll(GOsTemp);
+        InitScriptAll(scriptsTemp);
         TryKillTweenAll();
         for (int i = 0; i < GetMaxPlayerCount(); i++)
         {
@@ -315,16 +317,16 @@ public class PlayManager : MonoBehaviour
         }
         for (int i = 0; i < GetWorldInfoCount(); i++)
         {
-            Note curNoteScript = GetNoteScript(GetPlayerIndex(i), GetEachNoteIndex(i));
+            Note curNoteScript = GetNoteScript(i);
             curNoteScript.TryKillWaitTweens();
             curNoteScript.TryKillHoldTweens();
             curNoteScript.TryStopCheckHoldingKeyCo();
             curNoteScript.gameObject.SetActive(false);
-            StartCoroutine(Handy.ProcessCode.WaitCodeMethod.WaitCodeWaitForFixedUpdateCo(() => { curNoteScript.InitGameObjectScript(); if (i < startWorldInfoIndex) curNoteScript.EndNoteScript(); }));
+            StartCoroutine(Handy.ProcessCode.WaitCodeMethod.WaitCodeWaitForFixedUpdateCo(() => { curNoteScript.InitNoteScript(); if (i < worldInfoIndex) curNoteScript.EndNoteScript(); }));
         }
         tryCount++;
         if (worldInfoIndex > 0)
-            worldInfoIndex -= (int)Mathf.Clamp01(-SignDeltaWorldInfoIndex);
+            worldInfoIndex--;
         countDownScript.PlayCountDown();
     }
     IEnumerator PauseTweensOnPauseCo()
@@ -353,7 +355,7 @@ public class PlayManager : MonoBehaviour
     }
     void ActiveNote()
     {
-        for (int i = worldInfoIndex; i < GetWorldInfoCount(); i++)
+        for (int i = worldInfoIndex + 1; i < GetWorldInfoCount(); i++)
         {
             Note curNoteScript = GetNoteScript(GetPlayerIndex(i), GetEachNoteIndex(i));
             if (!curNoteScript.isStop)
@@ -721,9 +723,9 @@ public class PlayManager : MonoBehaviour
     {
         tweenerInPlayGO.PlayHoldTween();
     }
-    public void InitGameObjectScript(IGameObject GO)
+    public void InitScript(IScript script)
     {
-        GO.InitGameObjectScript();
+        script.InitScript();
     }
     public void UpdateTransform(IGameObject GO)
     {
@@ -805,13 +807,13 @@ public class PlayManager : MonoBehaviour
             GO.UpdateRenderer();
         }
     }
-    public void InitGameObjectScriptAll(List<IGameObject> GOs = null)
+    public void InitScriptAll(List<IScript> scripts = null)
     {
-        if (GOs == null)
-            GOs = this.GOs;
-        foreach (var GO in GOs)
+        if (scripts == null)
+            scripts = this.scripts;
+        foreach (var script in scripts)
         {
-            GO.InitGameObjectScript();
+            script.InitScript();
         }
     }
     PlayManager()

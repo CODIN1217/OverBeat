@@ -4,7 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using TweenManager;
 
-public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject
+public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject, IScript
 {
     public readonly float stdSize;
     public bool isInit;
@@ -24,20 +24,21 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     void Awake()
     {
         PM = PlayManager.Member;
-        InitGameObjectScript();
+        baseCamera = Camera.main;
+        InitScript();
     }
     public void InitTween()
     {
         isInit = true;
 
         worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
-        
+
         orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-        
+
         BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-        
+
         rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
-        
+
         posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
     }
     public void UpdateTweenValue()
@@ -55,7 +56,7 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     public void TryKillTween()
     {
         TweenMethod.TryKillTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
-        
+
         isInit = false;
     }
     public void GotoTween(float toSecs)
@@ -68,10 +69,9 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
             posInfo.Goto(toSecs);
         }
     }
-    public void InitGameObjectScript()
+    public void InitScript()
     {
-        baseCamera = Camera.main;
-        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this);
+        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this).AddScript(this);
     }
     public void UpdateTransform()
     {

@@ -259,10 +259,26 @@ namespace Handy
                 return vector2s;
             }
         }
+
+        public static class DecimalMethod
+        {
+            public static float Ceil(float value, int place)
+            {
+                return Mathf.Ceil(value * Mathf.Pow(10f, place - 1)) / Mathf.Pow(10f, place - 1);
+            }
+            public static float Round(float value, int place)
+            {
+                return Mathf.Round(value * Mathf.Pow(10f, place - 1)) / Mathf.Pow(10f, place - 1);
+            }
+            public static float Floor(float value, int place)
+            {
+                return Mathf.Floor(value * Mathf.Pow(10f, place - 1)) / Mathf.Pow(10f, place - 1);
+            }
+        }
     }
     public static class LogMethod
     {
-        public static void WriteLog(params object[] contents)
+        public static void WriteLog<T>(params T[] contents)
         {
             StringBuilder text = new StringBuilder();
             foreach (var cont in contents)
