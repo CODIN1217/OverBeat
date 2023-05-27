@@ -58,11 +58,11 @@ public class DevTool : MonoBehaviour
         else
             dottedLineColors.Add(predicateName, color);
     }
-    public void UpdateDottedLine()
+    void UpdateDottedLine()
     {
         foreach (var PN in predicateNames)
         {
-            Handy.LineRendMethod.SetDottedLine(testDottedLines[PN], testDottedLinePoses[PN]);
+            Handy.SetDottedLine(testDottedLines[PN], testDottedLinePoses[PN]);
             testDottedLines[PN].SetColor(dottedLineColors[PN]);
         }
     }

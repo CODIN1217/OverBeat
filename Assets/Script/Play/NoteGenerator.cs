@@ -30,32 +30,32 @@ public class NoteGenerator : MonoBehaviour
         }
         eachNoteCount = new int[PM.GetMaxPlayerCount()];
 
-        for (int j = 0; j < PM.GetWorldInfoCount(); j++)
+        for (int j = 0; j < PM.GetLevelInfoCount(); j++)
         {
             SetNotePrefab(j);
         }
 
-        for (int i = 1; i < PM.GetWorldInfoCount(); i++)
+        for (int i = 1; i < PM.GetLevelInfoCount(); i++)
         {
             PM.GetNoteScript(i).InitNote();
         }
     }
-    void SetNotePrefab(int worldInfoIndex)
+    void SetNotePrefab(int levelInfoIndex)
     {
         GameObject newNote = Instantiate(notePrefab, transform);
         Note newNoteScript = newNote.GetComponent<Note>();
 
-        WorldInfo worldInfo = PM.GetWorldInfo(worldInfoIndex);
-        int playerIndex = worldInfo.noteInfo.tarPlayerIndex;
-        int eachNoteIndex = worldInfo.noteInfo.eachNoteIndex;
+        LevelInfo levelInfo = PM.GetLevelInfo(levelInfoIndex);
+        int playerIndex = levelInfo.noteInfo.tarPlayerIndex;
+        int eachNoteIndex = levelInfo.noteInfo.eachNoteIndex;
 
-        newNoteScript.noteWaitSecs = Mathf.Abs(worldInfo.noteInfo.waitDeltaRadiusTween.startValue - worldInfo.noteInfo.waitDeltaRadiusTween.endValue) / 3.5f / worldInfo.noteInfo.speed;
-        newNoteScript.noteWaitSecs *= Mathf.Clamp01(worldInfoIndex);
+        newNoteScript.noteWaitSecs = Mathf.Abs(levelInfo.noteInfo.waitDeltaRadiusTween.startValue - levelInfo.noteInfo.waitDeltaRadiusTween.endValue) / 3.5f / levelInfo.noteInfo.speed;
+        newNoteScript.noteWaitSecs *= Mathf.Clamp01(levelInfoIndex);
         if (playerIndex != -1)
             notesWaitSecs[playerIndex].Add(newNoteScript.noteWaitSecs);
 
-        newNoteScript.holdNoteSecs = Mathf.Abs(worldInfo.noteInfo.holdDeltaRadiusTween.startValue - worldInfo.noteInfo.holdDeltaRadiusTween.endValue) / worldInfo.noteInfo.speed;
-        newNoteScript.holdNoteSecs *= Mathf.Clamp01(worldInfoIndex);
+        newNoteScript.holdNoteSecs = Mathf.Abs(levelInfo.noteInfo.holdDeltaRadiusTween.startValue - levelInfo.noteInfo.holdDeltaRadiusTween.endValue) / levelInfo.noteInfo.speed;
+        newNoteScript.holdNoteSecs *= Mathf.Clamp01(levelInfoIndex);
         if (playerIndex != -1)
             notesLengthSecs[playerIndex].Add(newNoteScript.holdNoteSecs);
 
@@ -70,12 +70,12 @@ public class NoteGenerator : MonoBehaviour
             startNoteScript = newNoteScript;
         }
 
-        newNoteScript.myWorldInfoIndex = worldInfoIndex;
+        newNoteScript.myLevelInfoIndex = levelInfoIndex;
         newNoteScript.myEachNoteIndex = eachNoteIndex;
         newNoteScript.tarPlayerIndex = playerIndex;
         if (playerIndex != -1)
             eachNoteCount[playerIndex]++;
-        if (worldInfoIndex == 0)
+        if (levelInfoIndex == 0)
         {
             for (int i = 0; i < PM.GetMaxPlayerCount(); i++)
             {

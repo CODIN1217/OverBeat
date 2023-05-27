@@ -203,7 +203,7 @@ MonoBehaviour:
   notePathPosesCount: 0
   closestNoteIndex: 
   stopedNoteIndex: 0
-  worldInfoIndex: 0
+  levelInfoIndex: 0
   totalNoteCount: 0
   checkPointIndex: 0
   tryCount: 0
@@ -1807,7 +1807,7 @@ GameObject:
   - component: {fileID: 2060904677}
   - component: {fileID: 2060904676}
   m_Layer: 0
-  m_Name: WorldReader
+  m_Name: LevelReader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1825,8 +1825,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f456f7f6063fd0541aecaacddc2eb361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldInfosObj: {fileID: 2530228523831187916, guid: 194a598e269d1dc4694b7d1f706a61a5, type: 3}
-  worldInfos: []
+  levelInfosObj: {fileID: 2530228523831187916, guid: 194a598e269d1dc4694b7d1f706a61a5, type: 3}
+  levelInfos: []
 --- !u!4 &2060904677
 Transform:
   m_ObjectHideFlags: 0

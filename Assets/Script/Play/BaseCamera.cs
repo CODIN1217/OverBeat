@@ -9,7 +9,7 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     public readonly float stdSize;
     public bool isInit;
     Camera baseCamera;
-    WorldInfo worldInfo;
+    LevelInfo levelInfo;
     PlayManager PM;
 
     public float orthoSize;
@@ -31,21 +31,21 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     {
         isInit = true;
 
-        worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
+        levelInfo = PM.GetLevelInfo(PM.levelInfoIndex);
 
-        orthoSizeInfo = new TweeningInfo(worldInfo.cameraInfo.sizeTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        orthoSizeInfo = new TweeningInfo(levelInfo.cameraInfo.sizeTween, PM.GetNoteHoldSecs(PM.levelInfoIndex));
 
-        BGColorInfo = new TweeningInfo(worldInfo.cameraInfo.BGColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        BGColorInfo = new TweeningInfo(levelInfo.cameraInfo.BGColorTween, PM.GetNoteHoldSecs(PM.levelInfoIndex));
 
-        rotationInfo = new TweeningInfo(worldInfo.cameraInfo.rotationTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        rotationInfo = new TweeningInfo(levelInfo.cameraInfo.rotationTween, PM.GetNoteHoldSecs(PM.levelInfoIndex));
 
-        posInfo = new TweeningInfo(worldInfo.cameraInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        posInfo = new TweeningInfo(levelInfo.cameraInfo.posTween, PM.GetNoteHoldSecs(PM.levelInfoIndex));
     }
     public void UpdateTweenValue()
     {
         orthoSize = stdSize * ((TweenerInfo<float>)orthoSizeInfo).curValue;
         BGColor = ((TweenerInfo<Color>)BGColorInfo).curValue;
-        rotation = Handy.Math.DegMethod.CorrectDegMaxIs0(-((TweenerInfo<float>)rotationInfo).curValue);
+        rotation = Handy.GetCorrectedDegMaxIs0(-((TweenerInfo<float>)rotationInfo).curValue);
         pos = ((TweenerInfo<Vector2>)posInfo).curValue;
     }
     public void PlayWaitTween() { }

@@ -14,7 +14,7 @@ public class CountDown : MonoBehaviour
     public bool isCountDown;
     float countDownSecs;
     TextMeshProUGUI countDownTMP;
-    WorldInfo worldInfo;
+    LevelInfo levelInfo;
     PlayManager PM;
     void Awake()
     {
@@ -43,27 +43,27 @@ public class CountDown : MonoBehaviour
             countDownTMP.text = "";
             isCountDown = false;
             PM.isStop = false;
-            Handy.Renderer.ColorMethod.FadeColor(countDownTMP, 0f);
+            Handy.GetColor(countDownTMP, 0f);
         }
     }
 
-    public void PlayCountDown(int? numberOfCountDownTick = null, float? intervalOfCountDownTick = null, int? worldInfoIndex = null)
+    public void PlayCountDown(int? numberOfCountDownTick = null, float? intervalOfCountDownTick = null, int? levelInfoIndex = null)
     {
-        if (worldInfoIndex == null)
-            worldInfoIndex = PM.worldInfoIndex;
-        worldInfo = PM.GetWorldInfo((int)worldInfoIndex);
+        if (levelInfoIndex == null)
+            levelInfoIndex = PM.levelInfoIndex;
+        levelInfo = PM.GetLevelInfo((int)levelInfoIndex);
         if (numberOfCountDownTick == null)
-            this.numberOfCountDownTick = worldInfo.countDownInfo.numberOfTick;
+            this.numberOfCountDownTick = levelInfo.countDownInfo.numberOfTick;
         else
             this.numberOfCountDownTick = (int)numberOfCountDownTick;
         if (intervalOfCountDownTick == null)
-            this.intervalOfCountDownTick = worldInfo.countDownInfo.intervalOfTick;
+            this.intervalOfCountDownTick = levelInfo.countDownInfo.intervalOfTick;
         else
             this.intervalOfCountDownTick = (float)intervalOfCountDownTick;
         totalCountDownSecs = this.numberOfCountDownTick * this.intervalOfCountDownTick;
         countDownSecs = 0f;
         isCountDown = true;
         PM.isStop = true;
-        Handy.Renderer.ColorMethod.FadeColor(countDownTMP, 1f);
+        Handy.GetColor(countDownTMP, 1f);
     }
 }

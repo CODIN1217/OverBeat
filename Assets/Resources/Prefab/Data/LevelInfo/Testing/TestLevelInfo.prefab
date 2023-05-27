@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2530228523831187891}
   m_Layer: 0
-  m_Name: TestWorldInfo
+  m_Name: TestLevelInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,7 +49,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_Name
-      value: WorldInfoBlock_1_3
+      value: LevelInfoBlock_1_3
       objectReference: {fileID: 0}
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_IsActive
@@ -2271,7 +2271,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_Name
-      value: WorldInfoBlock_0_0
+      value: LevelInfoBlock_0_0
       objectReference: {fileID: 0}
     - target: {fileID: 143414726713689557, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_RootOrder
@@ -4465,7 +4465,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_Name
-      value: WorldInfoBlock_0_1
+      value: LevelInfoBlock_0_1
       objectReference: {fileID: 0}
     - target: {fileID: 143414726713689557, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_RootOrder
@@ -6691,7 +6691,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_Name
-      value: WorldInfoBlock_Start
+      value: LevelInfoBlock_Start
       objectReference: {fileID: 0}
     - target: {fileID: 143414726713689557, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_RootOrder
@@ -8641,7 +8641,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_Name
-      value: WorldInfoBlock_1_1
+      value: LevelInfoBlock_1_1
       objectReference: {fileID: 0}
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_IsActive
@@ -10899,7 +10899,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_Name
-      value: WorldInfoBlock_1_0
+      value: LevelInfoBlock_1_0
       objectReference: {fileID: 0}
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_IsActive
@@ -13157,7 +13157,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_Name
-      value: WorldInfoBlock_0_3
+      value: LevelInfoBlock_0_3
       objectReference: {fileID: 0}
     - target: {fileID: 143414726713689557, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_RootOrder
@@ -15363,7 +15363,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_Name
-      value: WorldInfoBlock_0_2
+      value: LevelInfoBlock_0_2
       objectReference: {fileID: 0}
     - target: {fileID: 143414726713689557, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_RootOrder
@@ -17585,7 +17585,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_Name
-      value: WorldInfoBlock_1_2
+      value: LevelInfoBlock_1_2
       objectReference: {fileID: 0}
     - target: {fileID: 143414726713689556, guid: f302c65792fe68d4086ed0c4214db186, type: 3}
       propertyPath: m_IsActive

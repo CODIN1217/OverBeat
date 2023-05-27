@@ -6,7 +6,7 @@ using System;
 using TweenManager;
 
 [Serializable]
-public class WorldInfo : MonoBehaviour
+public class LevelInfo : MonoBehaviour
 {
     [Serializable]
     public class CameraInfo
@@ -88,7 +88,7 @@ public class WorldInfo : MonoBehaviour
         {
             eachNoteIndex = 0;
             tarPlayerIndex = 0;
-            
+
             awakeSecs = 0f;
             speed = 1f;
             noteHitTiming01s = new float[noteCount];
@@ -97,12 +97,12 @@ public class WorldInfo : MonoBehaviour
             waitDeltaRadiusTween = new TweenInfo<float>(3.5f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             holdDeltaRadiusTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             fadeTween = new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0, 0, 1, 1));
-            
+
             rotationTweens = new TweenInfo<float>[noteCount];
-            Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => { rotationTweens[i] = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1)); }, noteCount);
-            
+            Handy.RepeatCode((i) => { rotationTweens[i] = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1)); }, noteCount);
+
             colorTweens = new TweenInfo<Color>[noteCount];
-            Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => { colorTweens[i] = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, AnimationCurve.Linear(0, 0, 1, 1)); }, noteCount);
+            Handy.RepeatCode((i) => { colorTweens[i] = new TweenInfo<Color>(new Color(100, 45, 250, 255) / 255f, new Color(100, 45, 250, 255) / 255f, AnimationCurve.Linear(0, 0, 1, 1)); }, noteCount);
             processStartColorTween = new TweenInfo<Color>(new Color(130, 80, 255, 255) / 255f, new Color(130, 80, 255, 255) / 255f, AnimationCurve.Linear(0, 0, 1, 1));
             processEndColorTween = new TweenInfo<Color>(new Color(130, 80, 255, 255) / 255f, new Color(130, 80, 255, 255) / 255f, AnimationCurve.Linear(0, 0, 1, 1));
         }
@@ -170,7 +170,7 @@ public class WorldInfo : MonoBehaviour
     public JudgmentInfo judgmentInfo;
     public CreditInfo creditInfo;
 
-    public WorldInfo()
+    public LevelInfo()
     {
         cameraInfo = new CameraInfo();
         centerInfo = new CenterInfo();

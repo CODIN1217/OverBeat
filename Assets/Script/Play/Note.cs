@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
 {
-    public int myWorldInfoIndex;
+    public int myLevelInfoIndex;
     public int myEachNoteIndex;
     public int tarPlayerIndex;
 
@@ -70,7 +70,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     public TweeningInfo processEndColorInfo;
     public TweeningInfo[] notesColorInfo;
 
-    public WorldInfo worldInfo;
+    public LevelInfo levelInfo;
     PlayManager PM;
     Coroutine checkHoldingKeyCo;
     void Awake()
@@ -88,10 +88,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     }
     void Update()
     {
-        // Handy.LogMethod.WriteLog(processPathPoses == null);
-        if (myWorldInfoIndex < PM.worldInfoIndex)
-            PM.StartCoroutine(Handy.ProcessCode.WaitCodeMethod.WaitCodeWaitForUpdateCo(() => fade = 0f));
-        if (PM.isStop || PM.isPause || myWorldInfoIndex == 0)
+        if (PM.isStop || PM.isPause || myLevelInfoIndex == 0)
             return;
         if (isAwake)
         {
@@ -138,11 +135,11 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
                 StartCheckHoldingKeyCo();
             }
         }
-        for (int i = 1; i < worldInfo.noteInfo.noteCount - 1; i++)
+        for (int i = 1; i < levelInfo.noteInfo.noteCount - 1; i++)
         {
             if (!isJudgNotes[i])
             {
-                if (worldInfo.noteInfo.noteHitTiming01s[i] <= holdElapsedSecs01)
+                if (levelInfo.noteInfo.noteHitTiming01s[i] <= holdElapsedSecs01)
                 {
                     if (isInputted && PM.GetIsKeyPress(tarPlayerIndex))
                     {
@@ -158,26 +155,26 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     }
     public void InitNote()
     {
-        worldInfo = PM.GetWorldInfo(myWorldInfoIndex);
+        levelInfo = PM.GetLevelInfo(myLevelInfoIndex);
         tarPlayer = PM.GetPlayer(tarPlayerIndex);
         tarPlayerScript = PM.GetPlayerScript(tarPlayerIndex);
-        isJudgNotes = new bool[worldInfo.noteInfo.noteCount];
+        isJudgNotes = new bool[levelInfo.noteInfo.noteCount];
         InitNoteChild();
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => { notesSideSprite[i] = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName); }, notesSideSprite.Length);
+        Handy.RepeatCode((i) => { notesSideSprite[i] = Resources.Load<Sprite>("Image/Play/Player/" + levelInfo.noteInfo.sideImageName); }, notesSideSprite.Length);
     }
     public void InitNoteChild()
     {
-        notes = new GameObject[worldInfo.noteInfo.noteCount];
-        notesSideRend = new SpriteRenderer[worldInfo.noteInfo.noteCount];
-        notesCenterRend = new SpriteRenderer[worldInfo.noteInfo.noteCount];
-        notesSideSprite = new Sprite[worldInfo.noteInfo.noteCount];
-        notesRotation = new float[worldInfo.noteInfo.noteCount];
-        notesColor = new Color[worldInfo.noteInfo.noteCount];
-        notesRotationInfo = new TweeningInfo[worldInfo.noteInfo.noteCount];
-        notesColorInfo = new TweeningInfo[worldInfo.noteInfo.noteCount];
-        processNoteRenderer.sortingOrder = PM.GetNoteScript(myWorldInfoIndex - 1).processNoteRenderer.sortingOrder + PM.GetWorldInfo(myWorldInfoIndex - 1).noteInfo.noteCount * 2 + (int)Mathf.Clamp01(myWorldInfoIndex - 1);
+        notes = new GameObject[levelInfo.noteInfo.noteCount];
+        notesSideRend = new SpriteRenderer[levelInfo.noteInfo.noteCount];
+        notesCenterRend = new SpriteRenderer[levelInfo.noteInfo.noteCount];
+        notesSideSprite = new Sprite[levelInfo.noteInfo.noteCount];
+        notesRotation = new float[levelInfo.noteInfo.noteCount];
+        notesColor = new Color[levelInfo.noteInfo.noteCount];
+        notesRotationInfo = new TweeningInfo[levelInfo.noteInfo.noteCount];
+        notesColorInfo = new TweeningInfo[levelInfo.noteInfo.noteCount];
+        processNoteRenderer.sortingOrder = PM.GetNoteScript(myLevelInfoIndex - 1).processNoteRenderer.sortingOrder + PM.GetLevelInfo(myLevelInfoIndex - 1).noteInfo.noteCount * 2 + (int)Mathf.Clamp01(myLevelInfoIndex - 1);
 
-        for (int i = 0; i < worldInfo.noteInfo.noteCount; i++)
+        for (int i = 0; i < levelInfo.noteInfo.noteCount; i++)
         {
             notes[i] = Instantiate(noteUnit, transform);
             notesSideRend[i] = notes[i].transform.GetChild(0).GetComponent<SpriteRenderer>();
@@ -188,39 +185,39 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     }
     public void InitNoteTween()
     {
-        if (myWorldInfoIndex == 0)
+        if (myLevelInfoIndex == 0)
             return;
 
         TryKillWaitTweens();
         TryKillHoldTweens();
 
-        waitDeltaRadiusInfo = new TweeningInfo(worldInfo.noteInfo.waitDeltaRadiusTween, PM.GetNoteWaitSecs(myWorldInfoIndex));
-        fadeInfo = new TweeningInfo(worldInfo.noteInfo.fadeTween, PM.GetNoteWaitSecs(myWorldInfoIndex) * 0.3f);
+        waitDeltaRadiusInfo = new TweeningInfo(levelInfo.noteInfo.waitDeltaRadiusTween, PM.GetNoteWaitSecs(myLevelInfoIndex));
+        fadeInfo = new TweeningInfo(levelInfo.noteInfo.fadeTween, PM.GetNoteWaitSecs(myLevelInfoIndex) * 0.3f);
 
-        holdDeltaRadiusInfo = new TweeningInfo(worldInfo.noteInfo.holdDeltaRadiusTween, PM.GetNoteHoldSecs(myWorldInfoIndex));
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => { notesRotationInfo[i] = new TweeningInfo(worldInfo.noteInfo.rotationTweens[i], PM.GetNoteHoldSecs(myWorldInfoIndex)); }, notesRotationInfo.Length);
-        processStartColorInfo = new TweeningInfo(worldInfo.noteInfo.processStartColorTween, PM.GetNoteHoldSecs(myWorldInfoIndex));
-        processEndColorInfo = new TweeningInfo(worldInfo.noteInfo.processEndColorTween, PM.GetNoteHoldSecs(myWorldInfoIndex));
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => { notesColorInfo[i] = new TweeningInfo(worldInfo.noteInfo.colorTweens[i], PM.GetNoteHoldSecs(myWorldInfoIndex)); }, notesColorInfo.Length);
+        holdDeltaRadiusInfo = new TweeningInfo(levelInfo.noteInfo.holdDeltaRadiusTween, PM.GetNoteHoldSecs(myLevelInfoIndex));
+        Handy.RepeatCode((i) => { notesRotationInfo[i] = new TweeningInfo(levelInfo.noteInfo.rotationTweens[i], PM.GetNoteHoldSecs(myLevelInfoIndex)); }, notesRotationInfo.Length);
+        processStartColorInfo = new TweeningInfo(levelInfo.noteInfo.processStartColorTween, PM.GetNoteHoldSecs(myLevelInfoIndex));
+        processEndColorInfo = new TweeningInfo(levelInfo.noteInfo.processEndColorTween, PM.GetNoteHoldSecs(myLevelInfoIndex));
+        Handy.RepeatCode((i) => { notesColorInfo[i] = new TweeningInfo(levelInfo.noteInfo.colorTweens[i], PM.GetNoteHoldSecs(myLevelInfoIndex)); }, notesColorInfo.Length);
     }
     public void UpdateNoteTweenValue()
     {
-        if (myWorldInfoIndex == 0)
+        if (myLevelInfoIndex == 0)
             return;
         waitDeltaRadius = ((TweenerInfo<float>)waitDeltaRadiusInfo).curValue;
         fade = isDisable ? 0f : ((TweenerInfo<float>)fadeInfo).curValue;
 
         holdDeltaRadius = ((TweenerInfo<float>)holdDeltaRadiusInfo).curValue;
 
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) =>
+        Handy.RepeatCode((i) =>
         {
             float curProgress = Mathf.Clamp((float)i / (float)(notesRotation.Length - 1), holdElapsedSecs01, 1f);
-            notesRotation[i] = Handy.Math.DegMethod.CorrectDegMaxIs0(-(((TweenerInfo<float>)notesRotationInfo[i]).curValue + TweenMethod.GetTweenValue(PM.CorrectDegTween(worldInfo.playerInfo[tarPlayerIndex].degTween, worldInfo.playerInfo[tarPlayerIndex].degDir), curProgress)));
+            notesRotation[i] = Handy.GetCorrectedDegMaxIs0(-(((TweenerInfo<float>)notesRotationInfo[i]).curValue + TweenMethod.GetTweenValue(PM.CorrectDegTween(levelInfo.playerInfo[tarPlayerIndex].degTween, levelInfo.playerInfo[tarPlayerIndex].degDir), curProgress)));
         }, notesRotation.Length);
 
         processStartColor = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)processStartColorInfo).curValue, tarPlayerIndex);
         processEndColor = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)processEndColorInfo).curValue, tarPlayerIndex);
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => { notesColor[i] = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)notesColorInfo[i]).curValue, tarPlayerIndex); }, notesColor.Length);
+        Handy.RepeatCode((i) => { notesColor[i] = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)notesColorInfo[i]).curValue, tarPlayerIndex); }, notesColor.Length);
     }
     public void PlayWaitTween()
     {
@@ -234,12 +231,8 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             holdDeltaRadiusInfo,
             processStartColorInfo,
             processEndColorInfo);
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => TweenMethod.PlayTween(notesRotationInfo[i]), Handy.ArrayMethod.TryGetLength(notesRotationInfo));
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => TweenMethod.PlayTween(notesColorInfo[i]), Handy.ArrayMethod.TryGetLength(notesColorInfo));
-        // foreach (var NRI in notesRotationInfo)
-        //     TweenMethod.PlayTweens(NRI);
-        // foreach (var NCI in notesColorInfo)
-        //     TweenMethod.PlayTweens(NCI);
+        Handy.RepeatCode((i) => TweenMethod.PlayTween(notesRotationInfo[i]), Handy.TryGetArrayLength(notesRotationInfo));
+        Handy.RepeatCode((i) => TweenMethod.PlayTween(notesColorInfo[i]), Handy.TryGetArrayLength(notesColorInfo));
     }
     public void UpdateElapsedSecs01()
     {
@@ -255,7 +248,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     }
     public void EndWaiting()
     {
-        PM.worldInfoIndex = myWorldInfoIndex;
+        PM.levelInfoIndex = myLevelInfoIndex;
 
         TryKillWaitTweens();
         PM.TryKillTweenAll();
@@ -266,9 +259,9 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         toleranceSecsEndWait = waitElapsedSecs - noteWaitSecs;
         myElapsedSecs = 0f;
 
-        if (worldInfo.noteInfo.isCheckPoint)
+        if (levelInfo.noteInfo.isCheckPoint)
         {
-            PM.checkPointIndex = myWorldInfoIndex;
+            PM.checkPointIndex = myLevelInfoIndex;
             PM.checkPointAccuracy01 = PM.accuracy01;
         }
 
@@ -276,7 +269,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     }
     public void InitNoteScript()
     {
-        if (myWorldInfoIndex > PM.worldInfoIndex)
+        if (myLevelInfoIndex > PM.levelInfoIndex)
         {
             waitElapsedSecs = 0f;
             holdElapsedSecs = 0f;
@@ -297,8 +290,8 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     }
     public void EndNoteScript()
     {
-        waitElapsedSecs = PM.GetNoteWaitSecs(myWorldInfoIndex);
-        holdElapsedSecs = PM.GetNoteHoldSecs(myWorldInfoIndex);
+        waitElapsedSecs = PM.GetNoteWaitSecs(myLevelInfoIndex);
+        holdElapsedSecs = PM.GetNoteHoldSecs(myLevelInfoIndex);
         waitElapsedSecs01 = 1f;
         holdElapsedSecs01 = 1f;
 
@@ -319,25 +312,23 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     {
         UpdatePathPoses();
         UpdateProcessPathPoses();
-        Handy.LineRendMethod.SetDottedLine(processNoteDottedLine, processPathPoses, processPathPosesLength);
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) =>
+        Handy.SetDottedLine(processNoteDottedLine, processPathPoses, processPathPosesLength);
+        Handy.RepeatCode((i) =>
         {
-            float curProgress = Mathf.Clamp(worldInfo.noteInfo.noteHitTiming01s[i], holdElapsedSecs01, 1f);
-            notes[i].transform.position = holdElapsedSecs01 == curProgress ? Handy.Transform.PosMethod.GetCircularPos(tarPlayerScript.curDeg, waitDeltaRadius + tarPlayerScript.curRadius, PM.centerScript.pos) : pathPoses[(int)((float)(pathPoses.Count - 1) * curProgress)];
+            float curProgress = Mathf.Clamp(levelInfo.noteInfo.noteHitTiming01s[i], holdElapsedSecs01, 1f);
+            notes[i].transform.position = holdElapsedSecs01 == curProgress ? Handy.GetCircularPos(tarPlayerScript.curDeg, waitDeltaRadius + tarPlayerScript.curRadius, PM.centerScript.pos) : pathPoses[(int)((float)(pathPoses.Count - 1) * curProgress)];
         },
         notes.Length);
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => notes[i].transform.localScale = tarPlayerScript.playerSide.transform.localScale, notes.Length);
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => notes[i].transform.localRotation = Quaternion.Euler(0f, 0f, notesRotation[i]), notes.Length);
-
-        // Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => DevTool.Member.AddDottedLinePos(Handy.ReflectionMethod.GetPredicateName(Handy.ArrayMethod.GetParams<string>(this.name, nameof(notes) + i.ToString()), myWorldInfoIndex), notes[i].transform.position, new DevTool.StdColors()[i]), notes.Length);
+        Handy.RepeatCode((i) => notes[i].transform.localScale = tarPlayerScript.playerSide.transform.localScale, notes.Length);
+        Handy.RepeatCode((i) => notes[i].transform.localRotation = Quaternion.Euler(0f, 0f, notesRotation[i]), notes.Length);
     }
     public void UpdateRenderer()
     {
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => notesSideRend[i].sprite = notesSideSprite[i], notesSideRend.Length);
+        Handy.RepeatCode((i) => notesSideRend[i].sprite = notesSideSprite[i], notesSideRend.Length);
 
         processNoteRenderer.startColor = processStartColor;
         processNoteRenderer.endColor = processEndColor;
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => { notesSideRend[i].color = notesColor[i]; notesCenterRend[i].color = notesColor[i]; }, notesSideRend.Length);
+        Handy.RepeatCode((i) => { notesSideRend[i].color = notesColor[i]; notesCenterRend[i].color = notesColor[i]; }, notesSideRend.Length);
 
         ChangeNoteAlpha(fade);
     }
@@ -347,65 +338,34 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         for (int i = 0; i < PM.notePathPosesCount; i++)
         {
             float curProgress = (float)i / (float)(PM.notePathPosesCount - 1);
-            Vector2 pathPos = Handy.Transform.PosMethod.GetCircularPos(TweenMethod.GetTweenValue(PM.CorrectDegTween(worldInfo.playerInfo[tarPlayerIndex].degTween, worldInfo.playerInfo[tarPlayerIndex].degDir), curProgress),
-            TweenMethod.GetTweenValue(worldInfo.playerInfo[tarPlayerIndex].radiusTween, curProgress)
-            + TweenMethod.GetTweenValue(worldInfo.noteInfo.holdDeltaRadiusTween, curProgress) - holdDeltaRadius);
+            Vector2 pathPos = Handy.GetCircularPos(TweenMethod.GetTweenValue(PM.CorrectDegTween(levelInfo.playerInfo[tarPlayerIndex].degTween, levelInfo.playerInfo[tarPlayerIndex].degDir), curProgress),
+            TweenMethod.GetTweenValue(levelInfo.playerInfo[tarPlayerIndex].radiusTween, curProgress)
+            + TweenMethod.GetTweenValue(levelInfo.noteInfo.holdDeltaRadiusTween, curProgress) - holdDeltaRadius);
 
-            pathPoses.Add(pathPos + Handy.Transform.PosMethod.GetCircularPos(tarPlayerScript.curDeg, waitDeltaRadius));
+            pathPoses.Add(pathPos + Handy.GetCircularPos(tarPlayerScript.curDeg, waitDeltaRadius));
         }
-        pathPosesLength = Handy.Math.VectorMethod.GetDistance(pathPoses);
+        pathPosesLength = Handy.GetPosesDistance(pathPoses);
     }
     void UpdateProcessPathPoses()
     {
-        float stdDegDistance = Handy.Math.DegMethod.GetDegDistance(
-        TweenMethod.GetTweenValue(PM.CorrectDegTween(worldInfo.playerInfo[tarPlayerIndex].degTween, worldInfo.playerInfo[tarPlayerIndex].degDir), 1f),
-        TweenMethod.GetTweenValue(PM.CorrectDegTween(worldInfo.playerInfo[tarPlayerIndex].degTween, worldInfo.playerInfo[tarPlayerIndex].degDir), 0f),
+        float stdDegDistance = Handy.GetDegDistance(
+        TweenMethod.GetTweenValue(PM.CorrectDegTween(levelInfo.playerInfo[tarPlayerIndex].degTween, levelInfo.playerInfo[tarPlayerIndex].degDir), 1f),
+        TweenMethod.GetTweenValue(PM.CorrectDegTween(levelInfo.playerInfo[tarPlayerIndex].degTween, levelInfo.playerInfo[tarPlayerIndex].degDir), 0f),
         false,
-        worldInfo.playerInfo[tarPlayerIndex].degDir);
-        float stdRadiusDistance = Mathf.Abs(TweenMethod.GetTweenValue(worldInfo.noteInfo.holdDeltaRadiusTween, 1f) - TweenMethod.GetTweenValue(worldInfo.noteInfo.holdDeltaRadiusTween, 0f));
+        levelInfo.playerInfo[tarPlayerIndex].degDir);
+        float stdRadiusDistance = Mathf.Abs(TweenMethod.GetTweenValue(levelInfo.noteInfo.holdDeltaRadiusTween, 1f) - TweenMethod.GetTweenValue(levelInfo.noteInfo.holdDeltaRadiusTween, 0f));
 
         processPathPoses.Clear();
         for (int i = (int)(holdElapsedSecs01 * (float)(PM.notePathPosesCount - 1)); i < PM.notePathPosesCount; i++)
         {
             float curProgress = (float)i / (float)(PM.notePathPosesCount - 1);
-            Vector2 pathPos = Handy.Transform.PosMethod.GetCircularPos(TweenMethod.GetTweenValue(PM.CorrectDegTween(worldInfo.playerInfo[tarPlayerIndex].degTween, worldInfo.playerInfo[tarPlayerIndex].degDir), curProgress),
-            TweenMethod.GetTweenValue(worldInfo.playerInfo[tarPlayerIndex].radiusTween, curProgress)
-            + TweenMethod.GetTweenValue(worldInfo.noteInfo.holdDeltaRadiusTween, curProgress) - holdDeltaRadius);
+            Vector2 pathPos = Handy.GetCircularPos(TweenMethod.GetTweenValue(PM.CorrectDegTween(levelInfo.playerInfo[tarPlayerIndex].degTween, levelInfo.playerInfo[tarPlayerIndex].degDir), curProgress),
+            TweenMethod.GetTweenValue(levelInfo.playerInfo[tarPlayerIndex].radiusTween, curProgress)
+            + TweenMethod.GetTweenValue(levelInfo.noteInfo.holdDeltaRadiusTween, curProgress) - holdDeltaRadius);
 
-            processPathPoses.Add(pathPos + Handy.Transform.PosMethod.GetCircularPos(tarPlayerScript.curDeg, waitDeltaRadius));
+            processPathPoses.Add(pathPos + Handy.GetCircularPos(tarPlayerScript.curDeg, waitDeltaRadius));
         }
-        processPathPosesLength = Handy.Math.VectorMethod.GetDistance(processPathPoses);
-
-        /* float removeLength = processPathPosesLength * 0.2f / (stdDegDistance / 90f) / stdRadiusDistance;
-
-        float startRemoveLength = 0f;
-        int startRemoveCount = 0;
-        for (int i = 0; i < processPathPoses.Count; i++)
-        {
-            startRemoveLength += Vector2.Distance(processPathPoses[Handy.IndexMethod.GetBeforeIndex(i)], processPathPoses[i]);
-            if (startRemoveLength >= removeLength)
-            {
-                startRemoveCount = i + 1;
-                break;
-            }
-        }
-        float endRemoveLength = 0f;
-        int endRemoveCount = 0;
-        for (int i = processPathPoses.Count - 1; i >= 0; i--)
-        {
-            endRemoveLength += Vector2.Distance(processPathPoses[Handy.IndexMethod.CorrectIndex(i + 1, processPathPoses.Count - 1)], processPathPoses[i]);
-            if (endRemoveLength >= removeLength)
-            {
-                endRemoveCount = processPathPoses.Count - i;
-                break;
-            }
-        }
-        processPathPosesLength -= startRemoveLength + endRemoveLength;
-        if (processPathPoses.Count >= startRemoveCount + endRemoveCount)
-        {
-            processPathPoses.RemoveRange(0, startRemoveCount);
-            processPathPoses.RemoveRange(processPathPoses.Count - endRemoveCount, endRemoveCount);
-        } */
+        processPathPosesLength = Handy.GetPosesDistance(processPathPoses);
     }
     public void StopNote()
     {
@@ -429,7 +389,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         tarPlayerScript.SetSideClickScaleTweener(true);
         holdElapsedSecs = holdNoteSecs;
         DisableMe();
-        PM.stopedNoteIndex = myWorldInfoIndex;
+        PM.stopedNoteIndex = myLevelInfoIndex;
         isStop = true;
     }
     public void TryKillWaitTweens()
@@ -444,17 +404,13 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             holdDeltaRadiusInfo,
             processStartColorInfo,
             processEndColorInfo);
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => TweenMethod.TryKillTween(notesRotationInfo[i]), Handy.ArrayMethod.TryGetLength(notesRotationInfo));
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => TweenMethod.TryKillTween(notesColorInfo[i]), Handy.ArrayMethod.TryGetLength(notesColorInfo));
-        // foreach (var NRI in notesRotationInfo)
-        //     TweenMethod.TryKillTween(NRI);
-        // foreach (var NCI in notesColorInfo)
-        //     TweenMethod.TryKillTween(NCI);
+        Handy.RepeatCode((i) => TweenMethod.TryKillTween(notesRotationInfo[i]), Handy.TryGetArrayLength(notesRotationInfo));
+        Handy.RepeatCode((i) => TweenMethod.TryKillTween(notesColorInfo[i]), Handy.TryGetArrayLength(notesColorInfo));
     }
     public void ChangeNoteAlpha(float alpha)
     {
-        Handy.Renderer.ColorMethod.FadeColor(processNoteRenderer, alpha);
-        Handy.ProcessCode.RepeatCodeMethod.RepeatCode((i) => Handy.Renderer.ColorMethod.FadeColor(notesSideRend[i], alpha), notesSideRend.Length);
+        Handy.GetColor(processNoteRenderer, alpha);
+        Handy.RepeatCode((i) => Handy.GetColor(notesSideRend[i], alpha), notesSideRend.Length);
     }
     void DisableMe()
     {
@@ -488,10 +444,10 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     }
     public void Active()
     {
-        if (myWorldInfoIndex != 0)
+        if (myLevelInfoIndex != 0)
         {
             gameObject.SetActive(true);
-            toleranceSecsAwake = PM.totalElapsedSecs - worldInfo.noteInfo.awakeSecs;
+            toleranceSecsAwake = PM.totalElapsedSecs - levelInfo.noteInfo.awakeSecs;
         }
     }
 }

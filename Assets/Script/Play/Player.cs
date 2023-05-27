@@ -14,7 +14,7 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public SpriteRenderer playerSideRenderer;
     public SpriteRenderer playerCenterRenderer;
     public Sprite playerSideSprite;
-    WorldInfo worldInfo;
+    LevelInfo levelInfo;
 
     public float curDeg;
     public float rotation;
@@ -69,30 +69,30 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     {
         isInit = true;
 
-        worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
+        levelInfo = PM.GetLevelInfo(PM.levelInfoIndex);
 
-        playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + worldInfo.noteInfo.sideImageName);
+        playerSideSprite = Resources.Load<Sprite>("Image/Play/Player/" + levelInfo.noteInfo.sideImageName);
 
-        radiusInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].radiusTween, PM.GetNoteHoldSecs(worldInfo));
+        radiusInfo = new TweeningInfo(levelInfo.playerInfo[playerIndex].radiusTween, PM.GetNoteHoldSecs(levelInfo));
 
-        degInfo = new TweeningInfo(PM.CorrectDegTween(worldInfo.playerInfo[playerIndex].degTween, worldInfo.playerInfo[playerIndex].degDir), PM.GetNoteHoldSecs(worldInfo));
+        degInfo = new TweeningInfo(PM.CorrectDegTween(levelInfo.playerInfo[playerIndex].degTween, levelInfo.playerInfo[playerIndex].degDir), PM.GetNoteHoldSecs(levelInfo));
 
-        rotationInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].rotationTween, PM.GetNoteHoldSecs(worldInfo));
+        rotationInfo = new TweeningInfo(levelInfo.playerInfo[playerIndex].rotationTween, PM.GetNoteHoldSecs(levelInfo));
 
-        totalScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].totalScaleTween, PM.GetNoteHoldSecs(worldInfo));
+        totalScaleInfo = new TweeningInfo(levelInfo.playerInfo[playerIndex].totalScaleTween, PM.GetNoteHoldSecs(levelInfo));
 
-        sideScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideScaleTween, PM.GetNoteHoldSecs(worldInfo));
+        sideScaleInfo = new TweeningInfo(levelInfo.playerInfo[playerIndex].sideScaleTween, PM.GetNoteHoldSecs(levelInfo));
 
-        centerScaleInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerScaleTween, PM.GetNoteHoldSecs(worldInfo));
+        centerScaleInfo = new TweeningInfo(levelInfo.playerInfo[playerIndex].centerScaleTween, PM.GetNoteHoldSecs(levelInfo));
 
-        sideColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].sideColorTween, PM.GetNoteHoldSecs(worldInfo));
+        sideColorInfo = new TweeningInfo(levelInfo.playerInfo[playerIndex].sideColorTween, PM.GetNoteHoldSecs(levelInfo));
 
-        centerColorInfo = new TweeningInfo(worldInfo.playerInfo[playerIndex].centerColorTween, PM.GetNoteHoldSecs(worldInfo));
+        centerColorInfo = new TweeningInfo(levelInfo.playerInfo[playerIndex].centerColorTween, PM.GetNoteHoldSecs(levelInfo));
     }
     public void UpdateTweenValue()
     {
-        curDeg = Handy.Math.DegMethod.CorrectDegMaxIs0(((TweenerInfo<float>)degInfo).curValue);
-        rotation = Handy.Math.DegMethod.CorrectDegMaxIs0(-(((TweenerInfo<float>)rotationInfo).curValue + curDeg));
+        curDeg = Handy.GetCorrectedDegMaxIs0(((TweenerInfo<float>)degInfo).curValue);
+        rotation = Handy.GetCorrectedDegMaxIs0(-(((TweenerInfo<float>)rotationInfo).curValue + curDeg));
         curRadius = ((TweenerInfo<float>)radiusInfo).curValue;
         totalScale = ((TweenerInfo<Vector2>)totalScaleInfo).curValue;
         sideClickScale = ((TweenerInfo<float>)sideClickScaleInfo).curValue;
@@ -147,7 +147,7 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     }
     public void UpdateTransform()
     {
-        transform.position = Handy.Transform.PosMethod.GetCircularPos(curDeg, curRadius, PM.centerScript.pos);
+        transform.position = Handy.GetCircularPos(curDeg, curRadius, PM.centerScript.pos);
         transform.rotation = Quaternion.Euler(0, 0, rotation);
         transform.localScale = totalScale;
         playerSide.transform.localScale = sideScale * sideClickScale;

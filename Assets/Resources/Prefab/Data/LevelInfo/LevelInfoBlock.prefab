@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 143414726713689557}
   - component: {fileID: 718398728308860595}
   m_Layer: 0
-  m_Name: WorldInfoBlock
+  m_Name: LevelInfoBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

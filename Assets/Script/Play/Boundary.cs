@@ -8,7 +8,7 @@ using TweenManager;
 public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject, IScript
 {
     public bool isInit;
-    WorldInfo worldInfo;
+    LevelInfo levelInfo;
     public GameObject boundaryLine;
     public GameObject boundaryCover;
     public GameObject boundaryMask;
@@ -35,15 +35,15 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
     {
         isInit = true;
 
-        worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
+        levelInfo = PM.GetLevelInfo(PM.levelInfoIndex);
 
-        coverColorInfo = new TweeningInfo(worldInfo.boundaryInfo.coverColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        coverColorInfo = new TweeningInfo(levelInfo.boundaryInfo.coverColorTween, PM.GetNoteHoldSecs(PM.levelInfoIndex));
 
-        posInfo = new TweeningInfo(worldInfo.boundaryInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        posInfo = new TweeningInfo(levelInfo.boundaryInfo.posTween, PM.GetNoteHoldSecs(PM.levelInfoIndex));
 
-        lineColorInfo = new TweeningInfo(worldInfo.boundaryInfo.lineColorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        lineColorInfo = new TweeningInfo(levelInfo.boundaryInfo.lineColorTween, PM.GetNoteHoldSecs(PM.levelInfoIndex));
 
-        scaleInfo = new TweeningInfo(worldInfo.boundaryInfo.scaleTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        scaleInfo = new TweeningInfo(levelInfo.boundaryInfo.scaleTween, PM.GetNoteHoldSecs(PM.levelInfoIndex));
     }
     public void UpdateTweenValue()
     {

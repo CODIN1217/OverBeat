@@ -9,7 +9,7 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
 {
     public bool isInit;
     Image centerImage;
-    WorldInfo worldInfo;
+    LevelInfo levelInfo;
     PlayManager PM;
 
     public Vector2 scale;
@@ -35,13 +35,13 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     {
         isInit = true;
 
-        worldInfo = PM.GetWorldInfo(PM.worldInfoIndex);
+        levelInfo = PM.GetLevelInfo(PM.levelInfoIndex);
 
-        scaleInfo = new TweeningInfo(worldInfo.centerInfo.scaleTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        scaleInfo = new TweeningInfo(levelInfo.centerInfo.scaleTween, PM.GetNoteHoldSecs(PM.levelInfoIndex));
 
-        posInfo = new TweeningInfo(worldInfo.centerInfo.posTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        posInfo = new TweeningInfo(levelInfo.centerInfo.posTween, PM.GetNoteHoldSecs(PM.levelInfoIndex));
 
-        colorInfo = new TweeningInfo(worldInfo.centerInfo.colorTween, PM.GetNoteHoldSecs(PM.worldInfoIndex));
+        colorInfo = new TweeningInfo(levelInfo.centerInfo.colorTween, PM.GetNoteHoldSecs(PM.levelInfoIndex));
     }
     public void UpdateTweenValue()
     {
