@@ -221,18 +221,18 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     }
     public void PlayWaitTween()
     {
-        TweenMethod.PlayTweens(
+        TweenMethod.TryPlayTweens(
             waitDeltaRadiusInfo,
             fadeInfo);
     }
     public void PlayHoldTween()
     {
-        TweenMethod.PlayTweens(
+        TweenMethod.TryPlayTweens(
             holdDeltaRadiusInfo,
             processStartColorInfo,
             processEndColorInfo);
-        Handy.RepeatCode((i) => TweenMethod.PlayTween(notesRotationInfo[i]), Handy.TryGetArrayLength(notesRotationInfo));
-        Handy.RepeatCode((i) => TweenMethod.PlayTween(notesColorInfo[i]), Handy.TryGetArrayLength(notesColorInfo));
+        Handy.RepeatCode((i) => TweenMethod.TryPlayTween(notesRotationInfo[i]), Handy.TryGetArrayLength(notesRotationInfo));
+        Handy.RepeatCode((i) => TweenMethod.TryPlayTween(notesColorInfo[i]), Handy.TryGetArrayLength(notesColorInfo));
     }
     public void UpdateElapsedSecs01()
     {

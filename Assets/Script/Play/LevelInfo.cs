@@ -6,7 +6,7 @@ using System;
 using TweenManager;
 
 [Serializable]
-public class LevelInfo : MonoBehaviour
+public class LevelInfo
 {
     [Serializable]
     public class CameraInfo
@@ -92,7 +92,7 @@ public class LevelInfo : MonoBehaviour
             awakeSecs = 0f;
             speed = 1f;
             noteHitTiming01s = new float[noteCount];
-            sideImageName = "Basic";
+            sideImageName = "PlayerBasic";
             isCheckPoint = false;
             waitDeltaRadiusTween = new TweenInfo<float>(3.5f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
             holdDeltaRadiusTween = new TweenInfo<float>(0f, 0f, AnimationCurve.Linear(0, 0, 1, 1));
@@ -146,21 +146,6 @@ public class LevelInfo : MonoBehaviour
             judgmentColors = new Color[] { new Color(100, 255, 65) / 255f, new Color(255, 235, 0) / 255f, new Color(160, 0, 140) / 255f, new Color(215, 0, 15) / 255f };
         }
     }
-    [Serializable]
-    public class CreditInfo
-    {
-        public string worldName;
-        public string worldEditor;
-        public string songName;
-        public string songWriter;
-        public CreditInfo()
-        {
-            worldName = "Empty";
-            worldEditor = "Empty";
-            songName = "Empty";
-            songWriter = "Empty";
-        }
-    }
     public CameraInfo cameraInfo;
     public CountDownInfo countDownInfo;
     public PlayerInfo[] playerInfo;
@@ -168,17 +153,16 @@ public class LevelInfo : MonoBehaviour
     public CenterInfo centerInfo;
     public BoundaryInfo boundaryInfo;
     public JudgmentInfo judgmentInfo;
-    public CreditInfo creditInfo;
+
 
     public LevelInfo()
     {
         cameraInfo = new CameraInfo();
         centerInfo = new CenterInfo();
         countDownInfo = new CountDownInfo();
-        playerInfo = new PlayerInfo[2];
+        playerInfo = new PlayerInfo[1];
         noteInfo = new NoteInfo();
         boundaryInfo = new BoundaryInfo();
         judgmentInfo = new JudgmentInfo();
-        creditInfo = new CreditInfo();
     }
 }

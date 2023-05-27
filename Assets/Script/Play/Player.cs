@@ -54,7 +54,13 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     void Update()
     {
         if (PM.isStop || PM.isPause)
+        {
+            if (PM.isGameOver)
+            {
+
+            }
             return;
+        }
 
         if (PM.GetIsKeyDown(playerIndex))
         {
@@ -104,7 +110,7 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
-        TweenMethod.PlayTweens(
+        TweenMethod.TryPlayTweens(
             radiusInfo,
             degInfo,
             rotationInfo,

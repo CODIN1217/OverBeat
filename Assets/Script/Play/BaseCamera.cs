@@ -51,7 +51,7 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
-        TweenMethod.PlayTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
+        TweenMethod.TryPlayTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
     }
     public void TryKillTween()
     {

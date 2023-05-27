@@ -49,12 +49,12 @@ public class NoteGenerator : MonoBehaviour
         int playerIndex = levelInfo.noteInfo.tarPlayerIndex;
         int eachNoteIndex = levelInfo.noteInfo.eachNoteIndex;
 
-        newNoteScript.noteWaitSecs = Mathf.Abs(levelInfo.noteInfo.waitDeltaRadiusTween.startValue - levelInfo.noteInfo.waitDeltaRadiusTween.endValue) / 3.5f / levelInfo.noteInfo.speed;
+        newNoteScript.noteWaitSecs = Mathf.Abs((levelInfo.noteInfo.waitDeltaRadiusTween.startValue - levelInfo.noteInfo.waitDeltaRadiusTween.endValue) / 3.5f / levelInfo.noteInfo.speed);
         newNoteScript.noteWaitSecs *= Mathf.Clamp01(levelInfoIndex);
         if (playerIndex != -1)
             notesWaitSecs[playerIndex].Add(newNoteScript.noteWaitSecs);
 
-        newNoteScript.holdNoteSecs = Mathf.Abs(levelInfo.noteInfo.holdDeltaRadiusTween.startValue - levelInfo.noteInfo.holdDeltaRadiusTween.endValue) / levelInfo.noteInfo.speed;
+        newNoteScript.holdNoteSecs = Mathf.Abs((levelInfo.noteInfo.holdDeltaRadiusTween.startValue - levelInfo.noteInfo.holdDeltaRadiusTween.endValue) / levelInfo.noteInfo.speed);
         newNoteScript.holdNoteSecs *= Mathf.Clamp01(levelInfoIndex);
         if (playerIndex != -1)
             notesLengthSecs[playerIndex].Add(newNoteScript.holdNoteSecs);

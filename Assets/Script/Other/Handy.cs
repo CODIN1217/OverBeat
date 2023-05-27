@@ -218,15 +218,15 @@ public static class Handy
             vector2s.Add(vector3);
         return vector2s;
     }
-    public static float CeilValue(float value, int place)
+    public static float CeilValue(float value, int place = 1)
     {
         return Mathf.Ceil(value * Mathf.Pow(10f, place - 1)) / Mathf.Pow(10f, place - 1);
     }
-    public static float RoundValue(float value, int place)
+    public static float RoundValue(float value, int place = 1)
     {
         return Mathf.Round(value * Mathf.Pow(10f, place - 1)) / Mathf.Pow(10f, place - 1);
     }
-    public static float FloorValue(float value, int place)
+    public static float FloorValue(float value, int place = 1)
     {
         return Mathf.Floor(value * Mathf.Pow(10f, place - 1)) / Mathf.Pow(10f, place - 1);
     }

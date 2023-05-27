@@ -52,7 +52,7 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
-        TweenMethod.PlayTweens(scaleInfo, posInfo, colorInfo);
+        TweenMethod.TryPlayTweens(scaleInfo, posInfo, colorInfo);
     }
     public void TryKillTween()
     {

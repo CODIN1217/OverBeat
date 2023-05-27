@@ -16,7 +16,7 @@ public class PlayManager : MonoBehaviour
     public GameObject noteGenerator;
     public NoteGenerator noteGeneratorScript;
     public GameObject worldReader;
-    public LevelReader worldReaderScript;
+    public WorldReader worldReaderScript;
     public GameObject playerController;
     public PlayerController playerControllerScript;
     public GameObject judgmentGen;
@@ -27,6 +27,8 @@ public class PlayManager : MonoBehaviour
     public BaseCamera baseCameraScript;
     public GameObject center;
     public Center centerScript;
+    public GameObject endMessage;
+    public EndMessage endMessageScript;
 
 
     public GameObject[] closestNotes;
@@ -225,16 +227,18 @@ public class PlayManager : MonoBehaviour
             }
         }
 
-        if (HP01 <= 0f)
-        {
-            isGameOver = true;
-            isStop = true;
-        }
         if (progress01 >= 1f)
         {
             isClearWorld = true;
             isStop = true;
         }
+        else if (HP01 <= 0f)
+        {
+            isGameOver = true;
+            isStop = true;
+        }
+        if (isClearWorld || isGameOver)
+            endMessageScript.SetEndMessage();
     }
     void LateUpdate()
     {
@@ -297,7 +301,6 @@ public class PlayManager : MonoBehaviour
     }
     void Restart(int startLevelInfoIndex)
     {
-        List<IGameObject> GOsTemp = new List<IGameObject>(GOs);
         List<IScript> scriptsTemp = new List<IScript>(scripts);
         InitPlayManagerScript(startLevelInfoIndex);
         InitScriptAll(scriptsTemp);
@@ -496,10 +499,8 @@ public class PlayManager : MonoBehaviour
             }
         }
     }
-    public LevelInfo GetLevelInfo(int levelInfoIndex)
-    {
-        return worldReaderScript.levelInfos[Handy.GetCorrectedIndex(levelInfoIndex, GetMaxLevelInfoIndex())];
-    }
+    public WorldInfo worldInfo { get { return worldReaderScript.worldInfo; } }
+    public LevelInfo GetLevelInfo(int levelInfoIndex) => worldReaderScript.worldInfo.levelInfos[Handy.GetCorrectedIndex(levelInfoIndex, worldReaderScript.worldInfo.levelInfos.Length - 1)];
     public LevelInfo GetLevelInfo(int playerIndex, int eachNoteIndex)
     {
         playerIndex = Handy.GetCorrectedIndex(playerIndex, GetMaxPlayerIndex());
@@ -603,7 +604,7 @@ public class PlayManager : MonoBehaviour
     }
     public int GetLevelInfoCount()
     {
-        return worldReaderScript.levelInfos.Count;
+        return worldReaderScript.worldInfo.levelInfos.Length;
     }
     public int GetMaxLevelInfoIndex()
     {

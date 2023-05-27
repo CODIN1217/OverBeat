@@ -55,7 +55,7 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
-        TweenMethod.PlayTweens(coverColorInfo, lineColorInfo, scaleInfo, posInfo);
+        TweenMethod.TryPlayTweens(coverColorInfo, lineColorInfo, scaleInfo, posInfo);
     }
     public void TryKillTween()
     {

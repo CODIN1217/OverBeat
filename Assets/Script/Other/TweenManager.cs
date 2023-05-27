@@ -212,25 +212,41 @@ namespace TweenManager
                     return false;
             return true;
         }
-        public static void PlayTween(TweeningInfo tweeningInfos)
+        public static bool IsInfosNull(params TweeningInfo[] tweeningInfos)
+        {
+            foreach (var TI in tweeningInfos)
+            {
+                if (TI == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    if (TI.tweener == null)
+                        return true;
+                }
+            }
+            return false;
+        }
+        public static void TryPlayTween(TweeningInfo tweeningInfos)
         {
             if (tweeningInfos != null)
                 tweeningInfos.Play();
         }
-        public static void PlayTweens(params TweeningInfo[] tweeningInfos)
+        public static void TryPlayTweens(params TweeningInfo[] tweeningInfos)
         {
             foreach (var TI in tweeningInfos)
-                PlayTween(TI);
+                TryPlayTween(TI);
         }
-        public static void PauseTween(TweeningInfo tweeningInfos)
+        public static void TryPauseTween(TweeningInfo tweeningInfos)
         {
             if (tweeningInfos != null)
                 tweeningInfos.Pause();
         }
-        public static void PauseTweens(params TweeningInfo[] tweeningInfos)
+        public static void TryPauseTweens(params TweeningInfo[] tweeningInfos)
         {
             foreach (var TI in tweeningInfos)
-                PauseTween(TI);
+                TryPauseTween(TI);
         }
         public static void TryKillTween(TweeningInfo tweeningInfo, bool isComplete = true)
         {
