@@ -5,7 +5,7 @@ using System;
 using DG.Tweening;
 using TweenManager;
 
-public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject, IScript
+public class Player : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject, IScript, ITweener
 {
     public int playerIndex;
     public bool isInit;
@@ -34,9 +34,9 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public TweeningInfo sideColorInfo;
     public TweeningInfo centerColorInfo;
 
-    public float sideClickScale;
+    public float sideSubScale;
 
-    public TweeningInfo sideClickScaleInfo;
+    public TweeningInfo sideSubScaleInfo;
 
     PlayManager PM;
 
@@ -49,7 +49,7 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     }
     void OnEnable()
     {
-        InitSideClickScaleInfo();
+        InitSideSubScaleInfo();
     }
     void Update()
     {
@@ -57,19 +57,33 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
         {
             if (PM.isGameOver)
             {
-
+                TweenMethod.TryPauseTween(GetTweens());
+                TweenMethod.TryKillTween(sideSubScaleInfo);
+                sideSubScaleInfo = new TweeningInfo(new TweenInfo<float>(sideSubScale, 0f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 1.5f);
             }
             return;
         }
 
         if (PM.GetIsKeyDown(playerIndex))
         {
-            SetSideClickScaleTweener(false);
+            SetSideSubScaleTweener(false);
         }
         else if (!PM.GetIsKeyPress(playerIndex) && PM.GetIsKeyUp(playerIndex))
         {
-            SetSideClickScaleTweener(true);
+            SetSideSubScaleTweener(true);
         }
+    }
+    public TweeningInfo[] GetTweens()
+    {
+        return Handy.GetArray(
+            radiusInfo,
+            degInfo,
+            rotationInfo,
+            totalScaleInfo,
+            sideScaleInfo,
+            centerScaleInfo,
+            sideColorInfo,
+            centerColorInfo);
     }
     public void InitTween()
     {
@@ -101,7 +115,7 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
         rotation = Handy.GetCorrectedDegMaxIs0(-(((TweenerInfo<float>)rotationInfo).curValue + curDeg));
         curRadius = ((TweenerInfo<float>)radiusInfo).curValue;
         totalScale = ((TweenerInfo<Vector2>)totalScaleInfo).curValue;
-        sideClickScale = ((TweenerInfo<float>)sideClickScaleInfo).curValue;
+        sideSubScale = ((TweenerInfo<float>)sideSubScaleInfo).curValue;
         sideScale = ((TweenerInfo<Vector2>)sideScaleInfo).curValue;
         centerScale = ((TweenerInfo<Vector2>)centerScaleInfo).curValue;
         sideColor = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)sideColorInfo).curValue, playerIndex);
@@ -110,27 +124,11 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
-        TweenMethod.TryPlayTweens(
-            radiusInfo,
-            degInfo,
-            rotationInfo,
-            totalScaleInfo,
-            sideScaleInfo,
-            centerScaleInfo,
-            sideColorInfo,
-            centerColorInfo);
+        TweenMethod.TryPlayTween(GetTweens());
     }
     public void TryKillTween()
     {
-        TweenMethod.TryKillTweens(
-            radiusInfo,
-            degInfo,
-            rotationInfo,
-            totalScaleInfo,
-            sideScaleInfo,
-            centerScaleInfo,
-            sideColorInfo,
-            centerColorInfo);
+        TweenMethod.TryKillTween(GetTweens());
 
         isInit = false;
     }
@@ -138,25 +136,22 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     {
         if (isInit)
         {
-            degInfo.Goto(toSecs);
-            rotationInfo.Goto(toSecs);
-            totalScaleInfo.Goto(toSecs);
-            sideScaleInfo.Goto(toSecs);
-            centerScaleInfo.Goto(toSecs);
-            sideColorInfo.Goto(toSecs);
-            centerColorInfo.Goto(toSecs);
+            foreach (var T in GetTweens())
+            {
+                T.Goto(toSecs);
+            }
         }
     }
     public void InitScript()
     {
-        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this).AddScript(this);
+        PM.AddGO(this).AddTweenerInPlayGO(this).AddScript(this).AddTweener(this);
     }
     public void UpdateTransform()
     {
         transform.position = Handy.GetCircularPos(curDeg, curRadius, PM.centerScript.pos);
         transform.rotation = Quaternion.Euler(0, 0, rotation);
         transform.localScale = totalScale;
-        playerSide.transform.localScale = sideScale * sideClickScale;
+        playerSide.transform.localScale = sideScale * sideSubScale;
         playerCenter.transform.localScale = centerScale;
     }
     public void UpdateRenderer()
@@ -165,26 +160,26 @@ public class Player : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
         playerSideRenderer.color = sideColor;
         playerCenterRenderer.color = centerColor;
     }
-    public void InitSideClickScaleInfo()
+    public void InitSideSubScaleInfo()
     {
-        TweenMethod.TryKillTween(sideClickScaleInfo);
-        sideClickScaleInfo = new TweeningInfo(new TweenInfo<float>(1f, 0.8f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.15f);
+        TweenMethod.TryKillTween(sideSubScaleInfo);
+        sideSubScaleInfo = new TweeningInfo(new TweenInfo<float>(1f, 0.8f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.15f);
     }
-    public void SetSideClickScaleTweener(bool IsBackwards)
+    public void SetSideSubScaleTweener(bool IsBackwards)
     {
-        PM.StartCoroutine(SetSideClickScaleTweenerCo(IsBackwards));
+        PM.StartCoroutine(SetSideSubScaleTweenerCo(IsBackwards));
     }
-    IEnumerator SetSideClickScaleTweenerCo(bool IsBackwards)
+    IEnumerator SetSideSubScaleTweenerCo(bool IsBackwards)
     {
-        yield return new WaitUntil(() => !sideClickScaleInfo.IsPlaying());
+        yield return new WaitUntil(() => !sideSubScaleInfo.IsPlaying());
         if (IsBackwards)
         {
-            sideClickScaleInfo.SetBackward();
+            TweenMethod.TrySetBackward(sideSubScaleInfo);
         }
         else
         {
-            sideClickScaleInfo.SetForward();
+            TweenMethod.TrySetForward(sideSubScaleInfo);
         }
-        sideClickScaleInfo.Play();
+        TweenMethod.TryPlayTween(sideSubScaleInfo);
     }
 }

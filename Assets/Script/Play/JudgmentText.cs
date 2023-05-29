@@ -42,8 +42,8 @@ public class JudgmentText : MonoBehaviour
             fadeInfo = new TweeningInfo(new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.1f)
             .AppendInterval(0.1f)
             .Append(new TweeningInfo(new TweenInfo<float>(1f, 0f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.1f))
-            .OnComplete(() => { gameObject.SetActive(false); TweenMethod.TryKillTween(fadeInfo); })
-            .Play();
+            .OnComplete(() => { gameObject.SetActive(false); TweenMethod.TryKillTween(fadeInfo); });
+            TweenMethod.TryPlayTween(fadeInfo);
             judgmentText_rect.localPosition = stdPlayerPos + new Vector2(0, 0.61f * Handy.GetAverageAbsScale(stdPlayerScale) + judgmentText_rect.sizeDelta.y * 0.005f) * 100f;
             isAwake = false;
         }

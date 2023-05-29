@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TweenManager;
 
-public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject, IScript
+public class Boundary : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject, IScript, ITweener
 {
     public bool isInit;
     LevelInfo levelInfo;
@@ -31,6 +31,10 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
         PM = PlayManager.Member;
         InitScript();
     }
+    public TweeningInfo[] GetTweens()
+    {
+        return Handy.GetArray(coverColorInfo, posInfo, lineColorInfo, scaleInfo);
+    }
     public void InitTween()
     {
         isInit = true;
@@ -55,11 +59,11 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
-        TweenMethod.TryPlayTweens(coverColorInfo, lineColorInfo, scaleInfo, posInfo);
+        TweenMethod.TryPlayTween(GetTweens());
     }
     public void TryKillTween()
     {
-        TweenMethod.TryKillTweens(coverColorInfo, posInfo, lineColorInfo, scaleInfo);
+        TweenMethod.TryKillTween(GetTweens());
 
         isInit = false;
     }
@@ -67,15 +71,15 @@ public class Boundary : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGa
     {
         if (isInit)
         {
-            coverColorInfo.Goto(toSecs);
-            posInfo.Goto(toSecs);
-            lineColorInfo.Goto(toSecs);
-            scaleInfo.Goto(toSecs);
+            foreach (var T in GetTweens())
+            {
+                T.Goto(toSecs);
+            }
         }
     }
     public void InitScript()
     {
-        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this).AddScript(this);
+        PM.AddGO(this).AddTweenerInPlayGO(this).AddScript(this).AddTweener(this);
     }
     public void UpdateTransform()
     {

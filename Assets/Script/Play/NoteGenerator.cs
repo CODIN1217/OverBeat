@@ -39,6 +39,10 @@ public class NoteGenerator : MonoBehaviour
         {
             PM.GetNoteScript(i).InitNote();
         }
+        for (int i = 0; i < PM.GetLevelInfoCount(); i++)
+        {
+            PM.GetNoteScript(i).InitNoteScript();
+        }
     }
     void SetNotePrefab(int levelInfoIndex)
     {

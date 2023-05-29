@@ -4,7 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using TweenManager;
 
-public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject, IScript
+public class BaseCamera : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject, IScript, ITweener
 {
     public readonly float stdSize;
     public bool isInit;
@@ -26,6 +26,10 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
         PM = PlayManager.Member;
         baseCamera = Camera.main;
         InitScript();
+    }
+    public TweeningInfo[] GetTweens()
+    {
+        return Handy.GetArray(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
     }
     public void InitTween()
     {
@@ -51,11 +55,11 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
-        TweenMethod.TryPlayTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
+        TweenMethod.TryPlayTween(GetTweens());
     }
     public void TryKillTween()
     {
-        TweenMethod.TryKillTweens(orthoSizeInfo, BGColorInfo, rotationInfo, posInfo);
+        TweenMethod.TryKillTween(GetTweens());
 
         isInit = false;
     }
@@ -63,15 +67,15 @@ public class BaseCamera : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, I
     {
         if (isInit)
         {
-            orthoSizeInfo.Goto(toSecs);
-            BGColorInfo.Goto(toSecs);
-            rotationInfo.Goto(toSecs);
-            posInfo.Goto(toSecs);
+            foreach (var T in GetTweens())
+            {
+                T.Goto(toSecs);
+            }
         }
     }
     public void InitScript()
     {
-        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this).AddScript(this);
+        PM.AddGO(this).AddTweenerInPlayGO(this).AddScript(this).AddTweener(this);
     }
     public void UpdateTransform()
     {

@@ -64,11 +64,11 @@ public class PlayManager : MonoBehaviour
     public int checkPointIndex;
     public int tryCount;
     public float totalElapsedSecs;
-    List<ITweener> tweenerGOs;
+    List<ITweener> tweeners;
     List<ITweenerInPlay> tweenerInPlayGOs;
     List<IGameObject> GOs;
     List<IScript> scripts;
-    public PlayManager AddTweenerGO(ITweener tweenerGO) { tweenerGOs.Add(tweenerGO); return this; }
+    public PlayManager AddTweener(ITweener tweener) { tweeners.Add(tweener); return this; }
     public PlayManager AddTweenerInPlayGO(ITweenerInPlay tweenerInPlayGO) { tweenerInPlayGOs.Add(tweenerInPlayGO); return this; }
     public PlayManager AddGO(IGameObject GO) { GOs.Add(GO); return this; }
     public PlayManager AddScript(IScript script) { scripts.Add(script); return this; }
@@ -101,6 +101,7 @@ public class PlayManager : MonoBehaviour
     }
     void Update()
     {
+        notePathPosesCount = 360;
         if (Input.GetKeyDown(KeyCode.P))
         {
             PauseOrPlay();
@@ -120,32 +121,20 @@ public class PlayManager : MonoBehaviour
         PauseTweensOnPause();
         if (isPause)
             return;
-        notePathPosesCount = 360;
-
-        UpdateJudgmentRange();
-        ClearIsKeyInput();
 
         if (isBeforeEnable)
         {
             InitTweenAll();
-
-            if (tryCount > 1)
-            {
-                GotoTweenAll(Mathf.Clamp(GetNoteHoldSecs(levelInfoIndex) - countDownScript.totalCountDownSecs, 0f, GetNoteHoldSecs(levelInfoIndex)));
-                PlayHoldTweenAll();
-            }
-
+            GotoTweenAll(Mathf.Clamp(GetNoteHoldSecs(levelInfoIndex) - countDownScript.totalCountDownSecs, 0f, GetNoteHoldSecs(levelInfoIndex)));
+            PlayHoldTweenAll();
             isBeforeEnable = false;
         }
         if (isBeforeAwake)
         {
-            PlayHoldTweenAll();
-
             for (int i = 0; i < GetMaxPlayerCount(); i++)
             {
                 totalNoteCount += GetNoteCount(i);
             }
-
             isBeforeAwake = false;
         }
 
@@ -155,13 +144,18 @@ public class PlayManager : MonoBehaviour
 
         UpdateTweenValueAll();
 
+        ClearIsKeyInput();
+
+        UpdateJudgmentRange();
+
         if (isStop)
         {
             return;
         }
 
-        totalElapsedSecs += Time.deltaTime;
         ActiveNote();
+
+        totalElapsedSecs += Time.deltaTime;
         UpdateClosestNote();
 
         if (isAutoPlay)
@@ -289,15 +283,10 @@ public class PlayManager : MonoBehaviour
             }
         }
 
-        tweenerGOs = new List<ITweener>();
+        tweeners = new List<ITweener>();
         tweenerInPlayGOs = new List<ITweenerInPlay>();
         GOs = new List<IGameObject>();
         scripts = new List<IScript>();
-    }
-    void PauseTweensOnPause()
-    {
-        if (isPause)
-            StartCoroutine(PauseTweensOnPauseCo());
     }
     void Restart(int startLevelInfoIndex)
     {
@@ -307,7 +296,7 @@ public class PlayManager : MonoBehaviour
         TryKillTweenAll();
         for (int i = 0; i < GetMaxPlayerCount(); i++)
         {
-            GetPlayerScript(i).InitSideClickScaleInfo();
+            GetPlayerScript(i).InitSideSubScaleInfo();
         }
         for (int i = 0; i < GetLevelInfoCount(); i++)
         {
@@ -316,27 +305,50 @@ public class PlayManager : MonoBehaviour
             curNoteScript.TryKillHoldTweens();
             curNoteScript.TryStopCheckHoldingKeyCo();
             curNoteScript.gameObject.SetActive(false);
-            StartCoroutine(Handy.WaitCodeForFixedUpdateCo(() => { curNoteScript.InitNoteScript(); if (i < levelInfoIndex) curNoteScript.EndNoteScript(); }));
+            curNoteScript.InitNoteScript();
+            if (i < levelInfoIndex)
+                curNoteScript.EndNoteScript();
+            // StartCoroutine(Handy.WaitCodeForUpdateCo(() => { }));
         }
         tryCount++;
         if (levelInfoIndex > 0)
             levelInfoIndex--;
         countDownScript.PlayCountDown();
     }
+    void PauseTweensOnPause()
+    {
+        if (isPause)
+            StartCoroutine(PauseTweensOnPauseCo());
+    }
     IEnumerator PauseTweensOnPauseCo()
     {
-        List<Tween> playingTweens = DOTween.PlayingTweens();
-        if (playingTweens != null)
+        List<TweeningInfo> playingTweens = new List<TweeningInfo>();
+        Handy.RepeatCode((i) =>
         {
-            foreach (var PT in playingTweens)
+            foreach (var NT in GetNoteScript(i).GetNoteTweens())
             {
-                PT.Pause();
+                if (!TweenMethod.IsInfoNull(NT))
+                    if (NT.IsPlaying())
+                        playingTweens.Add(NT);
             }
-            yield return new WaitUntil(() => !isPause);
-            foreach (var PT in playingTweens)
+        }, GetLevelInfoCount(), 1);
+        foreach (var T in tweeners)
+        {
+            foreach (var TI in T.GetTweens())
             {
-                PT.Play();
+                if (!TweenMethod.IsInfoNull(TI))
+                    if (TI.IsPlaying())
+                        playingTweens.Add(TI);
             }
+        }
+        foreach (var PT in playingTweens)
+        {
+            TweenMethod.TryPauseTween(PT);
+        }
+        yield return new WaitUntil(() => !isPause);
+        foreach (var PT in playingTweens)
+        {
+            TweenMethod.TryPlayTween(PT);
         }
     }
     void UpdateClosestNote()
@@ -351,7 +363,7 @@ public class PlayManager : MonoBehaviour
     {
         for (int i = levelInfoIndex + 1; i < GetLevelInfoCount(); i++)
         {
-            Note curNoteScript = GetNoteScript(GetPlayerIndex(i), GetEachNoteIndex(i));
+            Note curNoteScript = GetNoteScript(i);
             if (!curNoteScript.isStop)
             {
                 if (!curNoteScript.gameObject.activeSelf)
@@ -702,6 +714,7 @@ public class PlayManager : MonoBehaviour
     public void TryKillTween(ITweener tweenerGO)
     {
         tweenerGO.TryKillTween();
+        // tweenerGO.TryKillTween();
     }
     public void GotoTween(float toSecs, ITweener tweenerGO)
     {
@@ -730,7 +743,7 @@ public class PlayManager : MonoBehaviour
     public void InitTweenAll(List<ITweener> tweenerGOs = null)
     {
         if (tweenerGOs == null)
-            tweenerGOs = this.tweenerGOs;
+            tweenerGOs = this.tweeners;
         foreach (var TGO in tweenerGOs)
         {
             TGO.InitTween();
@@ -739,7 +752,7 @@ public class PlayManager : MonoBehaviour
     public void UpdateTweenValueAll(List<ITweener> tweenerGOs = null)
     {
         if (tweenerGOs == null)
-            tweenerGOs = this.tweenerGOs;
+            tweenerGOs = this.tweeners;
         foreach (var TGO in tweenerGOs)
         {
             TGO.UpdateTweenValue();
@@ -748,16 +761,16 @@ public class PlayManager : MonoBehaviour
     public void TryKillTweenAll(List<ITweener> tweenerGOs = null)
     {
         if (tweenerGOs == null)
-            tweenerGOs = this.tweenerGOs;
+            tweenerGOs = this.tweeners;
         foreach (var TGO in tweenerGOs)
         {
-            TGO.TryKillTween();
+            TGO.TryKillTween(); ;
         }
     }
     public void GotoTweenAll(float toSecs, List<ITweener> tweenerGOs = null)
     {
         if (tweenerGOs == null)
-            tweenerGOs = this.tweenerGOs;
+            tweenerGOs = this.tweeners;
         foreach (var TGO in tweenerGOs)
         {
             TGO.GotoTween(toSecs);

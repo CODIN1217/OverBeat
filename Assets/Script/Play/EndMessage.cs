@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using TweenManager;
+using System.Threading.Tasks;
 
 public class EndMessage : MonoBehaviour, IGameObject
 {
@@ -22,10 +23,6 @@ public class EndMessage : MonoBehaviour, IGameObject
     TweeningInfo alphaInfo;
 
     [SerializeField]
-    AnimationCurve alphaEase;
-    [SerializeField]
-    float alphaDuration;
-    [SerializeField]
     string[] cheerTexts;
     void Awake()
     {
@@ -43,20 +40,20 @@ public class EndMessage : MonoBehaviour, IGameObject
     }
     void InitGameOverTween()
     {
-        alphaInfo = new TweeningInfo(new TweenInfo<float>(0f, 1f, alphaEase), alphaDuration);
+        alphaInfo = new TweeningInfo(new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.5f);
     }
     void UpdateGameOverTweenValue()
     {
-        if (!TweenMethod.IsInfosNull(alphaInfo))
+        if (!TweenMethod.IsInfoNull(alphaInfo))
             alpha = ((TweenerInfo<float>)alphaInfo).curValue;
     }
     void TryKillGameOverTween()
     {
-        TweenMethod.TryKillTweens(alphaInfo);
+        TweenMethod.TryKillTween(alphaInfo);
     }
     void PlayGameOverTween()
     {
-        TweenMethod.TryPlayTweens(alphaInfo);
+        TweenMethod.TryPlayTween(alphaInfo);
     }
     public void SetEndMessage()
     {
@@ -64,9 +61,9 @@ public class EndMessage : MonoBehaviour, IGameObject
         InitGameOverTween();
         PlayGameOverTween();
 
-        InitGameOverScript();
+        PM.StartCoroutine(InitGameOverScript());
     }
-    void InitGameOverScript()
+    IEnumerator InitGameOverScript()
     {
         alpha = 0f;
         PM.AddGO(this);
@@ -83,6 +80,11 @@ public class EndMessage : MonoBehaviour, IGameObject
                 subMessage_TMP.text = cheerTexts[Random.Range(0, cheerTexts.Length)];
             }
         }
+        yield return new WaitUntil(() => !PM.isClearWorld && !PM.isGameOver);
+        TryKillGameOverTween();
+        alpha = 0f;
+        mainMessage_TMP.text = "";
+        subMessage_TMP.text = "";
     }
     public void UpdateTransform()
     {

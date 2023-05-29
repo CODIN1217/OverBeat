@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TweenManager;
 
-public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGameObject, IScript
+public class Center : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject, IScript, ITweener
 {
     public bool isInit;
     Image centerImage;
@@ -31,6 +31,10 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
             return;
         centerImage.fillAmount = Mathf.Lerp(centerImage.fillAmount, PM.HP01, Time.deltaTime * 4f);
     }
+    public TweeningInfo[] GetTweens()
+    {
+        return Handy.GetArray(scaleInfo, posInfo, colorInfo);
+    }
     public void InitTween()
     {
         isInit = true;
@@ -52,11 +56,11 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     public void PlayWaitTween() { }
     public void PlayHoldTween()
     {
-        TweenMethod.TryPlayTweens(scaleInfo, posInfo, colorInfo);
+        TweenMethod.TryPlayTween(GetTweens());
     }
     public void TryKillTween()
     {
-        TweenMethod.TryKillTweens(scaleInfo, posInfo, colorInfo);
+        TweenMethod.TryKillTween(GetTweens());
 
         isInit = false;
     }
@@ -64,14 +68,15 @@ public class Center : MonoBehaviour, ITweener, PlayManager.ITweenerInPlay, IGame
     {
         if (isInit)
         {
-            scaleInfo.Goto(toSecs);
-            posInfo.Goto(toSecs);
-            colorInfo.Goto(toSecs);
+            foreach (var T in GetTweens())
+            {
+                T.Goto(toSecs);
+            }
         }
     }
     public void InitScript()
     {
-        PM.AddGO(this).AddTweenerGO(this).AddTweenerInPlayGO(this).AddScript(this);
+        PM.AddGO(this).AddTweenerInPlayGO(this).AddScript(this).AddTweener(this);
     }
     public void UpdateTransform()
     {

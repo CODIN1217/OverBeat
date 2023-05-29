@@ -8,6 +8,7 @@ namespace TweenManager
 {
     public interface ITweener
     {
+        TweeningInfo[] GetTweens();
         void InitTween();
         void UpdateTweenValue();
         void TryKillTween();
@@ -56,93 +57,79 @@ namespace TweenManager
         public static explicit operator TweenerInfo<Vector2>(TweeningInfo tweeningInfo) { if (tweeningInfo.tweenerInfosVector2 != null) return tweeningInfo.tweenerInfosVector2.tweenerInfo; return null; }
         public static explicit operator TweenerInfo<Vector3>(TweeningInfo tweeningInfo) { if (tweeningInfo.tweenerInfosVector3 != null) return tweeningInfo.tweenerInfosVector3.tweenerInfo; return null; }
         public static explicit operator TweenerInfo<Color>(TweeningInfo tweeningInfo) { if (tweeningInfo.tweenerInfosColor != null) return tweeningInfo.tweenerInfosColor.tweenerInfo; return null; }
-        public TweeningInfo SetForward()
-        {
-            bool isPlaying = tweener.IsPlaying();
-            tweener.PlayForward();
-            if (!isPlaying)
-                tweener.Pause();
-            return this;
-        }
-        public TweeningInfo SetBackward()
-        {
-            bool isPlaying = tweener.IsPlaying();
-            tweener.PlayBackwards();
-            if (!isPlaying)
-                tweener.Pause();
-            return this;
-        }
         public TweeningInfo Append(TweeningInfo tweeningInfo)
         {
-            tweener.Append(tweeningInfo.tweener);
+            if (tweener != null)
+                tweener.Append(tweeningInfo.tweener);
             return this;
         }
         public TweeningInfo AppendInterval(float interval)
         {
-            tweener.AppendInterval(interval);
-            return this;
-        }
-        public TweeningInfo Play()
-        {
             if (tweener != null)
-                tweener.Play();
-            return this;
-        }
-        public TweeningInfo Pause()
-        {
-            if (tweener != null)
-                tweener.Pause();
-            return this;
-        }
-        public TweeningInfo Complete()
-        {
-            tweener.Complete();
+                tweener.AppendInterval(interval);
             return this;
         }
         public TweeningInfo OnStart(Action action)
         {
-            tweener.OnStart(() => action());
+            if (tweener != null)
+                tweener.OnStart(() => action());
             return this;
         }
         public TweeningInfo OnPlay(Action action)
         {
-            tweener.OnPlay(() => action());
+            if (tweener != null)
+                tweener.OnPlay(() => action());
             return this;
         }
         public TweeningInfo OnUpdate(Action action)
         {
-            tweener.OnUpdate(() => action());
+            if (tweener != null)
+                tweener.OnUpdate(() => action());
             return this;
         }
         public TweeningInfo OnComplete(Action action)
         {
-            tweener.OnComplete(() => action());
+            if (tweener != null)
+                tweener.OnComplete(() => action());
             return this;
         }
         public bool IsActive()
         {
-            return tweener.IsActive();
+            if (tweener != null)
+                return tweener.IsActive();
+            return false;
         }
         public bool IsBackwards()
         {
-            return tweener.IsBackwards();
+            if (tweener != null)
+                return tweener.IsBackwards();
+            return false;
         }
         public bool IsComplete()
         {
-            return tweener.IsComplete();
+            if (tweener != null)
+                return tweener.IsComplete();
+            return false;
         }
         public bool IsInitialized()
         {
-            return tweener.IsInitialized();
+            if (tweener != null)
+                return tweener.IsInitialized();
+            return false;
         }
         public bool IsPlaying()
         {
-            return tweener.IsPlaying();
+            if (tweener != null)
+                return tweener.IsPlaying();
+            return false;
         }
         public TweeningInfo Goto(float toSecs)
         {
-            bool isPlaying = tweener.IsPlaying();
-            tweener.Goto(toSecs, isPlaying);
+            if (tweener != null)
+            {
+                bool isPlaying = tweener.IsPlaying();
+                tweener.Goto(toSecs, isPlaying);
+            }
             return this;
         }
     }
@@ -205,14 +192,7 @@ namespace TweenManager
             .SetEase(tweenInfo.ease));
             return tweenerInfoTemp;
         }
-        public static bool IsInfoNull(TweeningInfo tweeningInfo)
-        {
-            if (tweeningInfo != null)
-                if (tweeningInfo.tweener != null)
-                    return false;
-            return true;
-        }
-        public static bool IsInfosNull(params TweeningInfo[] tweeningInfos)
+        public static bool IsInfoNull(params TweeningInfo[] tweeningInfos)
         {
             foreach (var TI in tweeningInfos)
             {
@@ -228,42 +208,63 @@ namespace TweenManager
             }
             return false;
         }
-        public static void TryPlayTween(TweeningInfo tweeningInfos)
-        {
-            if (tweeningInfos != null)
-                tweeningInfos.Play();
-        }
-        public static void TryPlayTweens(params TweeningInfo[] tweeningInfos)
+        public static void TryPlayTween(params TweeningInfo[] tweeningInfos)
         {
             foreach (var TI in tweeningInfos)
-                TryPlayTween(TI);
+                if (TI != null)
+                    if (TI.tweener != null)
+                        TI.tweener.Play();
         }
-        public static void TryPauseTween(TweeningInfo tweeningInfos)
-        {
-            if (tweeningInfos != null)
-                tweeningInfos.Pause();
-        }
-        public static void TryPauseTweens(params TweeningInfo[] tweeningInfos)
+        public static void TryPauseTween(params TweeningInfo[] tweeningInfos)
         {
             foreach (var TI in tweeningInfos)
-                TryPauseTween(TI);
+                if (TI != null)
+                    if (TI.tweener != null)
+                        TI.tweener.Pause();
         }
-        public static void TryKillTween(TweeningInfo tweeningInfo, bool isComplete = true)
+        public static void TryKillTween(params TweeningInfo[] tweeningInfos)
         {
-            if (tweeningInfo != null)
+            foreach (var TI in tweeningInfos)
+                if (TI != null)
+                    if (TI.tweener != null)
+                    {
+                        TI.tweener.Kill(true);
+                        TI.tweener = null;
+                    }
+        }
+        public static void TrySetForward(params TweeningInfo[] tweeningInfos)
+        {
+            foreach (var TI in tweeningInfos)
             {
-                if (tweeningInfo.tweener != null)
+                if (TI.tweener != null)
                 {
-                    tweeningInfo.tweener.Kill(isComplete);
-                    tweeningInfo.tweener = null;
-                    tweeningInfo = null;
+                    bool isPlaying = TI.tweener.IsPlaying();
+                    TI.tweener.PlayForward();
+                    if (!isPlaying)
+                        TI.tweener.Pause();
                 }
             }
         }
-        public static void TryKillTweens(params TweeningInfo[] tweeningInfos)
+        public static void TrySetBackward(params TweeningInfo[] tweeningInfos)
         {
             foreach (var TI in tweeningInfos)
-                TryKillTween(TI);
+            {
+                if (TI.tweener != null)
+                {
+                    bool isPlaying = TI.tweener.IsPlaying();
+                    TI.tweener.PlayBackwards();
+                    if (!isPlaying)
+                        TI.tweener.Pause();
+                }
+            }
+        }
+        public static void TryComplete(params TweeningInfo[] tweeningInfos)
+        {
+            foreach (var TI in tweeningInfos)
+            {
+                if (TI.tweener != null)
+                    TI.tweener.Complete();
+            }
         }
     }
 }
