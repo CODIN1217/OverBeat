@@ -72,7 +72,6 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
 
     public LevelInfo levelInfo;
     PlayManager PM;
-    Coroutine checkHoldingKeyCo;
     void Awake()
     {
         PM = PlayManager.Member;
@@ -93,42 +92,40 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             PM.PlayWaitTweenAll();
             isAwake = false;
         }
-        UpdateNoteTweenValue();
-        UpdateElapsedSecs01();
         myElapsedSecs += Time.deltaTime;
         if (!isNeedInput)
         {
-            waitElapsedSecs = toleranceSecsAwake + myElapsedSecs;
-            if (waitElapsedSecs >= noteWaitSecs)
+            waitElapsedSecs = Mathf.Clamp(toleranceSecsAwake + myElapsedSecs, 0f, noteWaitSecs);
+            if (waitElapsedSecs >= noteWaitSecs || (PM.GetJudgmentValue(tarPlayerIndex) <= PM.judgmentRange[tarPlayerIndex] && PM.GetIsKeyDown(tarPlayerIndex)))
             {
                 StopWaiting();
             }
         }
-        if (isNeedInput && !isStop)
+        if (isNeedInput)
         {
-            holdElapsedSecs = toleranceSecsEndWait + myElapsedSecs;
-            if (holdElapsedSecs >= holdNoteSecs)
+            if (!isStop)
             {
-                isDisable = true;
+                holdElapsedSecs = Mathf.Clamp(toleranceSecsEndWait + myElapsedSecs, 0f, holdNoteSecs);
+                if (holdElapsedSecs >= holdNoteSecs)
+                {
+                    isDisable = true;
+                }
+            }
+            if (holdNoteSecs != 0f)
+            {
+                if (toleranceSecsEndWait < 0f && !PM.GetIsKeyPress(tarPlayerIndex) && !isDisable)
+                {
+                    StopNote();
+                }
             }
         }
+        UpdateElapsedSecs01();
         if (isDisable)
         {
             if (!isStop)
             {
                 if (holdElapsedSecs01 > PM.judgmentRange[tarPlayerIndex])
                     StopNote();
-            }
-        }
-        if (PM.GetJudgmentValue(tarPlayerIndex) <= PM.judgmentRange[tarPlayerIndex])
-        {
-            if (PM.GetIsKeyDown(tarPlayerIndex))
-            {
-                if (!isNeedInput)
-                {
-                    StopWaiting();
-                }
-                StartCheckHoldingKeyCo();
             }
         }
         for (int i = 1; i < levelInfo.noteInfo.noteCount - 1; i++)
@@ -148,6 +145,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
                 }
             }
         }
+        UpdateNoteTweenValue();
     }
     public void InitNote()
     {
@@ -156,7 +154,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         tarPlayerScript = PM.GetPlayerScript(tarPlayerIndex);
         isJudgNotes = new bool[levelInfo.noteInfo.noteCount];
         InitNoteChild();
-        Handy.RepeatCode((i) => { notesSideSprite[i] = Resources.Load<Sprite>("Image/Play/Player/" + levelInfo.noteInfo.sideImageName); }, notesSideSprite.Length);
+        Handy.RepeatCode((i) => { notesSideSprite[i] = Resources.Load<Sprite>("Image/Play/Player/" + levelInfo.noteInfo.sideImageName); }, levelInfo.noteInfo.noteCount);
     }
     public void InitNoteChild()
     {
@@ -209,10 +207,10 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         fadeInfo = new TweeningInfo(levelInfo.noteInfo.fadeTween, PM.GetNoteWaitSecs(myLevelInfoIndex) * 0.3f);
 
         holdDeltaRadiusInfo = new TweeningInfo(levelInfo.noteInfo.holdDeltaRadiusTween, PM.GetNoteHoldSecs(myLevelInfoIndex));
-        Handy.RepeatCode((i) => { notesRotationInfos[i] = new TweeningInfo(levelInfo.noteInfo.rotationTweens[i], PM.GetNoteHoldSecs(myLevelInfoIndex)); }, notesRotationInfos.Length);
+        Handy.RepeatCode((i) => { notesRotationInfos[i] = new TweeningInfo(levelInfo.noteInfo.rotationTweens[i], PM.GetNoteHoldSecs(myLevelInfoIndex)); }, levelInfo.noteInfo.noteCount);
         processStartColorInfo = new TweeningInfo(levelInfo.noteInfo.processStartColorTween, PM.GetNoteHoldSecs(myLevelInfoIndex));
         processEndColorInfo = new TweeningInfo(levelInfo.noteInfo.processEndColorTween, PM.GetNoteHoldSecs(myLevelInfoIndex));
-        Handy.RepeatCode((i) => { notesColorInfos[i] = new TweeningInfo(levelInfo.noteInfo.colorTweens[i], PM.GetNoteHoldSecs(myLevelInfoIndex)); }, notesColorInfos.Length);
+        Handy.RepeatCode((i) => { notesColorInfos[i] = new TweeningInfo(levelInfo.noteInfo.colorTweens[i], PM.GetNoteHoldSecs(myLevelInfoIndex)); }, levelInfo.noteInfo.noteCount);
     }
     public void UpdateNoteTweenValue()
     {
@@ -225,13 +223,13 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
 
         Handy.RepeatCode((i) =>
         {
-            float curProgress = Mathf.Clamp((float)i / (float)(notesRotation.Length - 1), holdElapsedSecs01, 1f);
+            float curProgress = Mathf.Clamp((float)i / (float)(levelInfo.noteInfo.noteCount - 1), holdElapsedSecs01, 1f);
             notesRotation[i] = Handy.GetCorrectedDegMaxIs0(-(((TweenerInfo<float>)notesRotationInfos[i]).curValue + TweenMethod.GetTweenValue(PM.CorrectDegTween(levelInfo.playerInfo[tarPlayerIndex].degTween, levelInfo.playerInfo[tarPlayerIndex].degDir), curProgress)));
-        }, notesRotation.Length);
+        }, levelInfo.noteInfo.noteCount);
 
         processStartColor = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)processStartColorInfo).curValue, tarPlayerIndex);
         processEndColor = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)processEndColorInfo).curValue, tarPlayerIndex);
-        Handy.RepeatCode((i) => { notesColor[i] = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)notesColorInfos[i]).curValue, tarPlayerIndex); }, notesColor.Length);
+        Handy.RepeatCode((i) => { notesColor[i] = PM.GetColor01WithPlayerIndex(((TweenerInfo<Color>)notesColorInfos[i]).curValue, tarPlayerIndex); }, levelInfo.noteInfo.noteCount);
     }
     public void PlayWaitTween()
     {
@@ -300,6 +298,8 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             isNeedInput = false;
 
             myElapsedSecs = 0f;
+
+            fade = 0f;
         }
     }
     public void EndNoteScript()
@@ -330,17 +330,17 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             float curProgress = Mathf.Clamp(levelInfo.noteInfo.noteHitTiming01s[i], holdElapsedSecs01, 1f);
             notes[i].transform.position = holdElapsedSecs01 == curProgress ? Handy.GetCircularPos(tarPlayerScript.curDeg, waitDeltaRadius + tarPlayerScript.curRadius, PM.centerScript.pos) : pathPoses[(int)((float)(pathPoses.Count - 1) * curProgress)];
         },
-        notes.Length);
-        Handy.RepeatCode((i) => notes[i].transform.localScale = tarPlayerScript.playerSide.transform.localScale, notes.Length);
-        Handy.RepeatCode((i) => notes[i].transform.localRotation = Quaternion.Euler(0f, 0f, notesRotation[i]), notes.Length);
+        levelInfo.noteInfo.noteCount);
+        Handy.RepeatCode((i) => notes[i].transform.localScale = tarPlayerScript.playerSide.transform.localScale, levelInfo.noteInfo.noteCount);
+        Handy.RepeatCode((i) => notes[i].transform.localRotation = Quaternion.Euler(0f, 0f, notesRotation[i]), levelInfo.noteInfo.noteCount);
     }
     public void UpdateRenderer()
     {
-        Handy.RepeatCode((i) => notesSideRend[i].sprite = notesSideSprite[i], notesSideRend.Length);
+        Handy.RepeatCode((i) => notesSideRend[i].sprite = notesSideSprite[i], levelInfo.noteInfo.noteCount);
 
         processNoteRenderer.startColor = processStartColor;
         processNoteRenderer.endColor = processEndColor;
-        Handy.RepeatCode((i) => { notesSideRend[i].color = notesColor[i]; notesCenterRend[i].color = notesColor[i]; }, notesSideRend.Length);
+        Handy.RepeatCode((i) => { notesSideRend[i].color = notesColor[i]; notesCenterRend[i].color = notesColor[i]; }, levelInfo.noteInfo.noteCount);
 
         ChangeNoteAlpha(fade);
     }
@@ -421,38 +421,13 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     }
     public void ChangeNoteAlpha(float alpha)
     {
-        Handy.GetColor(processNoteRenderer, alpha);
-        Handy.RepeatCode((i) => Handy.GetColor(notesSideRend[i], alpha), notesSideRend.Length);
+        Handy.FadeColor(processNoteRenderer, alpha);
+        Handy.RepeatCode((i) => { Handy.FadeColor(notesSideRend[i], alpha); Handy.FadeColor(notesCenterRend[i], alpha); }, levelInfo.noteInfo.noteCount);
     }
     void DisableMe()
     {
         PM.closestNoteIndex[tarPlayerIndex]++;
         gameObject.SetActive(false);
-    }
-    void StartCheckHoldingKeyCo()
-    {
-        checkHoldingKeyCo = PM.StartCoroutine(CheckHoldingKeyCo());
-    }
-    public void TryStopCheckHoldingKeyCo()
-    {
-        if (checkHoldingKeyCo != null)
-            PM.StopCoroutine(checkHoldingKeyCo);
-    }
-    IEnumerator CheckHoldingKeyCo()
-    {
-        if (holdNoteSecs != 0f)
-        {
-            while (PM.GetIsKeyPress(tarPlayerIndex) && !isDisable)
-            {
-                yield return null;
-                if (PM.isPause)
-                    yield return new WaitUntil(() => !PM.isPause);
-            }
-            if (!isDisable)
-            {
-                StopNote();
-            }
-        }
     }
     public void Active()
     {

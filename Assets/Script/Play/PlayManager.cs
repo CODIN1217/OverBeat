@@ -95,13 +95,15 @@ public class PlayManager : MonoBehaviour
         tryCount = 1;
 
         InitPlayManagerScript(0);
-
+        DevTool.Member.infoViewer.SetInfo("FPS", () => 1f / Time.unscaledDeltaTime, 0.3f);
         Handy.RepeatCode((i) => DevTool.Member.infoViewer.SetInfo(Handy.GetPredicateName(Handy.GetArray(this.name, nameof(closestNoteIndex)), i), () => closestNoteIndex[i]), closestNoteIndex.Length);
         DevTool.Member.infoViewer.SetInfo(Handy.GetPredicateName(Handy.GetArray(this.name, nameof(levelInfoIndex))), () => levelInfoIndex);
     }
     void Update()
     {
         notePathPosesCount = 360;
+        if (isPause && Input.GetKeyDown(KeyCode.A))
+            isAutoPlay = !isAutoPlay;
         if (Input.GetKeyDown(KeyCode.P))
         {
             PauseOrPlay();
@@ -243,10 +245,7 @@ public class PlayManager : MonoBehaviour
     }
     public void PauseOrPlay()
     {
-        if (!isPause)
-            isPause = true;
-        else
-            isPause = false;
+        isPause = !isPause;
     }
     public void InitPlayManagerScript(int startLevelInfoIndex)
     {
@@ -303,12 +302,10 @@ public class PlayManager : MonoBehaviour
             Note curNoteScript = GetNoteScript(i);
             curNoteScript.TryKillWaitTweens();
             curNoteScript.TryKillHoldTweens();
-            curNoteScript.TryStopCheckHoldingKeyCo();
             curNoteScript.gameObject.SetActive(false);
             curNoteScript.InitNoteScript();
             if (i < levelInfoIndex)
                 curNoteScript.EndNoteScript();
-            // StartCoroutine(Handy.WaitCodeForUpdateCo(() => { }));
         }
         tryCount++;
         if (levelInfoIndex > 0)
@@ -714,7 +711,6 @@ public class PlayManager : MonoBehaviour
     public void TryKillTween(ITweener tweenerGO)
     {
         tweenerGO.TryKillTween();
-        // tweenerGO.TryKillTween();
     }
     public void GotoTween(float toSecs, ITweener tweenerGO)
     {

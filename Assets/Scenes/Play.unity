@@ -195,7 +195,7 @@ MonoBehaviour:
   isPause: 0
   isGameOver: 0
   isClearWorld: 0
-  isAutoPlay: 1
+  isAutoPlay: 0
   sumNoteAccuracy01: 0
   progress01: 0
   accuracy01: 0
@@ -766,31 +766,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainMessage: {fileID: 1947937855}
   subMessage: {fileID: 523052755}
-  alphaEase:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  alphaDuration: 0.5
   cheerTexts:
   - Cheer Up!
 --- !u!1 &914341203

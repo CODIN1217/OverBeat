@@ -43,7 +43,7 @@ public class CountDown : MonoBehaviour
             countDownTMP.text = "";
             isCountDown = false;
             PM.isStop = false;
-            Handy.GetColor(countDownTMP, 0f);
+            Handy.FadeColor(countDownTMP, 0f);
         }
     }
 
@@ -64,6 +64,6 @@ public class CountDown : MonoBehaviour
         countDownSecs = 0f;
         isCountDown = true;
         PM.isStop = true;
-        Handy.GetColor(countDownTMP, 1f);
+        Handy.FadeColor(countDownTMP, 1f);
     }
 }

@@ -60,24 +60,24 @@ public static class Handy
     {
         return Mathf.Abs(x) < Mathf.Abs(y) ? Mathf.Abs(x) : Mathf.Abs(y);
     }
-    public static Color GetColor(Color color, float alpha)
+    public static Color FadeColor(Color color, float alpha)
     {
         return new Color(color.r, color.g, color.b, alpha);
     }
-    public static SpriteRenderer GetColor(SpriteRenderer rend, float alpha)
+    public static SpriteRenderer FadeColor(SpriteRenderer rend, float alpha)
     {
-        rend.color = GetColor(rend.color, alpha);
+        rend.color = FadeColor(rend.color, alpha);
         return rend;
     }
-    public static LineRenderer GetColor(LineRenderer rend, float alpha)
+    public static LineRenderer FadeColor(LineRenderer rend, float alpha)
     {
-        rend.startColor = GetColor(rend.startColor, alpha);
-        rend.endColor = GetColor(rend.endColor, alpha);
+        rend.startColor = FadeColor(rend.startColor, alpha);
+        rend.endColor = FadeColor(rend.endColor, alpha);
         return rend;
     }
-    public static TextMeshProUGUI GetColor(TextMeshProUGUI rend, float alpha)
+    public static TextMeshProUGUI FadeColor(TextMeshProUGUI rend, float alpha)
     {
-        rend.color = GetColor(rend.color, alpha);
+        rend.color = FadeColor(rend.color, alpha);
         return rend;
     }
     public static Color GetCorrectedColor(Color color, float minValue = 0f, float maxValue = 1f)

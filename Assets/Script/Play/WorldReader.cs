@@ -9,10 +9,5 @@ public class WorldReader : MonoBehaviour
     void Awake()
     {
         worldInfo = new WorldInfo();
-        /* for (int i = 0; i < levelInfosObj.transform.childCount; i++)
-        {
-            if (levelInfosObj.transform.GetChild(i).gameObject.activeSelf)
-                levelInfos.Add(levelInfosObj.transform.GetChild(i).GetComponent<LevelInfo>());
-        } */
     }
 }
