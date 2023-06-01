@@ -30,6 +30,11 @@ public class PlayManager : MonoBehaviour
     public GameObject endMessage;
     public EndMessage endMessageScript;
 
+    [SerializeField]
+    GameObject Pause;
+    [SerializeField]
+    CanvasGroup PauseGroup;
+    TweeningInfo PauseGroupAlphaInfo;
 
     public GameObject[] closestNotes;
     public Note[] closestNoteScripts;
@@ -95,6 +100,8 @@ public class PlayManager : MonoBehaviour
         tryCount = 1;
 
         InitPlayManagerScript(0);
+        PauseGroupAlphaInfo = new TweeningInfo(new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.3f);
+
         DevTool.Member.infoViewer.SetInfo("FPS", () => 1f / Time.unscaledDeltaTime, 0.3f);
         Handy.RepeatCode((i) => DevTool.Member.infoViewer.SetInfo(Handy.GetPredicateName(Handy.GetArray(this.name, nameof(closestNoteIndex)), i), () => closestNoteIndex[i]), closestNoteIndex.Length);
         DevTool.Member.infoViewer.SetInfo(Handy.GetPredicateName(Handy.GetArray(this.name, nameof(levelInfoIndex))), () => levelInfoIndex);
@@ -102,12 +109,13 @@ public class PlayManager : MonoBehaviour
     void Update()
     {
         notePathPosesCount = 360;
-        if (isPause && Input.GetKeyDown(KeyCode.A))
-            isAutoPlay = !isAutoPlay;
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             PauseOrPlay();
         }
+        PauseGroup.alpha = ((TweenerInfo<float>)PauseGroupAlphaInfo).curValue;
+        /* if (isPause && Input.GetKeyDown(KeyCode.A))
+            isAutoPlay = !isAutoPlay;
         if (Input.GetKeyDown(KeyCode.R))
         {
             Restart(0);
@@ -119,7 +127,7 @@ public class PlayManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             Restart(Handy.GetNextIndex(levelInfoIndex + 1, GetMaxLevelInfoIndex()));
-        }
+        } */
         PauseTweensOnPause();
         if (isPause)
             return;
@@ -246,6 +254,11 @@ public class PlayManager : MonoBehaviour
     public void PauseOrPlay()
     {
         isPause = !isPause;
+        Pause.SetActive(isPause);
+        if (isPause)
+            TweenMethod.TryPlayTween(PauseGroupAlphaInfo);
+        else
+            PauseGroupAlphaInfo.Goto(0f);
     }
     public void InitPlayManagerScript(int startLevelInfoIndex)
     {
@@ -287,7 +300,7 @@ public class PlayManager : MonoBehaviour
         GOs = new List<IGameObject>();
         scripts = new List<IScript>();
     }
-    void Restart(int startLevelInfoIndex)
+    public void Restart(int startLevelInfoIndex)
     {
         List<IScript> scriptsTemp = new List<IScript>(scripts);
         InitPlayManagerScript(startLevelInfoIndex);
@@ -347,6 +360,10 @@ public class PlayManager : MonoBehaviour
         {
             TweenMethod.TryPlayTween(PT);
         }
+    }
+    public void Exit()
+    {
+        //Exit
     }
     void UpdateClosestNote()
     {
