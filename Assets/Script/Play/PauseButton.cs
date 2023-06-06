@@ -19,13 +19,15 @@ public class PauseButton : MonoBehaviour
     {
         if (PM.isPause)
         {
-            Ray2D ray = new Ray2D(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            // Handy.WriteLog(Camera.main.ScreenToWorldPoint(Input.mousePosition) * 100f);
+            Ray2D ray = new Ray2D(Camera.main.ScreenToWorldPoint(Input.mousePosition) * 100f, Vector2.zero);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
             if (!isMouseOn)
             {
-                if (hit.transform != null)
+                if (hit.collider != null)
                 {
-                    if (hit.transform.gameObject == gameObject)
+                    Handy.WriteLog(gameObject.name);
+                    if (ReferenceEquals(hit.collider.gameObject, gameObject))
                     {
                         TweenMethod.TrySetForward(scaleInfo);
                         TweenMethod.TryPlayTween(scaleInfo);
@@ -35,7 +37,7 @@ public class PauseButton : MonoBehaviour
             }
             else
             {
-                if (hit.transform == null)
+                if (hit.collider == null)
                 {
                     TweenMethod.TrySetBackward(scaleInfo);
                     TweenMethod.TryPlayTween(scaleInfo);

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7877413225284352920}
   - component: {fileID: 7877413225284352927}
   - component: {fileID: 7877413225284352926}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CanvasOverlay
   m_TagString: CanvasOverlay
   m_Icon: {fileID: 0}
@@ -111,7 +111,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7877413226574537486}
   - component: {fileID: 7877413226574537487}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: DevTool
   m_TagString: DevTool
   m_Icon: {fileID: 0}

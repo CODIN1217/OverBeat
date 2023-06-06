@@ -31,10 +31,7 @@ public class PlayManager : MonoBehaviour
     public EndMessage endMessageScript;
 
     [SerializeField]
-    GameObject Pause;
-    [SerializeField]
-    CanvasGroup PauseGroup;
-    TweeningInfo PauseGroupAlphaInfo;
+    GameObject PauseController;
 
     public GameObject[] closestNotes;
     public Note[] closestNoteScripts;
@@ -100,20 +97,26 @@ public class PlayManager : MonoBehaviour
         tryCount = 1;
 
         InitPlayManagerScript(0);
-        PauseGroupAlphaInfo = new TweeningInfo(new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.3f);
+        // PauseGroupAlphaInfo = new TweeningInfo(new TweenInfo<float>(0f, 1f, AnimationCurve.Linear(0f, 0f, 1f, 1f)), 0.3f);
 
         DevTool.Member.infoViewer.SetInfo("FPS", () => 1f / Time.unscaledDeltaTime, 0.3f);
         Handy.RepeatCode((i) => DevTool.Member.infoViewer.SetInfo(Handy.GetPredicateName(Handy.GetArray(this.name, nameof(closestNoteIndex)), i), () => closestNoteIndex[i]), closestNoteIndex.Length);
         DevTool.Member.infoViewer.SetInfo(Handy.GetPredicateName(Handy.GetArray(this.name, nameof(levelInfoIndex))), () => levelInfoIndex);
+        // for(int i = 0; i < Pause.transform.GetChild(1).childCount; i++){
+        //     DevTool.Member.infoViewer.SetInfo(Handy.GetPredicateName(Handy.GetArray(this.name, nameof(Pause), nameof(Pause.transform), nameof(Pause.transform.position)), i), () => Pause.transform.GetChild(1).GetChild(i).position);
+        // }
     }
     void Update()
     {
         notePathPosesCount = 360;
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            PauseOrPlay();
+            if (isPause)
+                Play();
+            else
+                Pause();
         }
-        PauseGroup.alpha = ((TweenerInfo<float>)PauseGroupAlphaInfo).curValue;
+        // PauseGroup.alpha = ((TweenerInfo<float>)PauseGroupAlphaInfo).curValue;
         /* if (isPause && Input.GetKeyDown(KeyCode.A))
             isAutoPlay = !isAutoPlay;
         if (Input.GetKeyDown(KeyCode.R))
@@ -251,14 +254,18 @@ public class PlayManager : MonoBehaviour
         UpdateTransformAll();
         UpdateRendererAll();
     }
-    public void PauseOrPlay()
+    public void Pause()
     {
-        isPause = !isPause;
-        Pause.SetActive(isPause);
-        if (isPause)
-            TweenMethod.TryPlayTween(PauseGroupAlphaInfo);
-        else
-            PauseGroupAlphaInfo.Goto(0f);
+        isPause = true;
+        PauseController.SetActive(true);
+    }
+    public void Play()
+    {
+        isPause = false;
+        // if (isPause)
+        //     TweenMethod.TryPlayTween(PauseGroupAlphaInfo);
+        // else
+        //     PauseGroupAlphaInfo.Goto(0f);
     }
     public void InitPlayManagerScript(int startLevelInfoIndex)
     {

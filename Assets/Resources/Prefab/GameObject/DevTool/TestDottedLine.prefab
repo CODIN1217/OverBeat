@@ -19,6 +19,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TestDottedLine
       objectReference: {fileID: 0}
+    - target: {fileID: 3033177732098317237, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 3033177732098317238, guid: 7f7ed0b6ed457ca42aff30ed7b525268, type: 3}
       propertyPath: m_RootOrder
       value: 0
