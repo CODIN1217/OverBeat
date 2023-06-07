@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 using System.Diagnostics;
 using System;
@@ -29,9 +30,15 @@ public class PlayManager : MonoBehaviour
     public Center centerScript;
     public GameObject endMessage;
     public EndMessage endMessageScript;
+    public GameObject Accuracy;
+    public Accuracy AccuracyScript;
 
     [SerializeField]
     GameObject PauseController;
+    [SerializeField]
+    Toggle Toggle_Auto;
+    [SerializeField]
+    Toggle Toggle_ShowAccuracy;
 
     public GameObject[] closestNotes;
     public Note[] closestNoteScripts;
@@ -47,6 +54,7 @@ public class PlayManager : MonoBehaviour
     public bool isGameOver;
     public bool isClearWorld;
     public bool isAutoPlay;
+    public bool isShowAccuracy;
     bool isBeforeAwake;
     bool isBeforeEnable;
     static PlayManager instance = null;
@@ -92,7 +100,6 @@ public class PlayManager : MonoBehaviour
         closestNoteScripts = new Note[GetMaxPlayerCount()];
         checkPointIndex = 0;
         checkPointAccuracy01 = 1f;
-        isAutoPlay = false;
         isBeforeAwake = true;
         tryCount = 1;
 
@@ -109,6 +116,9 @@ public class PlayManager : MonoBehaviour
     void Update()
     {
         notePathPosesCount = 360;
+        isAutoPlay = Toggle_Auto.isOn;
+        isShowAccuracy = Toggle_ShowAccuracy.isOn;
+        Accuracy.SetActive(isShowAccuracy);
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPause)
