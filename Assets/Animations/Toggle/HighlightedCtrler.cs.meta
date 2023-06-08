@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 88f481c038448e44f8fc4ced50cd92e9
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - toggleCtrler: {fileID: 4773193922413099315, guid: 716c15518926e6f45ad0ad4774c8a706, type: 3}
+  executionOrder: 2000
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

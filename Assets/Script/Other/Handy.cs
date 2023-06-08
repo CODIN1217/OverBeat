@@ -98,7 +98,7 @@ public static class Handy
     }
     public static bool CheckColliding(Vector2 objAPos, Vector2 objAScale, Vector2 objAPixelCount, Vector2 objBPos, Vector2 objBScale, Vector2 objBPixelCount)
     {
-        if (Vector2.Distance(objAPos, objBPos) <= (Handy.GetAverageAbsScale(Handy.MultiplyVector(objAScale, objAPixelCount)) + Handy.GetAverageAbsScale(Handy.MultiplyVector(objBScale, objBPixelCount))) * 0.005f)
+        if (Vector2.Distance(objAPos, objBPos) <= (Handy.GetAverageAbsScale(Vector2.Scale(objAScale, objAPixelCount)) + Handy.GetAverageAbsScale(Vector2.Scale(objBScale, objBPixelCount))) * 0.005f)
         {
             return true;
         }
@@ -186,10 +186,6 @@ public static class Handy
     public static float GetSign0IsMinus(float value)
     {
         return value <= 0f ? -1f : 1f;
-    }
-    public static Vector2 MultiplyVector(Vector2 va, Vector2 vb)
-    {
-        return new Vector2(va.x * vb.x, va.y * vb.y);
     }
     public static Vector2 GetCorrectedVector(Vector2 vector, float minValue, float maxValue)
     {
