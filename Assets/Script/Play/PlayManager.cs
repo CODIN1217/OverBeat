@@ -35,10 +35,10 @@ public class PlayManager : MonoBehaviour
 
     [SerializeField]
     GameObject PauseController;
-    [SerializeField]
-    Toggle Toggle_Auto;
-    [SerializeField]
-    Toggle Toggle_ShowAccuracy;
+    // [SerializeField]
+    // Toggle Toggle_Auto;
+    // [SerializeField]
+    // Toggle Toggle_ShowAccuracy;
 
     public GameObject[] closestNotes;
     public Note[] closestNoteScripts;
@@ -116,8 +116,6 @@ public class PlayManager : MonoBehaviour
     void Update()
     {
         notePathPosesCount = 360;
-        isAutoPlay = Toggle_Auto.isOn;
-        isShowAccuracy = Toggle_ShowAccuracy.isOn;
         Accuracy.SetActive(isShowAccuracy);
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -263,6 +261,12 @@ public class PlayManager : MonoBehaviour
             return;
         UpdateTransformAll();
         UpdateRendererAll();
+    }
+    public void SetIsAutoPlay(Toggle toggle){
+        isAutoPlay = toggle.isOn;
+    }
+    public void SetIsShowAccuracy(Toggle toggle){
+        isShowAccuracy = toggle.isOn;
     }
     public void Pause()
     {

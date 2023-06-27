@@ -15,7 +15,7 @@ namespace TweenManager
         void GotoTween(float toSecs);
     }
     [Serializable]
-    public class TweenInfo<T> : IDeepCopy<TweenInfo<T>>
+    public class TweenInfo<T> : OVERIZE.IDeepCopy<TweenInfo<T>>
     {
         [SerializeField] public T startValue;
         [SerializeField] public T endValue;

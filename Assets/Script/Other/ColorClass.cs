@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 [Serializable]
-public class ColorClass : IDeepCopy<ColorClass>
+public class ColorClass : OVERIZE.IDeepCopy<ColorClass>
 {
     [SerializeField]
     Color color;
