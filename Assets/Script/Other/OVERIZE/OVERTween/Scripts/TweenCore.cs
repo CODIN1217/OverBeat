@@ -20,7 +20,7 @@ namespace OVERIZE
             return null;
         }
         internal static int TweenCount { get =>  tweenCount;}
-        internal static List<TweenChain> TweenChains { get =>  tweenChains.Values.ToList();}
         internal static List<int> TweenIDs { get =>  tweenChains.Keys.ToList();}
+        internal static List<TweenChain> TweenChains { get =>  tweenChains.Values.ToList();}
     }
 }

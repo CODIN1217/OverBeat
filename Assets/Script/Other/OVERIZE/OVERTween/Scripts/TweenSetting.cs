@@ -10,6 +10,8 @@ namespace OVERIZE
 
         float time;
         public float Time { get => time; internal set => time = value; }
+        float speed;
+        public float Speed { get => speed; set => speed = value; }
 
         int curLoopCount;
         internal float startTime;
@@ -26,8 +28,6 @@ namespace OVERIZE
             this.tweenData = tweenData;
             this.duration = duration;
 
-            startTime = TweenUpdater.time;
-
             Init();
             Update();
         }
@@ -39,9 +39,11 @@ namespace OVERIZE
         public override void Init()
         {
             base.Init();
+            startTime = TweenUpdater.time;
             value = tweenData.startValue;
             Time = 0f;
             curLoopCount = 0;
+            speed = 1f;
         }
         public override void Play()
         {
@@ -66,7 +68,7 @@ namespace OVERIZE
             else
             {
                 tweenCallback.OnCompleteLoop();
-                if (curLoopCount <= LoopCount)
+                if (curLoopCount >= LoopCount)
                 {
                     if (LoopCount != -1)
                     {

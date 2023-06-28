@@ -18,23 +18,24 @@ namespace OVERIZE
             OnAddTween(() => tweenSettingsTemp = GetTweenSettings());
         }
         public static implicit operator TweenChain(TweenSetting tweenSetting) => new TweenChain().Append(tweenSetting);
-        public TweenChain Prepend(TweenSetting tweenSetting)
+        public TweenChain Prepend(TweenChain tweenChain)
         {
-            tweenSettings.Insert(0, new List<TweenSetting> { tweenSetting });
+            tweenSettings.Insert(0, tweenChain.TweenSettings);
             delays.Insert(0, 0f);
             onAddTween();
             return this;
         }
-        public TweenChain Join(TweenSetting tweenSetting)
+        public TweenChain Join(TweenChain tweenChain)
         {
             if (tweenSettings.Count > 0)
-                tweenSettings[tweenSettings.Count - 1].Add(tweenSetting);
+                foreach (var TS in tweenChain.TweenSettings)
+                    tweenSettings[tweenSettings.Count - 1].Add(TS);
             onAddTween();
             return this;
         }
-        public TweenChain Append(TweenSetting tweenSetting)
+        public TweenChain Append(TweenChain tweenChain)
         {
-            tweenSettings.Add(new List<TweenSetting> { tweenSetting });
+            tweenSettings.Add(tweenChain.TweenSettings);
             delays.Add(0f);
             onAddTween();
             return this;

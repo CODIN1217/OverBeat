@@ -48,5 +48,29 @@ namespace OVERIZE
         {
             return Clamp(value, 0, 1);
         }
+        public static int ClampMin(int value, int min)
+        {
+            if (value < min)
+                return min;
+            return value;
+        }
+        public static float ClampMin(float value, float min)
+        {
+            if (value < min)
+                return min;
+            return value;
+        }
+        public static int ClampMax(int value, int max)
+        {
+            if (value > max)
+                return max;
+            return value;
+        }
+        public static float ClampMax(float value, float max)
+        {
+            if (value > max)
+                return max;
+            return value;
+        }
     }
 }
