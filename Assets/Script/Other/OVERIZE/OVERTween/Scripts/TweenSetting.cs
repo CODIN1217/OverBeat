@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using OVERIZE;
 
 namespace OVERIZE
 {
@@ -12,6 +11,10 @@ namespace OVERIZE
         public float Time { get => time; internal set => time = value; }
         float speed;
         public float Speed { get => speed; set => speed = value; }
+        UpdateMode updateMode = UpdateMode.Nomal;
+        public UpdateMode UpdateMode { get => updateMode; set => updateMode = value; }
+        ExecuteMode executeMode = ExecuteMode.Editor | ExecuteMode.RunTime;
+        public ExecuteMode ExecuteMode { get => executeMode; set => executeMode = value; }
 
         int curLoopCount;
         internal float startTime;
@@ -81,5 +84,7 @@ namespace OVERIZE
 
             tweenCallback.OnUpdate();
         }
+        public void SetTimeAsUnscaled() => IsUnscaledTime = true;
+        public void SetTimeAsScaled() => IsUnscaledTime = false;
     }
 }

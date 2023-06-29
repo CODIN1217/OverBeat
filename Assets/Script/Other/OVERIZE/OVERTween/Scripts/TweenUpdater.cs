@@ -6,6 +6,7 @@ using System;
 namespace OVERIZE
 {
     public enum UpdateMode { Manual, Fixed, Nomal, Late }
+    [Flags] public enum ExecuteMode { Editor = 1 << 0, RunTime = 1 << 1 }
     [ExecuteInEditMode]
     class TweenUpdater : MonoBehaviour
     {
@@ -20,9 +21,7 @@ namespace OVERIZE
         internal static float time;
         bool isUpdated;
 
-        internal UpdateMode updateMode = UpdateMode.Nomal;
-        internal bool isExecuteInEditMode;
-        internal bool isUnscaledTime;
+        // internal bool isExecuteInEditMode;
         void Awake()
         {
             if (instance == null)
@@ -37,29 +36,23 @@ namespace OVERIZE
         }
         void FixedUpdate()
         {
-            if (!isExecuteInEditMode || updateMode != UpdateMode.Fixed)
-                return;
-            UpdateTweens();
-            if (isUpdated)
-                UpdateTime(isUnscaledTime ? Time.fixedUnscaledDeltaTime : Time.fixedDeltaTime);
+            // if (!isExecuteInEditMode)
+            //     return;
+            UpdateTweens(UpdateMode.Fixed);
         }
         void Update()
         {
-            if (!isExecuteInEditMode || updateMode != UpdateMode.Nomal)
-                return;
-            UpdateTweens();
-            if (isUpdated)
-                UpdateTime(isUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime);
+            // if (!isExecuteInEditMode)
+            //     return;
+            UpdateTweens(UpdateMode.Nomal);
         }
         void LateUpdate()
         {
-            if (!isExecuteInEditMode || updateMode != UpdateMode.Late)
-                return;
-            UpdateTweens();
-            if (isUpdated)
-                UpdateTime(isUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime);
+            // if (!isExecuteInEditMode)
+            //     return;
+            UpdateTweens(UpdateMode.Late);
         }
-        public void UpdateTweens()
+        void UpdateTweens(UpdateMode? updateMode = null, float? deltaTime = null)
         {
             if (!isUpdated)
             {
@@ -67,8 +60,30 @@ namespace OVERIZE
                 {
                     foreach (var TS in TC.TweenSettings)
                     {
-                        TS.Time = (time - TS.startTime) * TS.Speed;
-                        TS.Update();
+                        bool isExecute = true;
+                        if ((TS.ExecuteMode.HasFlag(ExecuteMode.Editor) && !Application.isEditor) && (TS.ExecuteMode.HasFlag(ExecuteMode.RunTime) && !Application.isPlaying))
+                            isExecute = false;
+                        if (isExecute)
+                        {
+                            if (updateMode == null || TS.UpdateMode == updateMode)
+                            {
+                                TS.Update();
+
+                                if ((updateMode == UpdateMode.Manual || updateMode == null) && deltaTime == null)
+                                    return;
+                                switch ((int)TS.UpdateMode)
+                                {
+                                    case 1:
+                                        deltaTime = TS.IsUnscaledTime ? Time.fixedUnscaledDeltaTime : Time.fixedDeltaTime;
+                                        break;
+                                    case 2:
+                                    case 3:
+                                        deltaTime = TS.IsUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+                                        break;
+                                }
+                                TS.Time += (float)deltaTime * TS.Speed;
+                            }
+                        }
                     }
                 }
                 isUpdated = true;
@@ -89,6 +104,5 @@ namespace OVERIZE
                 yield return new WaitForEndOfFrame();
             }
         }
-        void UpdateTime(float deltaTime) => time += deltaTime;
     }
 }

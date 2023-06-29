@@ -26,10 +26,7 @@ namespace OVERIZE
                 tweenSettings.AddRange(TC.TweenSettings);
             return tweenSettings;
         }
-        public static void SetUpdateMode(UpdateMode updateMode) => TweenUpdater.Member.updateMode = updateMode;
-        public static void ExecuteInEditMode() => TweenUpdater.Member.isExecuteInEditMode = true;
-        public static void ExecuteInRunTimeOnly() => TweenUpdater.Member.isExecuteInEditMode = false;
-        public static void SetTimeAsUnscaled() => TweenUpdater.Member.isUnscaledTime = true;
-        public static void SetTimeAsScaled() => TweenUpdater.Member.isUnscaledTime = false;
+        // public static void ExecuteInEditMode() => TweenUpdater.Member.isExecuteInEditMode = true;
+        // public static void ExecuteInRunTimeOnly() => TweenUpdater.Member.isExecuteInEditMode = false;
     }
 }

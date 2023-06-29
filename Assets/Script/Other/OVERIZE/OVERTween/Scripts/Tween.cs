@@ -5,13 +5,8 @@ using OVERIZE;
 
 namespace OVERIZE
 {
-    public class Tween
+    public class Tween : TweenPreference
     {
-        int loopCount;
-        public int LoopCount { get => loopCount; set => loopCount = OVERMath.ClampMin(value, 0); }
-        public void InfiniteLoop() => loopCount = -1;
-        Direction.Horizontal toward;
-        public Direction.Horizontal Toward { get => toward; set => toward = value; }
         bool isPlaying;
         public bool IsPlaying { get => isPlaying; internal set => isPlaying = value; }
         bool isComplete;
