@@ -8,19 +8,21 @@ namespace OVERIZE
     internal static class TweenCore
     {
         static int tweenCount = 0;
-        static Dictionary<int, TweenChain> tweenChains = new Dictionary<int, TweenChain>();
-        internal static TweenChain AddTweenSetting(TweenChain tweenChain)
+        internal static int TweenCount { get => tweenCount; }
+        static Dictionary<TweenID, TweenSetting> tweenSettings = new Dictionary<TweenID, TweenSetting>();
+        internal static List<TweenID> TweenIDs { get => tweenSettings.Keys.ToList(); }
+        internal static List<TweenSetting> TweenSettings { get => tweenSettings.Values.ToList(); }
+        static TweenPreference tweenPreference = new TweenPreference();
+        internal static TweenPreference TweenPreference { get => tweenPreference; set => tweenPreference = value;}
+        internal static TweenSetting AddTweenSetting(TweenSetting tweenSetting)
         {
-            tweenChains.Add(tweenCount++, tweenChain);
-            return tweenChain;
+            tweenSetting.TweenID = tweenCount++;
+            tweenSettings.Add(tweenSetting.TweenID, tweenSetting);
+            return tweenSetting;
         }
-        internal static TweenChain RemoveTweenSetting(int tweenID)
+        internal static void RemoveTweenSetting(TweenID tweenID)
         {
-            tweenChains.Remove(tweenID);
-            return null;
+            tweenSettings.Remove(tweenID);
         }
-        internal static int TweenCount { get =>  tweenCount;}
-        internal static List<int> TweenIDs { get =>  tweenChains.Keys.ToList();}
-        internal static List<TweenChain> TweenChains { get =>  tweenChains.Values.ToList();}
     }
 }

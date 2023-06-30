@@ -11,14 +11,11 @@ namespace OVERIZE
         public bool IsPlaying { get => isPlaying; internal set => isPlaying = value; }
         bool isComplete;
         public bool IsComplete { get => isComplete; internal set => isComplete = value; }
-        protected TweenCallback tweenCallback;
-        public virtual void Init()
+        public override void Init()
         {
-            LoopCount = 1;
-            Toward = Direction.Horizontal.Right;
+            base.Init();
             IsPlaying = false;
             IsComplete = false;
-            tweenCallback = new TweenCallback();
         }
         public virtual void Play()
         {
@@ -26,37 +23,18 @@ namespace OVERIZE
             {
                 IsPlaying = true;
 
-                tweenCallback.OnPlay();
+                onPlay();
             }
         }
         public virtual void Complete()
         {
             if (!IsComplete)
             {
+                IsPlaying = false;
                 IsComplete = true;
 
-                tweenCallback.OnComplete();
+                onComplete();
             }
-        }
-        public Tween OnPlay(CallBack callBack)
-        {
-            tweenCallback.OnPlay += callBack;
-            return this;
-        }
-        public Tween OnUpdate(CallBack callBack)
-        {
-            tweenCallback.OnUpdate += callBack;
-            return this;
-        }
-        public Tween OnComplete(CallBack callBack)
-        {
-            tweenCallback.OnComplete += callBack;
-            return this;
-        }
-        public Tween OnCompleteLoop(CallBack callBack)
-        {
-            tweenCallback.OnCompleteLoop += callBack;
-            return this;
         }
     }
 }

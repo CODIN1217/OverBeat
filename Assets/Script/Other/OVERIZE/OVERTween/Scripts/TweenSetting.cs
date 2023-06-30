@@ -6,18 +6,12 @@ namespace OVERIZE
 {
     public class TweenSetting : Tween
     {
-
+        TweenID tweenID;
+        public TweenID TweenID { get => tweenID; internal set => tweenID = value; }
         float time;
         public float Time { get => time; internal set => time = value; }
-        float speed;
-        public float Speed { get => speed; set => speed = value; }
-        UpdateMode updateMode = UpdateMode.Nomal;
-        public UpdateMode UpdateMode { get => updateMode; set => updateMode = value; }
-        ExecuteMode executeMode = ExecuteMode.Editor | ExecuteMode.RunTime;
-        public ExecuteMode ExecuteMode { get => executeMode; set => executeMode = value; }
 
         int curLoopCount;
-        internal float startTime;
 
         TweenData tweenData;
         public TweenData TweenData { get => tweenData; }
@@ -32,48 +26,53 @@ namespace OVERIZE
             this.duration = duration;
 
             Init();
-            Update();
+            ManualUpdate();
         }
 
         public TweenAble Evaluate(float time)
         {
-            return tweenData.startValue + (tweenData.endValue - tweenData.startValue) * tweenData.ease[time];
+            return tweenData.startValue + (tweenData.endValue - tweenData.startValue) * tweenData.ease[Toward == Direction.Horizontal.Left ? 1f - time / Duration : time / Duration];
         }
         public override void Init()
         {
             base.Init();
-            startTime = TweenUpdater.time;
             value = tweenData.startValue;
             Time = 0f;
             curLoopCount = 0;
-            speed = 1f;
         }
         public override void Play()
         {
             base.Play();
             if (curLoopCount == 0)
             {
-                startTime = TweenUpdater.time;
                 curLoopCount++;
+                onStart();
             }
         }
         public override void Complete()
         {
             base.Complete();
             value = tweenData.endValue;
+            Time = Duration;
         }
-        public void Update()
+        public void Kill(bool isComplete = true)
+        {
+            if (isComplete)
+                Complete();
+            TweenCore.RemoveTweenSetting(tweenID);
+        }
+        public void ManualUpdate()
         {
             if (Time < duration)
             {
-                value = Evaluate(Toward == Direction.Horizontal.Left ? 1f - Time / duration : Time / duration);
+                value = Evaluate(Time);
             }
             else
             {
-                tweenCallback.OnCompleteLoop();
-                if (curLoopCount >= LoopCount)
+                onCompleteLoop();
+                if (!IsInfiniteLoop && (Application.isEditor ? !IsInfiniteLoopInEditMode : true))
                 {
-                    if (LoopCount != -1)
+                    if (curLoopCount >= LoopCount)
                     {
                         Complete();
                     }
@@ -82,7 +81,12 @@ namespace OVERIZE
                     curLoopCount++;
             }
 
-            tweenCallback.OnUpdate();
+            onUpdate();
+        }
+        public TweenSetting SetName(string name)
+        {
+            TweenID.Name = name;
+            return this;
         }
         public void SetTimeAsUnscaled() => IsUnscaledTime = true;
         public void SetTimeAsScaled() => IsUnscaledTime = false;

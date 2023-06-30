@@ -5,95 +5,80 @@ using System;
 
 namespace OVERIZE
 {
-    public enum UpdateMode { Manual, Fixed, Nomal, Late }
+    public enum UpdateMode { Manual = 1 << 0, Fixed = 1 << 1, Nomal = 1 << 2, Late = 1 << 3 }
     [Flags] public enum ExecuteMode { Editor = 1 << 0, RunTime = 1 << 1 }
     [ExecuteInEditMode]
     class TweenUpdater : MonoBehaviour
     {
-        static TweenUpdater instance = null;
+        static GameObject instance = null;
+        static TweenUpdater tweenUpdater = null;
         internal static TweenUpdater Member
         {
             get
             {
-                return instance;
+                if (instance == null)
+                {
+                    instance = new GameObject("OVERTween", typeof(TweenUpdater), typeof(DontDestroyOnLoad));
+                }
+                return tweenUpdater;
             }
         }
         internal static float time;
-        bool isUpdated;
-
-        // internal bool isExecuteInEditMode;
-        void Awake()
-        {
-            if (instance == null)
-            {
-                instance = this;
-                try { DontDestroyOnLoad(gameObject); } catch { }
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
         void FixedUpdate()
         {
-            // if (!isExecuteInEditMode)
-            //     return;
             UpdateTweens(UpdateMode.Fixed);
         }
         void Update()
         {
-            // if (!isExecuteInEditMode)
-            //     return;
             UpdateTweens(UpdateMode.Nomal);
         }
         void LateUpdate()
         {
-            // if (!isExecuteInEditMode)
-            //     return;
             UpdateTweens(UpdateMode.Late);
         }
-        void UpdateTweens(UpdateMode? updateMode = null, float? deltaTime = null)
+        void ExecuteCodeWithTweens(Action<TweenSetting> executeCode)
         {
-            if (!isUpdated)
+            foreach (var TS in TweenCore.TweenSettings)
             {
-                foreach (var TC in TweenCore.TweenChains)
+                bool isExecute = false;
+                if ((TS.ExecuteMode.HasFlag(ExecuteMode.Editor) && Application.isEditor) || (TS.ExecuteMode.HasFlag(ExecuteMode.RunTime) && Application.isPlaying))
+                    isExecute = true;
+                if (isExecute)
                 {
-                    foreach (var TS in TC.TweenSettings)
-                    {
-                        bool isExecute = true;
-                        if ((TS.ExecuteMode.HasFlag(ExecuteMode.Editor) && !Application.isEditor) && (TS.ExecuteMode.HasFlag(ExecuteMode.RunTime) && !Application.isPlaying))
-                            isExecute = false;
-                        if (isExecute)
-                        {
-                            if (updateMode == null || TS.UpdateMode == updateMode)
-                            {
-                                TS.Update();
-
-                                if ((updateMode == UpdateMode.Manual || updateMode == null) && deltaTime == null)
-                                    return;
-                                switch ((int)TS.UpdateMode)
-                                {
-                                    case 1:
-                                        deltaTime = TS.IsUnscaledTime ? Time.fixedUnscaledDeltaTime : Time.fixedDeltaTime;
-                                        break;
-                                    case 2:
-                                    case 3:
-                                        deltaTime = TS.IsUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
-                                        break;
-                                }
-                                TS.Time += (float)deltaTime * TS.Speed;
-                            }
-                        }
-                    }
+                    if (TS.IsPlaying)
+                        executeCode(TS);
                 }
-                isUpdated = true;
-                StartCoroutine(SetIsUpdated());
             }
         }
-        IEnumerator SetIsUpdated()
+        void UpdateTweens(UpdateMode updateMode)
         {
-            yield return new WaitForEndOfFrame();
-            isUpdated = false;
+            ExecuteCodeWithTweens((TS) =>
+            {
+                if (TS.UpdateMode == updateMode)
+                {
+                    TS.ManualUpdate();
+                    TS.Time += GetDeltaTime(TS) * TS.Speed;
+                }
+            });
+        }
+        internal void ManualUpdate(UpdateMode updateMode, float deltaTime)
+        {
+            ExecuteCodeWithTweens((TS) =>
+            {
+                if (TS.UpdateMode == updateMode)
+                {
+                    TS.ManualUpdate();
+                    TS.Time += deltaTime * TS.Speed;
+                }
+            });
+        }
+        internal void ManualUpdate(float deltaTime)
+        {
+            ExecuteCodeWithTweens((TS) =>
+            {
+                TS.ManualUpdate();
+                TS.Time += deltaTime * TS.Speed;
+            });
         }
         internal void UpdateValue(Setter setter, TweenSetting tweenSetting) => StartCoroutine(UpdateValueCo(setter, tweenSetting));
         IEnumerator UpdateValueCo(Setter setter, TweenSetting tweenSetting)
@@ -103,6 +88,14 @@ namespace OVERIZE
                 setter(tweenSetting.Value);
                 yield return new WaitForEndOfFrame();
             }
+        }
+        float GetDeltaTime(TweenSetting tweenSetting)
+        {
+            if (tweenSetting.UpdateMode == UpdateMode.Fixed)
+                return tweenSetting.IsUnscaledTime ? Time.fixedUnscaledDeltaTime : Time.fixedDeltaTime;
+            else if ((tweenSetting.UpdateMode & (UpdateMode.Nomal | UpdateMode.Late)) != 0)
+                return tweenSetting.IsUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+            return 0f;
         }
     }
 }
