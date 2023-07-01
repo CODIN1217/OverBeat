@@ -4,5 +4,5 @@ using UnityEngine;
 
 namespace OVERIZE
 {
-    public delegate void Setter(TweenAble value);
+    public delegate void Setter<T>(T value);
 }

@@ -36,9 +36,9 @@ namespace OVERIZE
         {
             UpdateTweens(UpdateMode.Late);
         }
-        void ExecuteCodeWithTweens(Action<TweenSetting> executeCode)
+        void ExecuteCodeWithTweens(Action<ITween> executeCode)
         {
-            foreach (var TS in TweenCore.TweenSettings)
+            foreach (var TS in TweenCore.Tweens)
             {
                 bool isExecute = false;
                 if ((TS.ExecuteMode.HasFlag(ExecuteMode.Editor) && Application.isEditor) || (TS.ExecuteMode.HasFlag(ExecuteMode.RunTime) && Application.isPlaying))
@@ -57,7 +57,7 @@ namespace OVERIZE
                 if (TS.UpdateMode == updateMode)
                 {
                     TS.ManualUpdate();
-                    TS.Time += GetDeltaTime(TS) * TS.Speed;
+                    TS.DeltaTime = GetDeltaTime(TS) * TS.Speed;
                 }
             });
         }
@@ -68,7 +68,7 @@ namespace OVERIZE
                 if (TS.UpdateMode == updateMode)
                 {
                     TS.ManualUpdate();
-                    TS.Time += deltaTime * TS.Speed;
+                    TS.DeltaTime = deltaTime * TS.Speed;
                 }
             });
         }
@@ -77,11 +77,11 @@ namespace OVERIZE
             ExecuteCodeWithTweens((TS) =>
             {
                 TS.ManualUpdate();
-                TS.Time += deltaTime * TS.Speed;
+                TS.DeltaTime = deltaTime * TS.Speed;
             });
         }
-        internal void UpdateValue(Setter setter, TweenSetting tweenSetting) => StartCoroutine(UpdateValueCo(setter, tweenSetting));
-        IEnumerator UpdateValueCo(Setter setter, TweenSetting tweenSetting)
+        internal void UpdateValue(Setter<TweenAble> setter, TweenSetting tweenSetting) => StartCoroutine(UpdateValueCo(setter, tweenSetting));
+        IEnumerator UpdateValueCo(Setter<TweenAble> setter, TweenSetting tweenSetting)
         {
             while (!tweenSetting.IsComplete)
             {
@@ -89,7 +89,7 @@ namespace OVERIZE
                 yield return new WaitForEndOfFrame();
             }
         }
-        float GetDeltaTime(TweenSetting tweenSetting)
+        float GetDeltaTime(ITween tweenSetting)
         {
             if (tweenSetting.UpdateMode == UpdateMode.Fixed)
                 return tweenSetting.IsUnscaledTime ? Time.fixedUnscaledDeltaTime : Time.fixedDeltaTime;

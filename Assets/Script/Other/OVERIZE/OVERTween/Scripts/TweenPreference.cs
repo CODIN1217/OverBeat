@@ -7,11 +7,13 @@ namespace OVERIZE
     public class TweenPreference : TweenCallback
     {
         bool isInfiniteLoopInEditMode = true;
-        public bool IsInfiniteLoopInEditMode { get => isInfiniteLoopInEditMode; set => isInfiniteLoopInEditMode = value; }
+        public virtual bool IsInfiniteLoopInEditMode { get => isInfiniteLoopInEditMode; set => isInfiniteLoopInEditMode = value; }
         bool isUnscaledTime = false;
-        public bool IsUnscaledTime { get => isUnscaledTime; set => isUnscaledTime = value; }
+        public virtual bool IsUnscaledTime { get => isUnscaledTime; set => isUnscaledTime = value; }
         bool isInfiniteLoop = false;
-        public bool IsInfiniteLoop { get => isInfiniteLoop; set => isInfiniteLoop = value; }
+        public virtual bool IsInfiniteLoop { get => isInfiniteLoop; set => isInfiniteLoop = value; }
+        bool isAutoKill = true;
+        public virtual bool IsAutoKill { get => isAutoKill; set => isAutoKill = value; }
         int loopCount = 1;
         public int LoopCount { get => loopCount; set => loopCount = OVERMath.ClampMin(value, 0); }
         Direction.Horizontal toward = Direction.Horizontal.Right;
