@@ -68,8 +68,11 @@ public class LevelInfo
         }
     }
     [Serializable]
+    public enum InsideNoteType { Tap, Keep }
+    [Serializable]
     public class NoteInfo : NotePreInfo
     {
+        public InsideNoteType insideNoteType;
         public int eachNoteIndex;
         public int tarPlayerIndex;
         public float awakeSecs;
@@ -86,6 +89,8 @@ public class LevelInfo
         public TweenInfo<Color> processEndColorTween;
         public NoteInfo() : base()
         {
+            insideNoteType = InsideNoteType.Tap;
+
             eachNoteIndex = 0;
             tarPlayerIndex = 0;
 

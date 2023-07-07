@@ -30,8 +30,8 @@ public class PlayManager : MonoBehaviour
     public Center centerScript;
     public GameObject endMessage;
     public EndMessage endMessageScript;
-    public GameObject Accuracy;
-    public Accuracy AccuracyScript;
+    public GameObject accuracy;
+    public Accuracy accuracyScript;
 
     [SerializeField]
     GameObject PauseController;
@@ -46,9 +46,12 @@ public class PlayManager : MonoBehaviour
     public float[] bestJudgmentRange;
     public int InputCount;
     public int missCount;
-    public List<List<bool>> isKeyDowns;
-    public List<List<bool>> isKeyPresses;
-    public List<List<bool>> isKeyUps;
+    int keyDownCount;
+    int keyPressCount;
+    int keyUpCount;
+    List<List<bool>> isKeyDowns;
+    List<List<bool>> isKeyPresses;
+    List<List<bool>> isKeyUps;
     public bool isStop;
     public bool isPause;
     public bool isGameOver;
@@ -89,6 +92,17 @@ public class PlayManager : MonoBehaviour
     }
     void Awake()
     {
+        countDownScript = countDown.GetComponent<CountDown>();
+        noteGeneratorScript = noteGenerator.GetComponent<NoteGenerator>();
+        worldReaderScript = worldReader.GetComponent<WorldReader>();
+        playerControllerScript = playerController.GetComponent<PlayerController>();
+        judgmentGenScript = judgmentGen.GetComponent<JudgmentGen>();
+        boundaryScript = boundary.GetComponent<Boundary>();
+        baseCameraScript = baseCamera.GetComponent<BaseCamera>();
+        centerScript = center.GetComponent<Center>();
+        endMessageScript = endMessage.GetComponent<EndMessage>();
+        accuracyScript = accuracy.GetComponent<Accuracy>();
+
         instance = this;
         canInputKeys = new List<List<KeyCode>>() { new List<KeyCode>() { KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.F }, new List<KeyCode>() { KeyCode.H, KeyCode.J, KeyCode.K, KeyCode.L } };
         isKeyDowns = new List<List<bool>>();
@@ -116,7 +130,7 @@ public class PlayManager : MonoBehaviour
     void Update()
     {
         notePathPosesCount = 360;
-        Accuracy.SetActive(isShowAccuracy);
+        accuracy.SetActive(isShowAccuracy);
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPause)
@@ -192,7 +206,7 @@ public class PlayManager : MonoBehaviour
                             LevelInfo curLevelInfo = GetLevelInfo(i, j);
                             if (curLevelInfo.noteInfo.awakeSecs + GetNoteWaitSecs(curLevelInfo) <= totalElapsedSecs)
                             {
-                                if (!closestNoteScripts[i].isInputted)
+                                if (!closestNoteScripts[i].isHitted)
                                 {
                                     KeyDown(i, 0);
                                 }
@@ -227,17 +241,42 @@ public class PlayManager : MonoBehaviour
                 }
             }
         }
-
         for (int i = 0; i < GetMaxPlayerCount(); i++)
         {
             if (GetPlayer(i).activeSelf)
             {
-                if (GetIsKeyDown(i))
+                int keyDownJudgCount = 0;
+                for (int j = closestNoteScripts[i].levelInfo.noteInfo.noteCount - 1; j >= 0; j--)
                 {
-                    float noteAccuracy01 = 1f;
-                    judgmentGenScript.SetJudgmentText(i, GetJudgment(i, GetJudgmentValue(i), () => { noteAccuracy01 = Mathf.Clamp01(1f - GetJudgmentValue(i)); CountMissNote(); }));
-                    sumNoteAccuracy01 += noteAccuracy01;
-                    SetAccuracy01();
+                    if (!closestNoteScripts[i].isJudgNotes[j])
+                    {
+                        if (closestNoteScripts[i].holdElapsedSecs01 != 0f)
+                        {
+                            if (closestNoteScripts[i].levelInfo.noteInfo.noteHitTiming01s[j] <= closestNoteScripts[i].holdElapsedSecs01)
+                            {
+                                if (GetIsHitNote(closestNoteScripts[i]))
+                                {
+                                    float noteAccuracy01 = 1f;
+                                    judgmentGenScript.SetJudgmentText(i, GetJudgment(i, GetJudgmentValue(closestNoteScripts[i]), () => { noteAccuracy01 = Mathf.Clamp01(1f - GetJudgmentValue(closestNoteScripts[i])); CountMissNote(); }));
+                                    sumNoteAccuracy01 += noteAccuracy01;
+                                    SetAccuracy01();
+                                    closestNoteScripts[i].isJudgNotes[j] = true;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (GetIsKeyDown(i) && keyDownJudgCount < keyDownCount)
+                            {
+                                keyDownJudgCount++;
+                                float noteAccuracy01 = 1f;
+                                judgmentGenScript.SetJudgmentText(i, GetJudgment(i, GetJudgmentValue(closestNoteScripts[i]), () => { noteAccuracy01 = Mathf.Clamp01(1f - GetJudgmentValue(closestNoteScripts[i])); CountMissNote(); }));
+                                sumNoteAccuracy01 += noteAccuracy01;
+                                SetAccuracy01();
+                                closestNoteScripts[i].isJudgNotes[j] = true;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -262,10 +301,12 @@ public class PlayManager : MonoBehaviour
         UpdateTransformAll();
         UpdateRendererAll();
     }
-    public void SetIsAutoPlay(Toggle toggle){
+    public void SetIsAutoPlay(Toggle toggle)
+    {
         isAutoPlay = toggle.isOn;
     }
-    public void SetIsShowAccuracy(Toggle toggle){
+    public void SetIsShowAccuracy(Toggle toggle)
+    {
         isShowAccuracy = toggle.isOn;
     }
     public void Pause()
@@ -413,6 +454,9 @@ public class PlayManager : MonoBehaviour
     }
     void ClearIsKeyInput()
     {
+        keyDownCount = 0;
+        keyPressCount = 0;
+        keyUpCount = 0;
         isKeyDowns.Clear();
         for (int i = 0; i < canInputKeys.Count; i++)
         {
@@ -445,15 +489,18 @@ public class PlayManager : MonoBehaviour
     {
         isKeyDowns[playerIndex][keyIndex] = true;
         InputCount++;
-        closestNoteScripts[playerIndex].isInputted = true;
+        closestNoteScripts[playerIndex].isHitted = true;
+        keyDownCount++;
     }
     void KeyPress(int playerIndex, int keyIndex)
     {
         isKeyPresses[playerIndex][keyIndex] = true;
+        keyPressCount++;
     }
     void KeyUp(int playerIndex, int keyIndex)
     {
         isKeyUps[playerIndex][keyIndex] = true;
+        keyUpCount++;
     }
     public JudgmentType GetJudgment(int playerIndex, float judgmentValue, Action codeOnJudgBad = null, Action codeOnJudgGood = null, Action codeOnStart = null)
     {
@@ -499,6 +546,9 @@ public class PlayManager : MonoBehaviour
     {
         accuracy01 = sumNoteAccuracy01 / (float)InputCount;
     }
+    public int GetKeyDownCount() => keyDownCount;
+    public int GetKeyPressCount() => keyPressCount;
+    public int GetKeyUpCount() => keyUpCount;
     public bool GetIsKeyDown(int playerIndex)
     {
         playerIndex = Handy.GetCorrectedIndex(playerIndex, GetMaxPlayerIndex());
@@ -531,6 +581,60 @@ public class PlayManager : MonoBehaviour
             if (isKeyUps[playerIndex][i])
             {
                 return true;
+            }
+        }
+        return false;
+    }
+    bool GetIsHitNote(Note note)
+    {
+        if (note.levelInfo.noteInfo.insideNoteType == LevelInfo.InsideNoteType.Tap)
+        {
+            if (!note.isJudgNotes[0])
+            {
+                if (GetIsKeyDown(note.tarPlayerIndex))
+                {
+                    return true;
+                }
+            }
+            else if (!note.isJudgNotes[note.isJudgNotes.Length - 1])
+            {
+                if (GetIsKeyDown(note.tarPlayerIndex))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (GetIsKeyUp(note.tarPlayerIndex))
+                {
+                    note.isJudgNotes[note.isJudgNotes.Length - 1] = true;
+                    return true;
+                }
+            }
+        }
+        else if (note.levelInfo.noteInfo.insideNoteType == LevelInfo.InsideNoteType.Keep)
+        {
+            if (!note.isJudgNotes[0])
+            {
+                if (GetIsKeyDown(note.tarPlayerIndex))
+                {
+                    return true;
+                }
+            }
+            else if (!note.isJudgNotes[note.isJudgNotes.Length - 1])
+            {
+                if (GetIsKeyPress(note.tarPlayerIndex))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (GetIsKeyUp(note.tarPlayerIndex))
+                {
+                    note.isJudgNotes[note.isJudgNotes.Length - 1] = true;
+                    return true;
+                }
             }
         }
         return false;
@@ -620,18 +724,38 @@ public class PlayManager : MonoBehaviour
         int eachNoteIndex = Handy.GetCorrectedIndex(GetEachNoteIndex(levelInfoIndex), GetMaxNoteIndex(playerIndex), -1);
         return GetNoteScript(playerIndex, eachNoteIndex);
     }
-    public float GetJudgmentValue(int playerIndex, float? waitElapsedSecs01 = null, float? holdElapsedSecs01 = null)
+    public float GetJudgmentValue(Note note, float? waitElapsedSecs01 = null, float? holdElapsedSecs01 = null)
     {
         if (waitElapsedSecs01 == null)
-            waitElapsedSecs01 = GetWaitElapsedSecs01(playerIndex, closestNoteIndex[playerIndex]);
+            waitElapsedSecs01 = note.waitElapsedSecs01;
         if (holdElapsedSecs01 == null)
-            holdElapsedSecs01 = GetHoldElapsedSecs01(playerIndex, closestNoteIndex[playerIndex]);
+            holdElapsedSecs01 = note.holdElapsedSecs01;
         float judgmentValue = 1f;
-        if (holdElapsedSecs01 > 0f)
-            judgmentValue = (float)holdElapsedSecs01;
-        else if (waitElapsedSecs01 >= 1f - judgmentRange[playerIndex])
-            judgmentValue = 1f - (float)waitElapsedSecs01;
-        return judgmentValue;
+        if (waitElapsedSecs01 >= 1f - judgmentRange[note.tarPlayerIndex] && holdElapsedSecs01 <= 1f + judgmentRange[note.tarPlayerIndex])
+        {
+            if (holdElapsedSecs01 == 0f)
+                judgmentValue = 1f - (float)waitElapsedSecs01;
+            else
+            {
+                if (holdElapsedSecs01 != 0f)
+                {
+                    for (int i = note.levelInfo.noteInfo.noteHitTiming01s.Length - 1; i >= 0; i--)
+                    {
+                        if (holdElapsedSecs01 >= note.levelInfo.noteInfo.noteHitTiming01s[i])
+                        {
+                            float range = i < note.levelInfo.noteInfo.noteHitTiming01s.Length - 1 ? note.levelInfo.noteInfo.noteHitTiming01s[i + 1] - note.levelInfo.noteInfo.noteHitTiming01s[i] : judgmentRange[note.tarPlayerIndex];
+                            judgmentValue = 1f - Mathf.Abs((((float)holdElapsedSecs01 - note.levelInfo.noteInfo.noteHitTiming01s[i]) / range) - 0.5f) * 2f;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    judgmentValue = (float)holdElapsedSecs01 / judgmentRange[note.tarPlayerIndex];
+                }
+            }
+        }
+        return Mathf.Clamp01(judgmentValue);
     }
     public int GetMaxPlayerCount()
     {

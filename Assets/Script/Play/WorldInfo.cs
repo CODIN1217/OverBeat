@@ -28,14 +28,14 @@ public class WorldInfo
     public WorldInfo()
     {
         levelInfos = new LevelInfo[9];
-        WorldInfoMethod.InitLevelInfo(ref levelInfos, 2, 4, 3.5f, 4f, 90f);
+        WorldInfoMethod.InitLevelInfo(ref levelInfos, 2, 4, 3.5f, 4f, 90f, LevelInfo.InsideNoteType.Keep);
         creditInfo = new CreditInfo();
     }
 }
 
 public static class WorldInfoMethod
 {
-    public static void InitLevelInfo(ref LevelInfo[] levelInfos, int playerInfoCount, int noteCount, float noteWaitRadius, float noteHoldRadius, float degDistance)
+    public static void InitLevelInfo(ref LevelInfo[] levelInfos, int playerInfoCount, int noteCount, float noteWaitRadius, float noteHoldRadius, float degDistance, LevelInfo.InsideNoteType insideNoteType)
     {
         float awakeSecs = 0f;
         for (int i = 0; i < levelInfos.Length; i++)
@@ -84,6 +84,8 @@ public static class WorldInfoMethod
 
             levelInfos[i].noteInfo.awakeSecs = awakeSecs;
             awakeSecs += noteWaitSecs + holdNoteSecs;
+
+            levelInfos[i].noteInfo.insideNoteType = insideNoteType;
         }
     }
 }

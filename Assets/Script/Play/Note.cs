@@ -33,8 +33,8 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     float processPathPosesLength;
 
     bool isAwake;
-    public bool isInputted;
-    bool[] isJudgNotes;
+    public bool isHitted;
+    public bool[] isJudgNotes;
 
     public bool isDisable;
     public bool isStop;
@@ -96,16 +96,16 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         if (!isNeedInput)
         {
             waitElapsedSecs = Mathf.Clamp(toleranceSecsAwake + myElapsedSecs, 0f, noteWaitSecs);
-            if (waitElapsedSecs >= noteWaitSecs || (PM.GetJudgmentValue(tarPlayerIndex) <= PM.judgmentRange[tarPlayerIndex] && PM.GetIsKeyDown(tarPlayerIndex)))
+            if (waitElapsedSecs >= noteWaitSecs || (PM.GetJudgmentValue(this) <= PM.judgmentRange[tarPlayerIndex] && PM.GetIsKeyDown(tarPlayerIndex)))
             {
                 StopWaiting();
             }
         }
+        holdElapsedSecs = Mathf.Clamp(toleranceSecsEndWait + myElapsedSecs, 0f, float.MaxValue);
         if (isNeedInput)
         {
             if (!isStop)
             {
-                holdElapsedSecs = Mathf.Clamp(toleranceSecsEndWait + myElapsedSecs, 0f, holdNoteSecs);
                 if (holdElapsedSecs >= holdNoteSecs)
                 {
                     isDisable = true;
@@ -113,7 +113,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             }
             if (holdNoteSecs != 0f)
             {
-                if (toleranceSecsEndWait < 0f && !PM.GetIsKeyPress(tarPlayerIndex) && !isDisable)
+                if (/* toleranceSecsEndWait < 0f &&  */!PM.GetIsKeyPress(tarPlayerIndex) && !isDisable)
                 {
                     StopNote();
                 }
@@ -128,7 +128,8 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
                     StopNote();
             }
         }
-        for (int i = 1; i < levelInfo.noteInfo.noteCount - 1; i++)
+        CheckIsMiss();
+        /* for (int i = 1; i < levelInfo.noteInfo.noteCount - 1; i++)
         {
             if (!isJudgNotes[i])
             {
@@ -144,7 +145,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
                     isJudgNotes[i] = true;
                 }
             }
-        }
+        } */
         UpdateNoteTweenValue();
     }
     public void InitNote()
@@ -223,7 +224,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
 
         Handy.RepeatCode((i) =>
         {
-            float curProgress = Mathf.Clamp((float)i / (float)(levelInfo.noteInfo.noteCount - 1), holdElapsedSecs01, 1f);
+            float curProgress = Mathf.Clamp(levelInfo.noteInfo.noteHitTiming01s[i], holdElapsedSecs01, float.MaxValue);
             notesRotation[i] = Handy.GetCorrectedDegMaxIs0(-(((TweenerInfo<float>)notesRotationInfos[i]).curValue + TweenMethod.GetTweenValue(PM.CorrectDegTween(levelInfo.playerInfo[tarPlayerIndex].degTween, levelInfo.playerInfo[tarPlayerIndex].degDir), curProgress)));
         }, levelInfo.noteInfo.noteCount);
 
@@ -254,9 +255,9 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             waitElapsedSecs01 = 0f;
 
         if (holdNoteSecs != 0f)
-            holdElapsedSecs01 = Mathf.Clamp01(Mathf.Clamp(holdElapsedSecs, 0f, holdNoteSecs) / holdNoteSecs);
+            holdElapsedSecs01 = holdElapsedSecs / holdNoteSecs;
         else
-            holdElapsedSecs01 = Mathf.Clamp01(Mathf.Clamp(holdElapsedSecs, 0f, PM.GetNoteWaitSecs(tarPlayerIndex, myEachNoteIndex + 1)) / PM.GetNoteWaitSecs(tarPlayerIndex, myEachNoteIndex + 1));
+            holdElapsedSecs01 = holdElapsedSecs / PM.GetNoteWaitSecs(tarPlayerIndex, myEachNoteIndex + 1);
     }
     public void StopWaiting()
     {
@@ -292,7 +293,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             toleranceSecsEndWait = 0f;
 
             isAwake = true;
-            isInputted = false;
+            isHitted = false;
             isDisable = false;
             isStop = false;
             isNeedInput = false;
@@ -313,7 +314,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         toleranceSecsEndWait = 0f;
 
         isAwake = false;
-        isInputted = false;
+        isHitted = false;
         isDisable = true;
         isStop = true;
         isNeedInput = true;
@@ -327,7 +328,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         Handy.SetDottedLine(processNoteDottedLine, processPathPoses, processPathPosesLength);
         Handy.RepeatCode((i) =>
         {
-            float curProgress = Mathf.Clamp(levelInfo.noteInfo.noteHitTiming01s[i], holdElapsedSecs01, 1f);
+            float curProgress = Mathf.Clamp(levelInfo.noteInfo.noteHitTiming01s[i], holdElapsedSecs01, float.MaxValue);
             notes[i].transform.position = holdElapsedSecs01 == curProgress ? Handy.GetCircularPos(tarPlayerScript.curDeg, waitDeltaRadius + tarPlayerScript.curRadius, PM.centerScript.pos) : pathPoses[(int)((float)(pathPoses.Count - 1) * curProgress)];
         },
         levelInfo.noteInfo.noteCount);
@@ -381,10 +382,10 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     }
     public void StopNote()
     {
-        if (holdNoteSecs != 0f)
+        /* if (holdNoteSecs != 0f)
         {
             float accuracy01_temp = 1f;
-            if (!isInputted)
+            if (!isHitted)
             {
                 PM.judgmentGenScript.SetJudgmentText(tarPlayerIndex, JudgmentType.Miss);
                 PM.CountMissNote();
@@ -396,7 +397,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             PM.sumNoteAccuracy01 += accuracy01_temp;
             PM.InputCount++;
             PM.SetAccuracy01();
-        }
+        } */
         TryKillHoldTweens();
         tarPlayerScript.SetSideSubScaleTweener(true);
         holdElapsedSecs = holdNoteSecs;
@@ -435,6 +436,23 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         {
             gameObject.SetActive(true);
             toleranceSecsAwake = PM.totalElapsedSecs - levelInfo.noteInfo.awakeSecs;
+        }
+    }
+    public void CheckIsMiss()
+    {
+        for (int i = 0; i < levelInfo.noteInfo.noteCount; i++)
+        {
+            if ((i < levelInfo.noteInfo.noteCount - 1 ? levelInfo.noteInfo.noteHitTiming01s[i + 1] : PM.judgmentRange[tarPlayerIndex] + levelInfo.noteInfo.noteHitTiming01s[i]) <= holdElapsedSecs01)
+            {
+                if (!isJudgNotes[i])
+                {
+                    PM.judgmentGenScript.SetJudgmentText(tarPlayerIndex, JudgmentType.Miss);
+                    PM.CountMissNote();
+                    PM.InputCount++;
+                    PM.SetAccuracy01();
+                    isJudgNotes[i] = true;
+                }
+            }
         }
     }
 }
