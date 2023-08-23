@@ -3598,7 +3598,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       noteInfo:
-        noteCount: 4
+        noteCount: 3
         insideNoteType: 1
         eachNoteIndex: -1
         tarPlayerIndex: -1
@@ -3606,8 +3606,7 @@ MonoBehaviour:
         speed: 1
         noteHitTiming01s:
         - 0
-        - 0.33333334
-        - 0.6666667
+        - 0.5
         - 1
         sideImageName: PlayerBasic
         isCheckPoint: 0
@@ -3771,59 +3770,7 @@ MonoBehaviour:
             m_PreInfinity: 2
             m_PostInfinity: 2
             m_RotationOrder: 4
-        - startValue: 0
-          endValue: 0
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         colorTweens:
-        - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           ease:
@@ -4148,7 +4095,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       judgmentInfo:
-        range: 0.5
+        range: 0.4
         judgmentColors:
         - {r: 0.39215687, g: 1, b: 0.25490198, a: 0.003921569}
         - {r: 1, g: 0.92156863, b: 0, a: 0.003921569}
@@ -4702,7 +4649,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       noteInfo:
-        noteCount: 4
+        noteCount: 3
         insideNoteType: 1
         eachNoteIndex: 0
         tarPlayerIndex: 0
@@ -4710,8 +4657,7 @@ MonoBehaviour:
         speed: 1
         noteHitTiming01s:
         - 0
-        - 0.33333334
-        - 0.6666667
+        - 0.5
         - 1
         sideImageName: PlayerBasic
         isCheckPoint: 0
@@ -4875,59 +4821,7 @@ MonoBehaviour:
             m_PreInfinity: 2
             m_PostInfinity: 2
             m_RotationOrder: 4
-        - startValue: 0
-          endValue: 0
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         colorTweens:
-        - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           ease:
@@ -5252,7 +5146,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       judgmentInfo:
-        range: 0.5
+        range: 0.4
         judgmentColors:
         - {r: 0.39215687, g: 1, b: 0.25490198, a: 0.003921569}
         - {r: 1, g: 0.92156863, b: 0, a: 0.003921569}
@@ -5806,7 +5700,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       noteInfo:
-        noteCount: 4
+        noteCount: 3
         insideNoteType: 1
         eachNoteIndex: 0
         tarPlayerIndex: 1
@@ -5814,8 +5708,7 @@ MonoBehaviour:
         speed: 1
         noteHitTiming01s:
         - 0
-        - 0.33333334
-        - 0.6666667
+        - 0.5
         - 1
         sideImageName: PlayerBasic
         isCheckPoint: 0
@@ -5979,59 +5872,7 @@ MonoBehaviour:
             m_PreInfinity: 2
             m_PostInfinity: 2
             m_RotationOrder: 4
-        - startValue: 0
-          endValue: 0
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         colorTweens:
-        - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           ease:
@@ -6356,7 +6197,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       judgmentInfo:
-        range: 0.5
+        range: 0.4
         judgmentColors:
         - {r: 0.39215687, g: 1, b: 0.25490198, a: 0.003921569}
         - {r: 1, g: 0.92156863, b: 0, a: 0.003921569}
@@ -6910,7 +6751,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       noteInfo:
-        noteCount: 4
+        noteCount: 3
         insideNoteType: 1
         eachNoteIndex: 1
         tarPlayerIndex: 0
@@ -6918,8 +6759,7 @@ MonoBehaviour:
         speed: 1
         noteHitTiming01s:
         - 0
-        - 0.33333334
-        - 0.6666667
+        - 0.5
         - 1
         sideImageName: PlayerBasic
         isCheckPoint: 0
@@ -7083,59 +6923,7 @@ MonoBehaviour:
             m_PreInfinity: 2
             m_PostInfinity: 2
             m_RotationOrder: 4
-        - startValue: 0
-          endValue: 0
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         colorTweens:
-        - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           ease:
@@ -7460,7 +7248,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       judgmentInfo:
-        range: 0.5
+        range: 0.4
         judgmentColors:
         - {r: 0.39215687, g: 1, b: 0.25490198, a: 0.003921569}
         - {r: 1, g: 0.92156863, b: 0, a: 0.003921569}
@@ -8014,7 +7802,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       noteInfo:
-        noteCount: 4
+        noteCount: 3
         insideNoteType: 1
         eachNoteIndex: 1
         tarPlayerIndex: 1
@@ -8022,8 +7810,7 @@ MonoBehaviour:
         speed: 1
         noteHitTiming01s:
         - 0
-        - 0.33333334
-        - 0.6666667
+        - 0.5
         - 1
         sideImageName: PlayerBasic
         isCheckPoint: 0
@@ -8187,59 +7974,7 @@ MonoBehaviour:
             m_PreInfinity: 2
             m_PostInfinity: 2
             m_RotationOrder: 4
-        - startValue: 0
-          endValue: 0
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         colorTweens:
-        - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           ease:
@@ -8564,7 +8299,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       judgmentInfo:
-        range: 0.5
+        range: 0.4
         judgmentColors:
         - {r: 0.39215687, g: 1, b: 0.25490198, a: 0.003921569}
         - {r: 1, g: 0.92156863, b: 0, a: 0.003921569}
@@ -9118,7 +8853,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       noteInfo:
-        noteCount: 4
+        noteCount: 3
         insideNoteType: 1
         eachNoteIndex: 2
         tarPlayerIndex: 0
@@ -9126,8 +8861,7 @@ MonoBehaviour:
         speed: 1
         noteHitTiming01s:
         - 0
-        - 0.33333334
-        - 0.6666667
+        - 0.5
         - 1
         sideImageName: PlayerBasic
         isCheckPoint: 0
@@ -9291,59 +9025,7 @@ MonoBehaviour:
             m_PreInfinity: 2
             m_PostInfinity: 2
             m_RotationOrder: 4
-        - startValue: 0
-          endValue: 0
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         colorTweens:
-        - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           ease:
@@ -9668,7 +9350,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       judgmentInfo:
-        range: 0.5
+        range: 0.4
         judgmentColors:
         - {r: 0.39215687, g: 1, b: 0.25490198, a: 0.003921569}
         - {r: 1, g: 0.92156863, b: 0, a: 0.003921569}
@@ -10222,7 +9904,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       noteInfo:
-        noteCount: 4
+        noteCount: 3
         insideNoteType: 1
         eachNoteIndex: 2
         tarPlayerIndex: 1
@@ -10230,8 +9912,7 @@ MonoBehaviour:
         speed: 1
         noteHitTiming01s:
         - 0
-        - 0.33333334
-        - 0.6666667
+        - 0.5
         - 1
         sideImageName: PlayerBasic
         isCheckPoint: 0
@@ -10395,59 +10076,7 @@ MonoBehaviour:
             m_PreInfinity: 2
             m_PostInfinity: 2
             m_RotationOrder: 4
-        - startValue: 0
-          endValue: 0
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         colorTweens:
-        - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           ease:
@@ -10772,7 +10401,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       judgmentInfo:
-        range: 0.5
+        range: 0.4
         judgmentColors:
         - {r: 0.39215687, g: 1, b: 0.25490198, a: 0.003921569}
         - {r: 1, g: 0.92156863, b: 0, a: 0.003921569}
@@ -11326,7 +10955,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       noteInfo:
-        noteCount: 4
+        noteCount: 3
         insideNoteType: 1
         eachNoteIndex: 3
         tarPlayerIndex: 0
@@ -11334,8 +10963,7 @@ MonoBehaviour:
         speed: 1
         noteHitTiming01s:
         - 0
-        - 0.33333334
-        - 0.6666667
+        - 0.5
         - 1
         sideImageName: PlayerBasic
         isCheckPoint: 0
@@ -11499,59 +11127,7 @@ MonoBehaviour:
             m_PreInfinity: 2
             m_PostInfinity: 2
             m_RotationOrder: 4
-        - startValue: 0
-          endValue: 0
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         colorTweens:
-        - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           ease:
@@ -11876,7 +11452,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       judgmentInfo:
-        range: 0.5
+        range: 0.4
         judgmentColors:
         - {r: 0.39215687, g: 1, b: 0.25490198, a: 0.003921569}
         - {r: 1, g: 0.92156863, b: 0, a: 0.003921569}
@@ -12430,7 +12006,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       noteInfo:
-        noteCount: 4
+        noteCount: 3
         insideNoteType: 1
         eachNoteIndex: 3
         tarPlayerIndex: 1
@@ -12438,8 +12014,7 @@ MonoBehaviour:
         speed: 1
         noteHitTiming01s:
         - 0
-        - 0.33333334
-        - 0.6666667
+        - 0.5
         - 1
         sideImageName: PlayerBasic
         isCheckPoint: 0
@@ -12603,59 +12178,7 @@ MonoBehaviour:
             m_PreInfinity: 2
             m_PostInfinity: 2
             m_RotationOrder: 4
-        - startValue: 0
-          endValue: 0
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         colorTweens:
-        - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
-          ease:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
         - startValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           endValue: {r: 0.39215687, g: 0.1764706, b: 0.98039216, a: 1}
           ease:
@@ -12980,7 +12503,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
       judgmentInfo:
-        range: 0.5
+        range: 0.4
         judgmentColors:
         - {r: 0.39215687, g: 1, b: 0.25490198, a: 0.003921569}
         - {r: 1, g: 0.92156863, b: 0, a: 0.003921569}

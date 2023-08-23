@@ -28,7 +28,7 @@ public class WorldInfo
     public WorldInfo()
     {
         levelInfos = new LevelInfo[9];
-        WorldInfoMethod.InitLevelInfo(ref levelInfos, 2, 4, 3.5f, 4f, 90f, LevelInfo.InsideNoteType.Keep);
+        WorldInfoMethod.InitLevelInfo(ref levelInfos, 2, 3, 3.5f, 4f, 90f, LevelInfo.InsideNoteType.Keep);
         creditInfo = new CreditInfo();
     }
 }

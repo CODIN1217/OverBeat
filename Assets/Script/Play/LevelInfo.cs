@@ -147,7 +147,7 @@ public class LevelInfo
         public Color[] judgmentColors;
         public JudgmentInfo()
         {
-            range = 0.5f;
+            range = 0.4f;
             judgmentColors = new Color[] { new Color(100, 255, 65) / 255f, new Color(255, 235, 0) / 255f, new Color(160, 0, 140) / 255f, new Color(215, 0, 15) / 255f };
         }
     }

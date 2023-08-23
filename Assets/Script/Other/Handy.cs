@@ -226,7 +226,7 @@ public static class Handy
     {
         return Mathf.Floor(value * Mathf.Pow(10f, place - 1)) / Mathf.Pow(10f, place - 1);
     }
-    public static void WriteLog<T>(params T[] contents)
+    public static void WriteLog(params object[] contents)
     {
         StringBuilder text = new StringBuilder();
         foreach (var cont in contents)
@@ -255,7 +255,7 @@ public static class Handy
             return array.Length;
         return 0;
     }
-    public static string GetPredicateName(string[] predicateNames, int? index = null)
+    public static string GetPredicateName(int? index, params string[] predicateNames)
     {
         StringBuilder predicateName = new StringBuilder();
         for (int i = 0; i < predicateNames.Length; i++)
@@ -269,5 +269,12 @@ public static class Handy
     public static void SetDottedLine(DottedLine dottedLine, List<Vector2> poses, float? posesLength = null)
     {
         dottedLine.poses = Handy.ConvertListVector(poses);
+    }
+    public static T[][] InitArray<T>(int[] lengthes)
+    {
+        T[][] array = new T[lengthes.Length][];
+        for (int i = 0; i < lengthes.Length; i++)
+            array[i] = new T[lengthes[i]];
+        return array;
     }
 }

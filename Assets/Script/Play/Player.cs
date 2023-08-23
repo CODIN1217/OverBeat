@@ -64,11 +64,11 @@ public class Player : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject, IS
             return;
         }
 
-        if (PM.GetIsKeyDown(playerIndex))
+        if (PM.keyControl.Down.GetIsInput(playerIndex))
         {
             SetSideSubScaleTweener(false);
         }
-        else if (!PM.GetIsKeyPress(playerIndex) && PM.GetIsKeyUp(playerIndex))
+        else if (!PM.keyControl.Press.GetIsInput(playerIndex) && PM.keyControl.Up.GetIsInput(playerIndex))
         {
             SetSideSubScaleTweener(true);
         }
