@@ -277,4 +277,5 @@ public static class Handy
             array[i] = new T[lengthes[i]];
         return array;
     }
+    public static Array Enums(Type enumType) => Enum.GetValues(enumType);
 }

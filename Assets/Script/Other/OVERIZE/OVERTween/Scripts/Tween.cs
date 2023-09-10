@@ -5,7 +5,7 @@ using OVERIZE;
 
 namespace OVERIZE
 {
-    public class Tween : TweenPreference
+    public abstract class Tween : TweenPreference
     {
         TweenID tweenID;
         bool isSetted;

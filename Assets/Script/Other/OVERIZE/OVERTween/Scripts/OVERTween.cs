@@ -11,18 +11,20 @@ namespace OVERIZE
         {
             TweenSetting tweenSetting = new TweenSetting(tweenData, duration);
             if (setter != null)
-                TweenUpdater.Member.UpdateValue(setter, tweenSetting);
+                Updater.Member<TweenUpdater>().OnUpdate += () => { if (!tweenSetting.IsComplete) setter(tweenSetting.Value); };
+            // Updater.Member<TweenUpdater>().UpdateValue(setter, tweenSetting);
             return TweenCore.AddTweenSetting(tweenSetting);
         }
         public static ITween Create(TweenAble startValue, TweenAble endValue, TweenEase ease, float duration, Setter<TweenAble> setter = null)
         => Create(new TweenData(startValue, endValue, ease), duration, setter);
 
-        public static int TweenCount() => TweenCore.TweenCount;
-        public static List<TweenID> TweenIDs() => TweenCore.TweenIDs;
-        public static List<ITween> Tweens() => TweenCore.Tweens;
-        public static void ManualUpdate(UpdateMode updateMode, float deltaTime = 0f) => TweenUpdater.Member.ManualUpdate(updateMode, deltaTime);
-        public static void ManualUpdate(float deltaTime = 0f) => TweenUpdater.Member.ManualUpdate(deltaTime);
-        public static void TweenPreference(TweenPreference tweenPreference) => TweenCore.TweenPreference = tweenPreference;
-        public static TweenPreference TweenPreference() => TweenCore.TweenPreference;
+        public static int TweenCount => TweenCore.TweenCount;
+        public static List<TweenID> TweenIDs => TweenCore.TweenIDs;
+        public static List<ITween> Tweens => TweenCore.Tweens;
+        public static void ManualUpdate(UpdateMode updateMode, float deltaTime = 0f) => Updater.Member<TweenUpdater>().ManualUpdate(updateMode, deltaTime);
+        public static void ManualUpdate(float deltaTime = 0f) => Updater.Member<TweenUpdater>().ManualUpdate(deltaTime);
+        // public static void TweenPreference(TweenPreference tweenPreference) => TweenCore.TweenPreference = tweenPreference;
+        // public static TweenPreference TweenPreference() => TweenCore.TweenPreference;
+        public static TweenPreference Preference { get => TweenCore.TweenPreference; set => TweenCore.TweenPreference = value; }
     }
 }

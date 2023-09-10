@@ -101,12 +101,6 @@ public class PlayManager : MonoBehaviour
         accuracyScript = accuracy.GetComponent<Accuracy>();
 
         instance = this;
-        keyControl = new();
-        keyControl.Down.AddOnInput((i, j) =>
-        {
-            InputCount++;
-            closestNoteScripts[i].isHitted = true;
-        });
         // canInputKeys = new List<List<KeyCode>>() { new List<KeyCode>() { KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.F }, new List<KeyCode>() { KeyCode.H, KeyCode.J, KeyCode.K, KeyCode.L } };
         // isKeyDowns = new List<List<bool>>();
         // isKeyPresses = new List<List<bool>>();
@@ -268,6 +262,12 @@ public class PlayManager : MonoBehaviour
     }
     public void InitPlayManagerScript(int startLevelInfoIndex)
     {
+        keyControl = new();
+        keyControl.Down.AddOnInput((i, j) =>
+        {
+            InputCount++;
+            closestNoteScripts[i].isHitted = true;
+        });
         if (startLevelInfoIndex == 0)
             checkPointAccuracy01 = 1f;
         levelInfoIndex = startLevelInfoIndex;
@@ -528,9 +528,9 @@ public class PlayManager : MonoBehaviour
     //     }
     //     return false;
     // }
-    public bool GetIsHitNote(Note note, int noteIndex, (int Down, int Press, int Up) keyCounts, Action<(int Down, int Press, int Up)> keyCountsSetter)
+    public bool GetIsHitNote((int index, int count) note, Note.Type noteType, (int Down, int Press, int Up) keyCounts, Action<(int Down, int Press, int Up)> keyCountsSetter)
     {
-        if (note.holdNoteSecs != 0f)
+        if (noteType == Note.Type.Tap)
         {
             /* if (note.levelInfo.noteInfo.insideNoteType == LevelInfo.InsideNoteType.Tap)
             {
@@ -540,8 +540,8 @@ public class PlayManager : MonoBehaviour
                 () => keyControl.Up.GetIsInput());
             }
             else  */
-            return note.PlayByNoteIndex(
-            noteIndex,
+            return Note.PlayByNoteIndex(
+            note,
             () =>
             {
                 keyCounts.Down--;
@@ -572,10 +572,10 @@ public class PlayManager : MonoBehaviour
             // {
             // }
         }
-        else
+        else if (noteType == Note.Type.Hold)
         {
-            return note.PlayByNoteIndex(
-            noteIndex,
+            return Note.PlayByNoteIndex(
+            note,
             () =>
             {
                 keyCounts.Down--;
@@ -601,7 +601,7 @@ public class PlayManager : MonoBehaviour
                 return false;
             });
         }
-        // return false;
+        return false;
     }
     public void UpdateJudgmentRange()
     {
@@ -688,27 +688,75 @@ public class PlayManager : MonoBehaviour
         int eachNoteIndex = Handy.GetCorrectedIndex(GetEachNoteIndex(levelInfoIndex), GetMaxNoteIndex(playerIndex), -1);
         return GetNoteScript(playerIndex, eachNoteIndex);
     }
-    public float GetJudgmentValue(Note note)
+    // public float GetJudgmentValue(Note note)
+    // {
+    //     float judgmentValue = 1f;
+    //     if (note.waitElapsedSecs01 >= 1f - judgmentRange[note.tarPlayerIndex])
+    //     {
+    //         if (note.holdElapsedSecs01 == 0f)
+    //             judgmentValue = (1f - note.waitElapsedSecs01) / judgmentRange[note.tarPlayerIndex];
+    //         else
+    //         {
+    //             for (int i = note.levelInfo.noteInfo.noteCount - 1; i >= 0; i--)
+    //             {
+    //                 if (note.holdElapsedSecs01 >= note.levelInfo.noteInfo.noteHitTiming01s[i])
+    //                 {
+    //                     float range =
+    //                     i < note.levelInfo.noteInfo.noteCount - 1
+    //                     ? note.levelInfo.noteInfo.noteHitTiming01s[i + 1] - note.levelInfo.noteInfo.noteHitTiming01s[i]
+    //                     : judgmentRange[note.tarPlayerIndex] * 2f;
+    //                     judgmentValue = 1f - Mathf.Abs(((note.holdElapsedSecs01 - note.levelInfo.noteInfo.noteHitTiming01s[i]) / range) - 0.5f) * 2f;
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return Mathf.Clamp01(judgmentValue);
+    // }
+    public float GetJudgmentValue(int noteIndex, (int count, float waitSec01s, float holdSec01s, float[] hitTiming01s, float judgmentRange) note)
     {
         float judgmentValue = 1f;
-        if (note.waitElapsedSecs01 >= 1f - judgmentRange[note.tarPlayerIndex])
+        if (note.waitSec01s >= 1f + note.hitTiming01s[0] - note.judgmentRange)
         {
-            if (note.holdElapsedSecs01 == 0f)
-                judgmentValue = (1f - note.waitElapsedSecs01) / judgmentRange[note.tarPlayerIndex];
-            else
+            float averageHitTiming01 =
+            noteIndex > 0
+            ? (note.hitTiming01s[noteIndex] + note.hitTiming01s[noteIndex - 1]) * 0.5f
+            : note.hitTiming01s[0];
+
+            if (note.holdSec01s <= note.hitTiming01s[0])
+                judgmentValue = (1f + note.hitTiming01s[0] - note.waitSec01s) / note.judgmentRange;
+
+            else if (note.holdSec01s >= averageHitTiming01)
             {
-                for (int i = note.levelInfo.noteInfo.noteCount - 1; i >= 0; i--)
-                {
-                    if (note.holdElapsedSecs01 >= note.levelInfo.noteInfo.noteHitTiming01s[i])
-                    {
-                        float range =
-                        i < note.levelInfo.noteInfo.noteCount - 1
-                        ? note.levelInfo.noteInfo.noteHitTiming01s[i + 1] - note.levelInfo.noteInfo.noteHitTiming01s[i]
-                        : judgmentRange[note.tarPlayerIndex] * 2f;
-                        judgmentValue = 1f - Mathf.Abs(((note.holdElapsedSecs01 - note.levelInfo.noteInfo.noteHitTiming01s[i]) / range) - 0.5f) * 2f;
-                        break;
-                    }
-                }
+                float range =
+                noteIndex < note.count - 1
+                ? note.hitTiming01s[noteIndex + 1] - note.hitTiming01s[noteIndex]
+                : note.judgmentRange * 2f;
+                judgmentValue = 1f - Mathf.Abs(((note.holdSec01s - note.hitTiming01s[noteIndex]) / range) - 0.5f) * 2f;
+            }
+        }
+        return Mathf.Clamp01(judgmentValue);
+    }
+    public float GetJudgmentValue((int count, float waitSec01s, float holdSec01s, float[] hitTiming01s, float judgmentRange) note)
+    {
+        float judgmentValue = 1f;
+        if (note.waitSec01s >= 1f + note.hitTiming01s[0] - note.judgmentRange)
+        {
+            float averageHitTiming01 =
+            Note.index > 0
+            ? (note.hitTiming01s[Note.index] + note.hitTiming01s[Note.index - 1]) * 0.5f
+            : note.hitTiming01s[0];
+
+            if (note.holdSec01s <= note.hitTiming01s[0])
+                judgmentValue = (1f + note.hitTiming01s[0] - note.waitSec01s) / note.judgmentRange;
+
+            else if (note.holdSec01s >= averageHitTiming01)
+            {
+                float range =
+                Note.index < note.count - 1
+                ? note.hitTiming01s[Note.index + 1] - note.hitTiming01s[Note.index]
+                : note.judgmentRange * 2f;
+                judgmentValue = 1f - Mathf.Abs(((note.holdSec01s - note.hitTiming01s[Note.index]) / range) - 0.5f) * 2f;
             }
         }
         return Mathf.Clamp01(judgmentValue);

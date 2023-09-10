@@ -2,40 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Unity.VisualScripting;
 
 namespace OVERIZE
 {
-    public enum UpdateMode { Manual = 1 << 0, Fixed = 1 << 1, Nomal = 1 << 2, Late = 1 << 3 }
+    public enum UpdateMode { Manual = 0, Fixed = 1 << 0, Nomal = 1 << 1, Late = 1 << 2 }
     [Flags] public enum ExecuteMode { Editor = 1 << 0, RunTime = 1 << 1 }
     [ExecuteInEditMode]
-    class TweenUpdater : MonoBehaviour
+    public class TweenUpdater : Updater
     {
-        static GameObject instance = null;
-        static TweenUpdater tweenUpdater = null;
-        internal static TweenUpdater Member
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new GameObject("OVERTween", typeof(TweenUpdater), typeof(DontDestroyOnLoad));
-                }
-                return tweenUpdater;
-            }
-        }
+        // static GameObject instance = null;
+        // static TweenUpdater tweenUpdater = null;
+        // internal static TweenUpdater Member
+        // {
+        //     get
+        //     {
+        //         if (instance == null)
+        //         {
+        //             instance = new GameObject("OVERTween", typeof(TweenUpdater), typeof(DontDestroyOnLoad));
+        //             tweenUpdater = instance.GetComponent<TweenUpdater>();
+        //         }
+        //         return tweenUpdater;
+        //     }
+        // }
         internal static float time;
-        void FixedUpdate()
+        void Awake()
         {
-            UpdateTweens(UpdateMode.Fixed);
+            gameObject.name = "OVERTween";
         }
-        void Update()
-        {
-            UpdateTweens(UpdateMode.Nomal);
-        }
-        void LateUpdate()
-        {
-            UpdateTweens(UpdateMode.Late);
-        }
+        protected override void FixedUpdate() => base.FixedUpdate();
+        protected override void Update() => base.Update();
+        protected override void LateUpdate() => base.LateUpdate();
         void ExecuteCodeWithTweens(Action<ITween> executeCode)
         {
             foreach (var TS in TweenCore.Tweens)
@@ -50,8 +47,9 @@ namespace OVERIZE
                 }
             }
         }
-        void UpdateTweens(UpdateMode updateMode)
+        protected override void Update(UpdateMode updateMode)
         {
+            // UpdateMode = updateMode;
             ExecuteCodeWithTweens((TS) =>
             {
                 if (TS.UpdateMode == updateMode)
@@ -63,6 +61,7 @@ namespace OVERIZE
         }
         internal void ManualUpdate(UpdateMode updateMode, float deltaTime)
         {
+            // UpdateMode = updateMode;
             ExecuteCodeWithTweens((TS) =>
             {
                 if (TS.UpdateMode == updateMode)
@@ -71,6 +70,7 @@ namespace OVERIZE
                     TS.DeltaTime = deltaTime * TS.Speed;
                 }
             });
+            // ManualUpdate(UpdateMode.Manual);
         }
         internal void ManualUpdate(float deltaTime)
         {
@@ -79,8 +79,9 @@ namespace OVERIZE
                 TS.ManualUpdate();
                 TS.DeltaTime = deltaTime * TS.Speed;
             });
+            // ManualUpdate(UpdateMode.Manual);
         }
-        internal void UpdateValue(Setter<TweenAble> setter, TweenSetting tweenSetting) => StartCoroutine(UpdateValueCo(setter, tweenSetting));
+        /* internal void UpdateValue(Setter<TweenAble> setter, TweenSetting tweenSetting) => StartCoroutine(UpdateValueCo(setter, tweenSetting));
         IEnumerator UpdateValueCo(Setter<TweenAble> setter, TweenSetting tweenSetting)
         {
             while (!tweenSetting.IsComplete)
@@ -88,7 +89,7 @@ namespace OVERIZE
                 setter(tweenSetting.Value);
                 yield return new WaitForEndOfFrame();
             }
-        }
+        } */
         float GetDeltaTime(ITween tweenSetting)
         {
             if (tweenSetting.UpdateMode == UpdateMode.Fixed)

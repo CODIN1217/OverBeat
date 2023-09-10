@@ -63,6 +63,22 @@ namespace OVERIZE
             if (IsAutoKill)
                 Kill(false);
         }
+        public void CompleteLoop()
+        {
+            onCompleteLoop();
+            if (!IsInfiniteLoop && (Application.isEditor ? !IsInfiniteLoopInEditMode : true))
+            {
+                if (curLoopCount >= LoopCount)
+                {
+                    Complete();
+                }
+            }
+            if (curLoopCount < LoopCount)
+            {
+                InitLoop();
+                curLoopCount++;
+            }
+        }
         public void Kill(bool isComplete = true)
         {
             if (isComplete)
@@ -77,30 +93,13 @@ namespace OVERIZE
                 Value = Evaluate(Time);
             }
             else
-                TweenUpdater.Member.StartCoroutine(CompleteCo());
+                CompleteLoop();
             onUpdate();
         }
         public TweenSetting SetName(string name)
         {
             TweenID.Name = name;
             return this;
-        }
-        IEnumerator CompleteCo()
-        {
-            yield return new WaitForEndOfFrame();
-            onCompleteLoop();
-            if (!IsInfiniteLoop && (Application.isEditor ? !IsInfiniteLoopInEditMode : true))
-            {
-                if (curLoopCount >= LoopCount)
-                {
-                    Complete();
-                }
-            }
-            if (curLoopCount < LoopCount)
-            {
-                InitLoop();
-                curLoopCount++;
-            }
         }
     }
 }

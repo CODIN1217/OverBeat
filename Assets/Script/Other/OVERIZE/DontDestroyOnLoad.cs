@@ -6,7 +6,7 @@ namespace OVERIZE
 {
     public class DontDestroyOnLoad : MonoBehaviour
     {
-        void Awake()
+        void Reset()
         {
             DontDestroyOnLoad(gameObject);
         }

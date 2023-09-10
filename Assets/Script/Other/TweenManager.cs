@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
+using OVERIZE;
 
 namespace TweenManager
 {
@@ -49,6 +50,7 @@ namespace TweenManager
         TweenerInfos<Vector2> tweenerInfosVector2;
         TweenerInfos<Vector3> tweenerInfosVector3;
         TweenerInfos<Color> tweenerInfosColor;
+        /* public TweeningInfo(TweenInfo<TweenAble> tweenInfo, float duration) => tweenerInfosFloat = new TweenerInfos<float>().AddTweenerInfo(TweenMethod.SetTweenerInfo(tweenInfo, duration, out tweener)); */
         public TweeningInfo(TweenInfo<float> tweenInfo, float duration) => tweenerInfosFloat = new TweenerInfos<float>().AddTweenerInfo(TweenMethod.SetTweenerInfo(tweenInfo, duration, out tweener));
         public TweeningInfo(TweenInfo<Vector2> tweenInfo, float duration) => tweenerInfosVector2 = new TweenerInfos<Vector2>().AddTweenerInfo(TweenMethod.SetTweenerInfo(tweenInfo, duration, out tweener));
         public TweeningInfo(TweenInfo<Vector3> tweenInfo, float duration) => tweenerInfosVector3 = new TweenerInfos<Vector3>().AddTweenerInfo(TweenMethod.SetTweenerInfo(tweenInfo, duration, out tweener));
@@ -160,6 +162,14 @@ namespace TweenManager
         public static Vector3 GetTweenValue(TweenInfo<Vector3> tweenInfo, float progress) => tweenInfo.startValue + GetTweenGap(tweenInfo, progress);
         public static Color GetTweenValue(TweenInfo<Color> tweenInfo, float progress) => tweenInfo.startValue + GetTweenGap(tweenInfo, progress);
 
+        /* public static TweenerInfo<float> SetTweenerInfo(TweenInfo<TweenAble> tweenInfo, float duration, out Sequence tweener)
+        {
+            TweenerInfo<float> tweenerInfoTemp = new TweenerInfo<float>(tweenInfo, duration);
+            tweener = DOTween.Sequence()
+            .Append(DOTween.To(() => tweenInfo.startValue, (v) => tweenerInfoTemp.curValue = v, tweenInfo.endValue, duration)
+            .SetEase(tweenInfo.ease));
+            return tweenerInfoTemp;
+        } */
         public static TweenerInfo<float> SetTweenerInfo(TweenInfo<float> tweenInfo, float duration, out Sequence tweener)
         {
             TweenerInfo<float> tweenerInfoTemp = new TweenerInfo<float>(tweenInfo, duration);

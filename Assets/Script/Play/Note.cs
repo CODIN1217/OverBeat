@@ -14,6 +14,7 @@ using UnityEditor;
 
 public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
 {
+    public enum Type { Tap, Hold }
     public int myLevelInfoIndex;
     public int myEachNoteIndex;
     public int tarPlayerIndex;
@@ -73,6 +74,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
 
     public LevelInfo levelInfo;
     PlayManager PM;
+    public static int index;
     void Awake()
     {
         PM = PlayManager.Member;
@@ -85,17 +87,21 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
     Stopwatch stopwatch = new Stopwatch();
     void Update()
     {
+        if (PM.isStop || PM.isPause || myLevelInfoIndex == 0)
+            return;
+
+
         stopwatch.Start();
         curve.AddKey(stopwatch.ElapsedMilliseconds * 0.001f, PM.GetJudgmentValue(this));
 
 
-        if (PM.isStop || PM.isPause || myLevelInfoIndex == 0)
-            return;
         if (isAwake)
         {
             PM.AddGO(this).AddTweenerInPlayGO(this);
             InitNoteTween();
             PM.PlayWaitTweenAll();
+            isJudgNotes = new bool[levelInfo.noteInfo.noteCount];
+            index = 0;
             isAwake = false;
         }
         myElapsedSecs += Time.deltaTime;
@@ -141,34 +147,35 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         {
             if (!isJudgNotes[i])
             {
-                // float averageHitTiming01 = i > 0 ? (levelInfo.noteInfo.noteHitTiming01s[i] + levelInfo.noteInfo.noteHitTiming01s[i - 1]) * 0.5f : 0f;
-                if (holdElapsedSecs01 >= levelInfo.noteInfo.noteHitTiming01s[i])
+                // float averageHitTiming01 = i > 0 ? (levelInfo.noteInfo.noteHitTiming01s[i] + levelInfo.noteInfo.noteHitTiming01s[i - 1]) * 0.5f : levelInfo.noteInfo.noteHitTiming01s[0];
+                // if (holdElapsedSecs01 >= averageHitTiming01)
+                // {
+                if (PM.GetJudgmentValue(i, this) <= PM.judgmentRange[tarPlayerIndex])
                 {
-                    if (PM.GetJudgmentValue(this) <= PM.judgmentRange[tarPlayerIndex])
+                    // Handy.WriteLog(nameof(keyCounts.Up), keyCounts.Up);
+                    // Handy.WriteLog("Can Hit Note", keyControlTemp.Down.Count, keyControlTemp.Press.Count, keyControlTemp.Up.Count);
+                    // Handy.WriteLog("Can Hit Note", i, PM.GetJudgmentValue(this));
+                    if (PM.GetIsHitNote((i, levelInfo.noteInfo.noteCount), holdNoteSecs == 0f ? Type.Tap : Type.Hold, keyCounts, (KCs) => keyCounts = KCs))
                     {
-                        // Handy.WriteLog(nameof(keyCounts.Up), keyCounts.Up);
-                        // Handy.WriteLog("Can Hit Note", keyControlTemp.Down.Count, keyControlTemp.Press.Count, keyControlTemp.Up.Count);
-                        // Handy.WriteLog("Can Hit Note", i, PM.GetJudgmentValue(this));
-                        if (PM.GetIsHitNote(this, i, keyCounts, (KCs) => keyCounts = KCs))
-                        {
-                            float noteAccuracy01 = 1f;
-                            PM.judgmentGenScript.SetJudgmentText(tarPlayerIndex, PM.GetJudgment(tarPlayerIndex, PM.GetJudgmentValue(this), () => { noteAccuracy01 = Mathf.Clamp01(1f - PM.GetJudgmentValue(this)); PM.CountMissNote(); }));
-                            PM.sumNoteAccuracy01 += noteAccuracy01;
-                            PM.SetAccuracy01();
-                            isJudgNotes[i] = true;
-                            Handy.WriteLog("Hit Note", i, PM.GetJudgmentValue(this));
-                        }
-                    }
-                    else if (holdElapsedSecs01 > levelInfo.noteInfo.noteHitTiming01s[i])
-                    {
-                        // Handy.WriteLog("Miss Note   " + i + "   " + PM.GetJudgmentValue(this));
-                        PM.judgmentGenScript.SetJudgmentText(tarPlayerIndex, JudgmentType.Miss);
-                        PM.CountMissNote();
-                        PM.InputCount++;
+                        float noteAccuracy01 = 1f;
+                        PM.judgmentGenScript.SetJudgmentText(tarPlayerIndex, PM.GetJudgment(tarPlayerIndex, PM.GetJudgmentValue(this), () => { noteAccuracy01 = Mathf.Clamp01(1f - PM.GetJudgmentValue(this)); PM.CountMissNote(); }));
+                        PM.sumNoteAccuracy01 += noteAccuracy01;
                         PM.SetAccuracy01();
                         isJudgNotes[i] = true;
+                        index = i;
+                        Handy.WriteLog("Hit Note", i, PM.GetJudgmentValue(this));
                     }
                 }
+                else if (holdElapsedSecs01 > levelInfo.noteInfo.noteHitTiming01s[i])
+                {
+                    // Handy.WriteLog("Miss Note   " + i + "   " + PM.GetJudgmentValue(this));
+                    PM.judgmentGenScript.SetJudgmentText(tarPlayerIndex, JudgmentType.Miss);
+                    PM.CountMissNote();
+                    PM.InputCount++;
+                    PM.SetAccuracy01();
+                    isJudgNotes[i] = true;
+                }
+                // }
             }
         }
         UpdateNoteTweenValue();
@@ -178,7 +185,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         levelInfo = PM.GetLevelInfo(myLevelInfoIndex);
         tarPlayer = PM.GetPlayer(tarPlayerIndex);
         tarPlayerScript = PM.GetPlayerScript(tarPlayerIndex);
-        isJudgNotes = new bool[levelInfo.noteInfo.noteCount];
+        // isJudgNotes = new bool[levelInfo.noteInfo.noteCount];
         InitNoteChild();
         Handy.RepeatCode((i) => { notesSideSprite[i] = Resources.Load<Sprite>("Image/Play/Player/" + levelInfo.noteInfo.sideImageName); }, levelInfo.noteInfo.noteCount);
     }
@@ -448,7 +455,7 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
             toleranceSecsAwake = PM.totalElapsedSecs - levelInfo.noteInfo.awakeSecs;
         }
     }
-    public T PlayByNoteIndex<T>(int noteIndex, Func<T> onStartNote, Func<T> onMiddleNote, Func<T> onEndNote)
+    public static T PlayByNoteIndex<T>((int index, int count) note, Func<T> onStartNote, Func<T> onMiddleNote, Func<T> onEndNote)
     {
         /* if (!isJudgNotes[0])
         {
@@ -476,15 +483,16 @@ public class Note : MonoBehaviour, PlayManager.ITweenerInPlay, IGameObject
         } */
         // if (!isJudgNotes[noteIndex])
         // {
-        if (noteIndex <= 0)
+        if (note.index <= 0)
             return onStartNote();
-        if (noteIndex > 0 && noteIndex < levelInfo.noteInfo.noteCount - 1)
+        if (note.index > 0 && note.index < note.count - 1)
             return onMiddleNote();
-        if (noteIndex >= levelInfo.noteInfo.noteCount - 1)
+        if (note.index >= note.count - 1)
             return onEndNote();
         // }
         return default;
     }
+    public static implicit operator (int count, float waitSec01s, float holdSec01s, float[] hitTiming01s, float judgmentRange)(Note note) => (note.levelInfo.noteInfo.noteCount, note.waitElapsedSecs01, note.holdElapsedSecs01, note.levelInfo.noteInfo.noteHitTiming01s, note.PM.judgmentRange[note.tarPlayerIndex]);
 
 
     AnimationCurve curve = new AnimationCurve();

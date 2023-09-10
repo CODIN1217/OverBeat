@@ -24,6 +24,7 @@ namespace OVERIZE
         void Play();
         void ManualUpdate();
         void Complete();
+        void CompleteLoop();
         void Kill(bool isComplete = true);
         TweenCallback OnStart(CallBack callBack);
         TweenCallback OnPlay(CallBack callBack);
