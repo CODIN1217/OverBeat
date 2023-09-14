@@ -9,8 +9,10 @@ namespace OVERIZE
         TweenID TweenID { get; set; }
         float DeltaTime { get; set; }
         bool IsPlaying { get; set; }
+        bool IsPause { get; set; }
+        bool IsRewind { get; set; }
         bool IsComplete { get; set; }
-        bool IsInfiniteLoopInEditMode { get; set; }
+        // bool IsInfiniteLoopInEditMode { get; set; }
         bool IsUnscaledTime { get; set; }
         bool IsInfiniteLoop { get; set; }
         bool IsAutoKill { get; set; }
@@ -22,6 +24,8 @@ namespace OVERIZE
         void Init();
         void InitLoop();
         void Play();
+        void Pause();
+        void Rewind(bool isPlay = true);
         void ManualUpdate();
         void Complete();
         void CompleteLoop();

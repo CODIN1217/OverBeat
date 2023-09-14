@@ -10,36 +10,55 @@ namespace OVERIZE
     public class Timer
     {
         // float[] delays;
+        int playIndex;
+        float totalTime;
+        float tarTime;
         OrderedElement<float>[] eventTimesOrdered;
         CallBack onUpdate;
         Updater updater;
         Action<int> callBack;
-        int playIndex;
-        float totalTime;
-        float tarTime;
-        public Timer(Updater updater, Action<int> callBack, bool isUnscaledTime = false, params float[] eventTimes)
+        Direction.Horizontal toward;
+        public Timer(Updater updater, Action<int> callBack, bool isUnscaledTime = false, Direction.Horizontal toward = Direction.Horizontal.Right, params float[] eventTimes)
         {
             this.updater = updater;
             this.callBack = callBack;
             // this.delays = delays;
-            eventTimesOrdered = eventTimes.Order();
-            if (eventTimesOrdered.Length > 0)
-                tarTime = eventTimesOrdered[0].Value;
+            // eventTimesOrdered = eventTimes.Order().ToArray();
+            Reset();
             onUpdate = () =>
             {
+                eventTimesOrdered = eventTimes.Order().ToArray();
+                this.toward = toward;
                 CheckEvent();
-                totalTime += isUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+                totalTime += (float)this.toward * (isUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime);
+                // totalTime = OVERMath.ClampMin(totalTime, 0f);
+            };
+        }
+        public Timer(Updater updater, Action<int> callBack, Func<bool> isUnscaledTime, Func<Direction.Horizontal> toward, Func<float[]> eventTimes)
+        {
+            this.updater = updater;
+            this.callBack = callBack;
+            // this.delays = delays;
+            // eventTimesOrdered = eventTimes().Order().ToArray();
+            Reset();
+            onUpdate = () =>
+            {
+                eventTimesOrdered = eventTimes().Order().ToArray();
+                this.toward = toward();
+                CheckEvent();
+                totalTime += (float)this.toward * (isUnscaledTime() ? Time.unscaledDeltaTime : Time.deltaTime);
+                // totalTime = OVERMath.ClampMin(totalTime, 0f);
             };
         }
         void CheckEvent()
         {
-            if (playIndex < eventTimesOrdered.Length)
+            if (playIndex >= 0 && playIndex < eventTimesOrdered.Length)
             {
-                if (totalTime >= tarTime)
+                tarTime = eventTimesOrdered[playIndex].Value;
+                if ((float)toward * totalTime >= (float)toward * tarTime)
                 {
                     callBack(eventTimesOrdered[playIndex].OrigIndex);
-                    playIndex++;
-                    tarTime += eventTimesOrdered[playIndex].Value;
+                    playIndex += (int)toward;
                     CheckEvent();
                 }
             }
@@ -75,8 +94,8 @@ namespace OVERIZE
         {
             playIndex = 0;
             totalTime = 0f;
-            if (eventTimesOrdered.Length > 0)
-                tarTime = eventTimesOrdered[0].Value;
+            // if (eventTimesOrdered.Length > 0)
+            //     tarTime = eventTimesOrdered[0].Value;
             if (isStop)
                 Stop();
         }

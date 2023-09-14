@@ -8,6 +8,7 @@ namespace OVERIZE
 {
     public static class Extension
     {
+        public static IEnumerable<Func<T>> ToGetters<T>(this IEnumerable<T> array) => array.Select<T, Func<T>>(item => () => item);
         public static bool IsAll<T>(this IEnumerable<T> array, T value)
         {
             foreach (var element in array)
@@ -15,13 +16,34 @@ namespace OVERIZE
                     return true;
             return false;
         }
-        public static OrderedElement<T>[] Order<T>(this T[] array, bool descendingOrder = false)
+        public static IEnumerable<OrderedElement<Func<T>>> Order<T>(this IEnumerable<Func<T>> array, bool descendingOrder = false)
+        {
+            var orderedArray = array.Select((item, index) => new OrderedElement<Func<T>>(index, item)).OrderBy(e => e.Value());
+            if (descendingOrder)
+                orderedArray.Reverse();
+            return orderedArray;
+        }
+        public static IEnumerable<OrderedElement<T>> Order<T>(this IEnumerable<T> array, bool descendingOrder = false)
+        {
+            var orderedArray = array.Select((item, index) => new OrderedElement<T>(index, item)).OrderBy(e => e.Value);
+            if (descendingOrder)
+                orderedArray.Reverse();
+            return orderedArray;
+        }
+        /* public static OrderedElement<T>[] Order<T>(this T[] array, bool descendingOrder = false)
         {
             var orderedArray = array.Select((item, index) => new OrderedElement<T>(index, item)).OrderBy(e => e.Value);
             if (descendingOrder)
                 orderedArray.Reverse();
             return orderedArray.ToArray();
         }
+        public static List<OrderedElement<T>> Order<T>(this List<T> array, bool descendingOrder = false)
+        {
+            var orderedArray = array.Select((item, index) => new OrderedElement<T>(index, item)).OrderBy(e => e.Value);
+            if (descendingOrder)
+                orderedArray.Reverse();
+            return orderedArray.ToList();
+        } */
         public static T[] SetLength<T>(this T[] array, int length)
         {
             T[] arrayTemp = new T[length];

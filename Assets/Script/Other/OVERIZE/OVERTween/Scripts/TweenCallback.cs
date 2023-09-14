@@ -8,6 +8,8 @@ namespace OVERIZE
     {
         protected CallBack onStart = () => { };
         protected CallBack onPlay = () => { };
+        protected CallBack onPause = () => { };
+        protected CallBack onRewind = () => { };
         protected CallBack onUpdate = () => { };
         protected CallBack onComplete = () => { };
         protected CallBack onCompleteLoop = () => { };
@@ -15,6 +17,8 @@ namespace OVERIZE
         {
             onStart = TweenCore.TweenPreference.onStart;
             onPlay = TweenCore.TweenPreference.onPlay;
+            onPause = TweenCore.TweenPreference.onPause;
+            onRewind = TweenCore.TweenPreference.onRewind;
             onUpdate = TweenCore.TweenPreference.onUpdate;
             onComplete = TweenCore.TweenPreference.onComplete;
             onCompleteLoop = TweenCore.TweenPreference.onCompleteLoop;
@@ -27,6 +31,16 @@ namespace OVERIZE
         public TweenCallback OnPlay(CallBack callBack)
         {
             onPlay += callBack;
+            return this;
+        }
+        public TweenCallback OnPause(CallBack callBack)
+        {
+            onPause += callBack;
+            return this;
+        }
+        public TweenCallback OnRewind(CallBack callBack)
+        {
+            onRewind += callBack;
             return this;
         }
         public TweenCallback OnUpdate(CallBack callBack)

@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 namespace OVERIZE
 {
     public enum UpdateMode { Manual = 0, Fixed = 1 << 0, Nomal = 1 << 1, Late = 1 << 2 }
-    [Flags] public enum ExecuteMode { Editor = 1 << 0, RunTime = 1 << 1 }
+    [Flags] public enum ExecuteMode { Editor = 1 << 0, RunTime = 1 << 1, All = Editor | RunTime }
     [ExecuteInEditMode]
     public class TweenUpdater : Updater
     {
@@ -55,7 +55,7 @@ namespace OVERIZE
                 if (TS.UpdateMode == updateMode)
                 {
                     TS.ManualUpdate();
-                    TS.DeltaTime = GetDeltaTime(TS) * TS.Speed;
+                    TS.DeltaTime = DeltaTime(TS.UpdateMode, TS.IsUnscaledTime);
                 }
             });
         }
@@ -67,7 +67,7 @@ namespace OVERIZE
                 if (TS.UpdateMode == updateMode)
                 {
                     TS.ManualUpdate();
-                    TS.DeltaTime = deltaTime * TS.Speed;
+                    TS.DeltaTime = deltaTime;
                 }
             });
             // ManualUpdate(UpdateMode.Manual);
@@ -77,7 +77,7 @@ namespace OVERIZE
             ExecuteCodeWithTweens((TS) =>
             {
                 TS.ManualUpdate();
-                TS.DeltaTime = deltaTime * TS.Speed;
+                TS.DeltaTime = deltaTime;
             });
             // ManualUpdate(UpdateMode.Manual);
         }
@@ -90,12 +90,12 @@ namespace OVERIZE
                 yield return new WaitForEndOfFrame();
             }
         } */
-        float GetDeltaTime(ITween tweenSetting)
+        internal float DeltaTime(UpdateMode updateMode, bool isUnscaledTime)
         {
-            if (tweenSetting.UpdateMode == UpdateMode.Fixed)
-                return tweenSetting.IsUnscaledTime ? Time.fixedUnscaledDeltaTime : Time.fixedDeltaTime;
-            else if ((tweenSetting.UpdateMode & (UpdateMode.Nomal | UpdateMode.Late)) != 0)
-                return tweenSetting.IsUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+            if (updateMode == UpdateMode.Fixed)
+                return isUnscaledTime ? Time.fixedUnscaledDeltaTime : Time.fixedDeltaTime;
+            else if ((updateMode & (UpdateMode.Nomal | UpdateMode.Late)) != 0)
+                return isUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
             return 0f;
         }
     }

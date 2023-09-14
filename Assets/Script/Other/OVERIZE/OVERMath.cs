@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace OVERIZE
 {
-    public static partial class OVERMath
+    public static class OVERMath
     {
         public static int Sign(int value)
         {

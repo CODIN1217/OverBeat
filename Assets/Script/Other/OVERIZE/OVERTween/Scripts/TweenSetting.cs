@@ -9,7 +9,7 @@ namespace OVERIZE
         bool isChained;
         internal bool IsChained { get => isChained; set => isChained = value; }
 
-        public override bool IsInfiniteLoopInEditMode { get => base.IsInfiniteLoopInEditMode && !IsChained; set => base.IsInfiniteLoopInEditMode = value && !IsChained; }
+        // public override bool IsInfiniteLoopInEditMode { get => base.IsInfiniteLoopInEditMode && !IsChained; set => base.IsInfiniteLoopInEditMode = value && !IsChained; }
         public override bool IsInfiniteLoop { get => base.IsInfiniteLoop && !IsChained; set => base.IsInfiniteLoop = value && !IsChained; }
 
         TweenData tweenData;
@@ -28,31 +28,29 @@ namespace OVERIZE
             ManualUpdate();
         }
 
-        public TweenAble Evaluate(float time)
-        {
-            return tweenData.startValue + (tweenData.endValue - tweenData.startValue) * tweenData.ease[Toward == Direction.Horizontal.Left ? 1f - time / Duration : time / Duration];
-        }
+        public TweenAble Evaluate(float time) => tweenData.startValue + (tweenData.endValue - tweenData.startValue) * tweenData.ease[time / Duration];
         public override void Init()
         {
             base.Init();
             InitLoop();
-            curLoopCount = 0;
+            if (((AutoPlay & AutoPlay.Tween) != 0) && !IsChained)
+                Play();
+            else
+                Pause();
+
         }
         public void InitLoop()
         {
             value = tweenData.startValue;
             Time = 0f;
         }
-        public override void Play()
+        public override void Rewind(bool isPlay = true)
         {
-            if (UpdateMode == UpdateMode.Manual)
-                return;
-            base.Play();
-            if (curLoopCount == 0)
-            {
-                curLoopCount++;
-                onStart();
-            }
+            base.Rewind(false);
+            value = tweenData.endValue;
+            Time = Duration;
+            if (isPlay)
+                Play();
         }
         public override void Complete()
         {
@@ -66,16 +64,14 @@ namespace OVERIZE
         public void CompleteLoop()
         {
             onCompleteLoop();
-            if (!IsInfiniteLoop && (Application.isEditor ? !IsInfiniteLoopInEditMode : true))
-            {
+            if (!IsInfiniteLoop/*  && (Application.isEditor ? !IsInfiniteLoopInEditMode : true) */)
                 if (curLoopCount >= LoopCount)
-                {
                     Complete();
-                }
-            }
             if (curLoopCount < LoopCount)
             {
                 InitLoop();
+                if (LoopType == LoopType.Yoyo)
+                    Rewind();
                 curLoopCount++;
             }
         }
@@ -88,10 +84,8 @@ namespace OVERIZE
         }
         public void ManualUpdate()
         {
-            if (Time < Duration)
-            {
+            if (Time <= Duration)
                 Value = Evaluate(Time);
-            }
             else
                 CompleteLoop();
             onUpdate();

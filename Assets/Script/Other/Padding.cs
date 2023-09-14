@@ -4,10 +4,10 @@ using UnityEngine;
 
 public struct Padding
 {
-    int left;
-    int right;
-    int top;
-    int bottom;
+    public int left;
+    public int right;
+    public int top;
+    public int bottom;
     public Padding(int left, int right, int top, int bottom)
     {
         this.left = left;

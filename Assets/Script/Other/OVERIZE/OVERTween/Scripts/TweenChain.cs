@@ -8,29 +8,19 @@ namespace OVERIZE
 {
     public class TweeningSetting
     {
-        float startTime;
-        public float StartTime { get => startTime; internal set => startTime = value; }
-        public float EndTime => StartTime + TweenSetting.Duration;
+        public TimeSetting Time;
         TweenSetting tweenSetting;
-        public TweenSetting TweenSetting { get => tweenSetting; internal set => tweenSetting = value; }
+        public TweenSetting TweenSetting { get => tweenSetting; internal set { tweenSetting = value; Time.Duration = tweenSetting.Duration; } }
         public TweeningSetting(TweenSetting tweenSetting, float startTime)
         {
-            StartTime = startTime;
+            Time = new(startTime, tweenSetting.Duration);
             TweenSetting = tweenSetting;
         }
     }
     public class DelaySetting
     {
-        float startTime;
-        public float StartTime { get => startTime; internal set => startTime = value; }
-        public float EndTime => StartTime + Delay;
-        float delay;
-        public float Delay { get => delay; internal set => delay = value; }
-        public DelaySetting(float delay, float startTime)
-        {
-            StartTime = startTime;
-            Delay = delay;
-        }
+        public TimeSetting Time;
+        public DelaySetting(float delay, float startTime) => Time = new(startTime, delay);
     }
     public class TweenChain : Tween, ITween
     {
@@ -51,21 +41,19 @@ namespace OVERIZE
         Action<float> onAddDelay = (delay) => { };
         Action<TweenSetting> onAddTween = (TS) => { };
         internal List<TweenSetting> TweenSettings => (from TS in tweenChain select TS.TweenSetting).ToList();
+        internal float TotalDuration => (from TS in tweenChain select TS.Time.EndTime).Max();
 
-        public override bool IsUnscaledTime { get => UpdateIsUnscaledTime(base.IsUnscaledTime); set => base.IsUnscaledTime = UpdateIsUnscaledTime(value); }
-        bool UpdateIsUnscaledTime(bool isUnscaledTime)
+        public override bool IsUnscaledTime
         {
-            foreach (var TS in TweenSettings)
+            get => base.IsUnscaledTime;
+            set
             {
-                TS.IsUnscaledTime = isUnscaledTime;
+                base.IsUnscaledTime = value;
+                foreach (var TS in TweenSettings)
+                    TS.IsUnscaledTime = base.IsUnscaledTime;
             }
-            return isUnscaledTime;
         }
-        public TweenChain()
-        {
-            OnAddTween((TS) => TweenSettings.Add(TS));
-            OnAddTween((TS) => TS.IsChained = true);
-        }
+        public TweenChain() => Init();
         public override void Init()
         {
             base.Init();
@@ -76,30 +64,42 @@ namespace OVERIZE
             onAddTween = (TS) => { };
             onAddDelay = (delay) => { };
             OnAddTween((TS) => TweenSettings.Add(TS));
-            OnAddTween((TS) => TS.IsChained = true);
+            OnAddTween((TS) => { TS.IsChained = true; TS.Init(); });
             tweenChain = new List<TweeningSetting>();
+            if ((AutoPlay & AutoPlay.Chain) != 0)
+                Play();
         }
         public void InitLoop()
         {
             foreach (var TS in TweenSettings)
                 TS.InitLoop();
         }
+        Timer eventTimer = null;
         public override void Play()
         {
+            base.Play();
             if (UpdateMode == UpdateMode.Manual)
                 return;
-            base.Play();
-            if (curLoopCount == 0)
-            {
-                curLoopCount++;
-                onStart();
-            }
-            new Timer(Updater.Member<TweenUpdater>(), (index) =>
+            eventTimer ??= new Timer(Updater.Member<TweenUpdater>(), (index) =>
             {
                 tweenChain[index].TweenSetting.Play();
                 if ((from TS in tweenChain select TS.TweenSetting.IsComplete).IsAll(true))
                     CompleteLoop();
-            }, IsUnscaledTime, (from TS in tweenChain select TS.StartTime).ToArray());
+            }, () => IsUnscaledTime, () => Toward, () => (from TS in tweenChain select TS.Time.StartTime).ToArray());
+        }
+        public override void Pause()
+        {
+            base.Pause();
+            foreach (var TS in TweenSettings)
+                TS.Pause();
+        }
+        public override void Rewind(bool isPlay = true)
+        {
+            base.Rewind(false);
+            foreach (var TS in TweenSettings)
+                TS.Rewind(false);
+            if (isPlay)
+                Play();
         }
         public void ManualUpdate()
         {
@@ -119,17 +119,13 @@ namespace OVERIZE
         {
             onCompleteLoop();
             if (curLoopCount >= LoopCount)
-            {
-                if (!IsInfiniteLoop && (Application.isEditor ? !IsInfiniteLoopInEditMode : true))
-                {
+                if (!IsInfiniteLoop/*  && (Application.isEditor ? !IsInfiniteLoopInEditMode : true) */)
                     Complete();
+                else
+                {
+                    InitLoop();
+                    curLoopCount++;
                 }
-            }
-            else
-            {
-                InitLoop();
-                curLoopCount++;
-            }
         }
         public void Kill(bool isComplete = true)
         {
@@ -143,9 +139,9 @@ namespace OVERIZE
         TweenChain PrependStartTime(float prependTime)
         {
             foreach (var TS in tweenChain)
-                TS.StartTime += prependTime;
+                TS.Time.StartTime += prependTime;
             foreach (var D in delays)
-                D.StartTime += prependTime;
+                D.Time.StartTime += prependTime;
             return this;
         }
 
@@ -156,8 +152,8 @@ namespace OVERIZE
             return this;
         }
         public ITween Prepend(TweenSetting tweenSetting) => PrependStartTime(tweenSetting.Duration).Insert(tweenSetting, 0f);
-        public ITween Join(TweenSetting tweenSetting) => Insert(tweenSetting, tweenChain[tweenChain.Count - 1].StartTime);
-        public ITween Append(TweenSetting tweenSetting) => Insert(tweenSetting, tweenChain[tweenChain.Count - 1].EndTime);
+        public ITween Join(TweenSetting tweenSetting) => Insert(tweenSetting, tweenChain[tweenChain.Count - 1].Time.StartTime);
+        public ITween Append(TweenSetting tweenSetting) => Insert(tweenSetting, tweenChain[tweenChain.Count - 1].Time.EndTime);
 
         public ITween InsertDelay(float delay, float startTime)
         {
@@ -166,7 +162,7 @@ namespace OVERIZE
             return this;
         }
         public ITween PrependDelay(float delay) => PrependStartTime(delay).InsertDelay(delay, 0f);
-        public ITween JoinDelay(float delay) => InsertDelay(delay, tweenChain[tweenChain.Count - 1].StartTime);
-        public ITween AppendDelay(float delay) => InsertDelay(delay, tweenChain[tweenChain.Count - 1].EndTime);
+        public ITween JoinDelay(float delay) => InsertDelay(delay, tweenChain[tweenChain.Count - 1].Time.StartTime);
+        public ITween AppendDelay(float delay) => InsertDelay(delay, tweenChain[tweenChain.Count - 1].Time.EndTime);
     }
 }

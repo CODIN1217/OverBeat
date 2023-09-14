@@ -26,5 +26,6 @@ namespace OVERIZE
         // public static void TweenPreference(TweenPreference tweenPreference) => TweenCore.TweenPreference = tweenPreference;
         // public static TweenPreference TweenPreference() => TweenCore.TweenPreference;
         public static TweenPreference Preference { get => TweenCore.TweenPreference; set => TweenCore.TweenPreference = value; }
+        public static float DeltaTime(UpdateMode updateMode, bool isUnscaledTime = false) => Updater.Member<TweenUpdater>().DeltaTime(updateMode, isUnscaledTime);
     }
 }
