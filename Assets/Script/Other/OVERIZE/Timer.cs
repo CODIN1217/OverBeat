@@ -2,104 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Linq;
 
 namespace OVERIZE
 {
-    [ExecuteInEditMode]
     public class Timer
     {
-        // float[] delays;
-        int playIndex;
-        float totalTime;
-        float tarTime;
-        OrderedElement<float>[] eventTimesOrdered;
-        CallBack onUpdate;
+        float time;
+        public float Time => time;
         Updater updater;
-        Action<int> callBack;
-        Direction.Horizontal toward;
-        public Timer(Updater updater, Action<int> callBack, bool isUnscaledTime = false, Direction.Horizontal toward = Direction.Horizontal.Right, params float[] eventTimes)
+        protected Updater Updater => updater;
+        CallBack onUpdate;
+        public Timer OnUpdate(CallBack onUpdate)
+        {
+            this.onUpdate += onUpdate;
+            return this;
+        }
+        public Timer(Updater updater, bool isUnscaledTime, Direction.Horizontal toward)
         {
             this.updater = updater;
-            this.callBack = callBack;
-            // this.delays = delays;
-            // eventTimesOrdered = eventTimes.Order().ToArray();
-            Reset();
-            onUpdate = () =>
-            {
-                eventTimesOrdered = eventTimes.Order().ToArray();
-                this.toward = toward;
-                CheckEvent();
-                totalTime += (float)this.toward * (isUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime);
-                // totalTime = OVERMath.ClampMin(totalTime, 0f);
-            };
+            onUpdate = () => time += (float)toward * (isUnscaledTime ? UnityEngine.Time.unscaledDeltaTime : UnityEngine.Time.deltaTime);
         }
-        public Timer(Updater updater, Action<int> callBack, Func<bool> isUnscaledTime, Func<Direction.Horizontal> toward, Func<float[]> eventTimes)
+        public Timer(Updater updater, Func<bool> isUnscaledTime, Func<Direction.Horizontal> toward)
         {
             this.updater = updater;
-            this.callBack = callBack;
-            // this.delays = delays;
-            // eventTimesOrdered = eventTimes().Order().ToArray();
-            Reset();
-            onUpdate = () =>
-            {
-                eventTimesOrdered = eventTimes().Order().ToArray();
-                this.toward = toward();
-                CheckEvent();
-                totalTime += (float)this.toward * (isUnscaledTime() ? Time.unscaledDeltaTime : Time.deltaTime);
-                // totalTime = OVERMath.ClampMin(totalTime, 0f);
-            };
+            onUpdate = () => time += (float)toward() * (isUnscaledTime() ? UnityEngine.Time.unscaledDeltaTime : UnityEngine.Time.deltaTime);
         }
-        void CheckEvent()
+        public virtual void Play() => updater.OnUpdate += onUpdate;
+        public virtual void Stop() => updater.OnUpdate -= onUpdate;
+        public virtual void Reset(bool isStop = true)
         {
-            if (playIndex >= 0 && playIndex < eventTimesOrdered.Length)
-            {
-                tarTime = eventTimesOrdered[playIndex].Value;
-                if ((float)toward * totalTime >= (float)toward * tarTime)
-                {
-                    callBack(eventTimesOrdered[playIndex].OrigIndex);
-                    playIndex += (int)toward;
-                    CheckEvent();
-                }
-            }
-        }
-        /* bool isElapsed = true;
-        public Timer(Updater updater, Func<int, bool> callBack, bool isUnscaledTime = false, params float[] delays)
-        {
-            this.updater = updater;
-            this.delays = delays;
-            if (delays.Length > 0)
-                tarTime = delays[0];
-            onUpdate = () =>
-            {
-                if (playIndex < delays.Length)
-                {
-                    if (totalTime >= tarTime)
-                    {
-                        if (callBack(playIndex))
-                        {
-                            playIndex++;
-                            tarTime += delays[playIndex];
-                            isElapsed = true;
-                        }
-                        else
-                            isElapsed = false;
-                    }
-                    if (isElapsed)
-                        totalTime += isUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
-                }
-            };
-        } */
-        public void Reset(bool isStop = true)
-        {
-            playIndex = 0;
-            totalTime = 0f;
-            // if (eventTimesOrdered.Length > 0)
-            //     tarTime = eventTimesOrdered[0].Value;
+            time = 0f;
             if (isStop)
                 Stop();
         }
-        public void Play() => updater.OnUpdate += onUpdate;
-        public void Stop() => updater.OnUpdate -= onUpdate;
     }
 }

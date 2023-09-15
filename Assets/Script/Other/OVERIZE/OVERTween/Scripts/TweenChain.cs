@@ -6,21 +6,20 @@ using System;
 
 namespace OVERIZE
 {
-    public class TweeningSetting
+    public class TweeningSetting : TimeSetting
     {
-        public TimeSetting Time;
+        // public TimeSetting Time;
         TweenSetting tweenSetting;
-        public TweenSetting TweenSetting { get => tweenSetting; internal set { tweenSetting = value; Time.Duration = tweenSetting.Duration; } }
+        public TweenSetting TweenSetting { get => tweenSetting; internal set => tweenSetting = value; }
+        public override float Duration { get => TweenSetting.Duration; set => TweenSetting.Duration = value; }
         public TweeningSetting(TweenSetting tweenSetting, float startTime)
-        {
-            Time = new(startTime, tweenSetting.Duration);
-            TweenSetting = tweenSetting;
-        }
+        : base(startTime, tweenSetting.Duration)
+        => TweenSetting = tweenSetting;
     }
-    public class DelaySetting
+    public class DelaySetting : TimeSetting
     {
-        public TimeSetting Time;
-        public DelaySetting(float delay, float startTime) => Time = new(startTime, delay);
+        // public TimeSetting Time;
+        public DelaySetting(float delay, float startTime) : base(startTime, delay) { }
     }
     public class TweenChain : Tween, ITween
     {
@@ -41,7 +40,7 @@ namespace OVERIZE
         Action<float> onAddDelay = (delay) => { };
         Action<TweenSetting> onAddTween = (TS) => { };
         internal List<TweenSetting> TweenSettings => (from TS in tweenChain select TS.TweenSetting).ToList();
-        internal float TotalDuration => (from TS in tweenChain select TS.Time.EndTime).Max();
+        internal float TotalDuration => (from TS in tweenChain select TS.EndTime).Max();
 
         public override bool IsUnscaledTime
         {
@@ -74,18 +73,34 @@ namespace OVERIZE
             foreach (var TS in TweenSettings)
                 TS.InitLoop();
         }
-        Timer eventTimer = null;
+        EventsTimer tweenEventTimer = null;
+        EventsTimer delayEventTimer = null;
         public override void Play()
         {
             base.Play();
             if (UpdateMode == UpdateMode.Manual)
                 return;
-            eventTimer ??= new Timer(Updater.Member<TweenUpdater>(), (index) =>
+
+            tweenEventTimer ??= new(
+            Updater.Member<TweenUpdater>(),
+            (index, totalTime) =>
             {
                 tweenChain[index].TweenSetting.Play();
                 if ((from TS in tweenChain select TS.TweenSetting.IsComplete).IsAll(true))
                     CompleteLoop();
-            }, () => IsUnscaledTime, () => Toward, () => (from TS in tweenChain select TS.Time.StartTime).ToArray());
+            },
+            (index, totalTime) => { },
+            () => IsUnscaledTime,
+            () => Toward,
+            () => tweenChain.ToArray());
+
+            delayEventTimer ??= new(
+            Updater.Member<TweenUpdater>(),
+            (index, totalTime) => tweenEventTimer.Stop(),
+            (index, totalTime) => tweenEventTimer.Play(),
+            () => IsUnscaledTime,
+            () => Toward,
+            () => delays.ToArray());
         }
         public override void Pause()
         {
@@ -139,9 +154,9 @@ namespace OVERIZE
         TweenChain PrependStartTime(float prependTime)
         {
             foreach (var TS in tweenChain)
-                TS.Time.StartTime += prependTime;
+                TS.StartTime += prependTime;
             foreach (var D in delays)
-                D.Time.StartTime += prependTime;
+                D.StartTime += prependTime;
             return this;
         }
 
@@ -152,8 +167,8 @@ namespace OVERIZE
             return this;
         }
         public ITween Prepend(TweenSetting tweenSetting) => PrependStartTime(tweenSetting.Duration).Insert(tweenSetting, 0f);
-        public ITween Join(TweenSetting tweenSetting) => Insert(tweenSetting, tweenChain[tweenChain.Count - 1].Time.StartTime);
-        public ITween Append(TweenSetting tweenSetting) => Insert(tweenSetting, tweenChain[tweenChain.Count - 1].Time.EndTime);
+        public ITween Join(TweenSetting tweenSetting) => Insert(tweenSetting, tweenChain[tweenChain.Count - 1].StartTime);
+        public ITween Append(TweenSetting tweenSetting) => Insert(tweenSetting, tweenChain[tweenChain.Count - 1].EndTime);
 
         public ITween InsertDelay(float delay, float startTime)
         {
@@ -162,7 +177,7 @@ namespace OVERIZE
             return this;
         }
         public ITween PrependDelay(float delay) => PrependStartTime(delay).InsertDelay(delay, 0f);
-        public ITween JoinDelay(float delay) => InsertDelay(delay, tweenChain[tweenChain.Count - 1].Time.StartTime);
-        public ITween AppendDelay(float delay) => InsertDelay(delay, tweenChain[tweenChain.Count - 1].Time.EndTime);
+        public ITween JoinDelay(float delay) => InsertDelay(delay, tweenChain[tweenChain.Count - 1].StartTime);
+        public ITween AppendDelay(float delay) => InsertDelay(delay, tweenChain[tweenChain.Count - 1].EndTime);
     }
 }
