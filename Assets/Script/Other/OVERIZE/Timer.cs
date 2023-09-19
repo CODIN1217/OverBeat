@@ -17,23 +17,28 @@ namespace OVERIZE
             this.onUpdate += onUpdate;
             return this;
         }
-        public Timer(Updater updater, bool isUnscaledTime, Direction.Horizontal toward)
-        {
-            this.updater = updater;
-            onUpdate = () => time += (float)toward * (isUnscaledTime ? UnityEngine.Time.unscaledDeltaTime : UnityEngine.Time.deltaTime);
-        }
-        public Timer(Updater updater, Func<bool> isUnscaledTime, Func<Direction.Horizontal> toward)
+        public Timer(Updater updater, bool isUnscaledTime, Direction.Horizontal toward) => new Timer(updater, () => isUnscaledTime, () => toward);
+        public Timer(Updater updater, Getter<bool> isUnscaledTime, Getter<Direction.Horizontal> toward)
         {
             this.updater = updater;
             onUpdate = () => time += (float)toward() * (isUnscaledTime() ? UnityEngine.Time.unscaledDeltaTime : UnityEngine.Time.deltaTime);
         }
-        public virtual void Play() => updater.OnUpdate += onUpdate;
-        public virtual void Stop() => updater.OnUpdate -= onUpdate;
-        public virtual void Reset(bool isStop = true)
+        public virtual Timer Play()
+        {
+            updater.OnUpdate += onUpdate;
+            return this;
+        }
+        public virtual Timer Stop()
+        {
+            updater.OnUpdate -= onUpdate;
+            return this;
+        }
+        public virtual Timer Reset(bool isStop = true)
         {
             time = 0f;
             if (isStop)
                 Stop();
+            return this;
         }
     }
 }

@@ -99,16 +99,6 @@ namespace OVERIZE
         public static explicit operator Vector3(TweenAble TA) => (Vector3)TA._value_Vector3;
         public static explicit operator Color(TweenAble TA) => (Color)TA._value_Color;
 
-        /* public T ByType<T>(Func<TweenType, T> code)
-        {
-            for (int i = 0; i < Handy.Enums(typeof(TweenType)).Length - 1; i++)
-            {
-                if (((int)tweenType & (1 << i)) != 0)
-                    return code((TweenType)(1 << i));
-            }
-            return code(TweenType.Null);
-        } */
-
         public static TweenAble operator +(TweenAble TA1, TweenAble TA2)
         {
             if ((((int)TA1.tweenType & (int)TA2.tweenType) & (1 << 0)) != 0)

@@ -9,12 +9,8 @@ namespace OVERIZE
     [Flags] public enum AutoPlay { None = 0, Tween = 1 << 0, Chain = 1 << 1, All = Tween | Chain }
     public class TweenPreference : TweenCallback
     {
-        // bool isInfiniteLoopInEditMode = true;
-        // public virtual bool IsInfiniteLoopInEditMode { get => isInfiniteLoopInEditMode; set => isInfiniteLoopInEditMode = value; }
         float speed = 1f;
         public float Speed { get => speed; set => speed = value; }
-        // float timeScale = 1f;
-        // public float TimeScale { get => timeScale; set => timeScale = value; }
         bool isUnscaledTime = false;
         public virtual bool IsUnscaledTime { get => isUnscaledTime; set => isUnscaledTime = value; }
         bool isAutoKill = true;
@@ -30,8 +26,6 @@ namespace OVERIZE
         public override void Init()
         {
             base.Init();
-            // IsInfiniteLoopInEditMode = TweenCore.TweenPreference.IsInfiniteLoopInEditMode;
-            // TimeScale = TweenCore.TweenPreference.TimeScale;
             Speed = TweenCore.TweenPreference.Speed;
             AutoPlay = TweenCore.TweenPreference.AutoPlay;
             LoopType = TweenCore.TweenPreference.LoopType;

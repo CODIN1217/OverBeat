@@ -1,20 +1,33 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace OVERIZE
 {
-    public class TimeSetting
+    public interface ITimeSetting
+    {
+        float StartTime { get; set; }
+        float EndTime { get; set; }
+        float Duration { get; }
+        void Defer(float time);
+    }
+    public class TimeSetting : ITimeSetting
     {
         float startTime;
         public float StartTime { get => startTime; set => startTime = value; }
-        public float EndTime => StartTime + Duration;
-        float duration;
-        public virtual float Duration { get => duration; set => duration = value; }
-        public TimeSetting(float startTime, float duration)
+        float endTime;
+        public float EndTime { get => endTime; set => endTime = value; }
+        public virtual float Duration => EndTime - StartTime;
+        public virtual void Defer(float time)
+        {
+            StartTime += time;
+            EndTime += time;
+        }
+        public TimeSetting(float startTime, float endTime)
         {
             this.startTime = startTime;
-            this.duration = duration;
+            this.endTime = endTime;
         }
     }
 }

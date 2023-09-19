@@ -4,36 +4,27 @@ using UnityEngine;
 
 namespace OVERIZE
 {
-    public interface ITween
+    public interface ITween : ITimeSetting, ITweenCallback, ITweenBehavior
     {
-        TweenID TweenID { get; set; }
+        int LoopCount { get; set; }
+        int LoopedCount { get; set; }
+        float Time { get; set; }
         float DeltaTime { get; set; }
+        float Speed { get; set; }
         bool IsPlaying { get; set; }
         bool IsPause { get; set; }
         bool IsRewind { get; set; }
         bool IsComplete { get; set; }
-        // bool IsInfiniteLoopInEditMode { get; set; }
         bool IsUnscaledTime { get; set; }
         bool IsInfiniteLoop { get; set; }
         bool IsAutoKill { get; set; }
-        int LoopCount { get; set; }
+        bool IsTweenAble { get; }
+        TweenID TweenID { get; set; }
+        TweenChain TweenChain { get; set; }
+        AutoPlay AutoPlay { get; set; }
+        LoopType LoopType { get; set; }
         Direction.Horizontal Toward { get; set; }
-        float Speed { get; set; }
         UpdateMode UpdateMode { get; set; }
         ExecuteMode ExecuteMode { get; set; }
-        void Init();
-        void InitLoop();
-        void Play();
-        void Pause();
-        void Rewind(bool isPlay = true);
-        void ManualUpdate();
-        void Complete();
-        void CompleteLoop();
-        void Kill(bool isComplete = true);
-        TweenCallback OnStart(CallBack callBack);
-        TweenCallback OnPlay(CallBack callBack);
-        TweenCallback OnUpdate(CallBack callBack);
-        TweenCallback OnComplete(CallBack callBack);
-        TweenCallback OnCompleteLoop(CallBack callBack);
     }
 }

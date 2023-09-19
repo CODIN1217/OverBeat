@@ -13,8 +13,10 @@ namespace OVERIZE
         internal static List<TweenID> TweenIDs { get => tweens.Keys.ToList(); }
         internal static List<ITween> Tweens { get => tweens.Values.ToList(); }
         static TweenPreference tweenPreference = new TweenPreference();
-        internal static TweenPreference TweenPreference { get => tweenPreference; set => tweenPreference = value;}
-        internal static ITween AddTweenSetting(ITween tween)
+        internal static TweenPreference TweenPreference { get => tweenPreference; set => tweenPreference = value; }
+        internal static TweenUpdater TweenUpdater => Updater.Member<TweenUpdater>();
+        internal static T AddTweenSetting<T>(T tween)
+        where T : ITween
         {
             tween.TweenID = tweenCount++;
             tweens.Add(tween.TweenID, tween);

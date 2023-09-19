@@ -18,14 +18,4 @@ namespace OVERIZE
             Value = value;
         }
     }
-    /* public class OrderedArray<T>
-    {
-        OrderedElement<T>[] orderedArray;
-        public OrderedArray(T[] array, bool descendingOrder)
-        {
-            orderedArray = array.Select((item, index) => new OrderedElement<T>(index, item)).OrderBy(e => e.Value).ToArray();
-            if (descendingOrder)
-                orderedArray.Reverse();
-        }
-    } */
 }

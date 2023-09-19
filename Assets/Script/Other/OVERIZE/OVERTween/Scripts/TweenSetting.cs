@@ -6,23 +6,18 @@ namespace OVERIZE
 {
     public class TweenSetting : Tween, ITween
     {
-        bool isChained;
-        internal bool IsChained { get => isChained; set => isChained = value; }
-
-        // public override bool IsInfiniteLoopInEditMode { get => base.IsInfiniteLoopInEditMode && !IsChained; set => base.IsInfiniteLoopInEditMode = value && !IsChained; }
         public override bool IsInfiniteLoop { get => base.IsInfiniteLoop && !IsChained; set => base.IsInfiniteLoop = value && !IsChained; }
 
         TweenData tweenData;
         public TweenData TweenData { get => tweenData; internal set => tweenData = value; }
-        float duration;
-        public float Duration { get => duration; internal set => duration = value; }
         TweenAble value;
         public TweenAble Value { get => value; internal set => this.value = value; }
 
         public TweenSetting(TweenData tweenData, float duration)
         {
             this.tweenData = tweenData;
-            this.duration = duration;
+            StartTime = 0f;
+            EndTime = duration;
 
             Init();
             ManualUpdate();
@@ -39,56 +34,41 @@ namespace OVERIZE
                 Pause();
 
         }
-        public void InitLoop()
+        public override ITween InitLoop()
         {
+            base.InitLoop();
             value = tweenData.startValue;
-            Time = 0f;
+            return this;
         }
-        public override void Rewind(bool isPlay = true)
+        public override ITween Rewind()
         {
-            base.Rewind(false);
+            base.Rewind();
             value = tweenData.endValue;
             Time = Duration;
-            if (isPlay)
-                Play();
+            return this;
         }
-        public override void Complete()
+        public override ITween Complete()
         {
             base.Complete();
-            value = tweenData.endValue;
+            Value = tweenData.endValue;
             Time = Duration;
-            curLoopCount = LoopCount;
+            LoopedCount = LoopCount;
             if (IsAutoKill)
-                Kill(false);
+                Kill();
+            return this;
         }
-        public void CompleteLoop()
+        public override ITween CompleteLoop()
         {
-            onCompleteLoop();
-            if (!IsInfiniteLoop/*  && (Application.isEditor ? !IsInfiniteLoopInEditMode : true) */)
-                if (curLoopCount >= LoopCount)
-                    Complete();
-            if (curLoopCount < LoopCount)
-            {
-                InitLoop();
-                if (LoopType == LoopType.Yoyo)
-                    Rewind();
-                curLoopCount++;
-            }
+            OVERTween.CompleteLoop(this);
+            return this;
         }
-        public void Kill(bool isComplete = true)
+        public override ITween ManualUpdate()
         {
-            if (isComplete)
-                Complete();
-            IsPlaying = false;
-            TweenCore.RemoveTweenSetting(TweenID);
-        }
-        public void ManualUpdate()
-        {
-            if (Time <= Duration)
-                Value = Evaluate(Time);
-            else
+            base.ManualUpdate();
+            Value = Evaluate(Time);
+            if (!IsTweenAble)
                 CompleteLoop();
-            onUpdate();
+            return this;
         }
         public TweenSetting SetName(string name)
         {

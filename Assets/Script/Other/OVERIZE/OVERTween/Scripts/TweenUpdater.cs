@@ -11,20 +11,6 @@ namespace OVERIZE
     [ExecuteInEditMode]
     public class TweenUpdater : Updater
     {
-        // static GameObject instance = null;
-        // static TweenUpdater tweenUpdater = null;
-        // internal static TweenUpdater Member
-        // {
-        //     get
-        //     {
-        //         if (instance == null)
-        //         {
-        //             instance = new GameObject("OVERTween", typeof(TweenUpdater), typeof(DontDestroyOnLoad));
-        //             tweenUpdater = instance.GetComponent<TweenUpdater>();
-        //         }
-        //         return tweenUpdater;
-        //     }
-        // }
         internal static float time;
         void Awake()
         {
@@ -49,47 +35,34 @@ namespace OVERIZE
         }
         protected override void Update(UpdateMode updateMode)
         {
-            // UpdateMode = updateMode;
             ExecuteCodeWithTweens((TS) =>
             {
                 if (TS.UpdateMode == updateMode)
                 {
-                    TS.ManualUpdate();
                     TS.DeltaTime = DeltaTime(TS.UpdateMode, TS.IsUnscaledTime);
+                    TS.ManualUpdate();
                 }
             });
         }
         internal void ManualUpdate(UpdateMode updateMode, float deltaTime)
         {
-            // UpdateMode = updateMode;
             ExecuteCodeWithTweens((TS) =>
             {
                 if (TS.UpdateMode == updateMode)
                 {
-                    TS.ManualUpdate();
                     TS.DeltaTime = deltaTime;
+                    TS.ManualUpdate();
                 }
             });
-            // ManualUpdate(UpdateMode.Manual);
         }
         internal void ManualUpdate(float deltaTime)
         {
             ExecuteCodeWithTweens((TS) =>
             {
-                TS.ManualUpdate();
                 TS.DeltaTime = deltaTime;
+                TS.ManualUpdate();
             });
-            // ManualUpdate(UpdateMode.Manual);
         }
-        /* internal void UpdateValue(Setter<TweenAble> setter, TweenSetting tweenSetting) => StartCoroutine(UpdateValueCo(setter, tweenSetting));
-        IEnumerator UpdateValueCo(Setter<TweenAble> setter, TweenSetting tweenSetting)
-        {
-            while (!tweenSetting.IsComplete)
-            {
-                setter(tweenSetting.Value);
-                yield return new WaitForEndOfFrame();
-            }
-        } */
         internal float DeltaTime(UpdateMode updateMode, bool isUnscaledTime)
         {
             if (updateMode == UpdateMode.Fixed)

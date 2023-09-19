@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace OVERIZE
 {
-    public class TweenCallback
+    public class TweenCallback : ITweenCallback
     {
-        protected CallBack onStart = () => { };
-        protected CallBack onPlay = () => { };
-        protected CallBack onPause = () => { };
-        protected CallBack onRewind = () => { };
-        protected CallBack onUpdate = () => { };
-        protected CallBack onComplete = () => { };
-        protected CallBack onCompleteLoop = () => { };
+        CallBack onStart = () => { };
+        CallBack onPlay = () => { };
+        CallBack onPause = () => { };
+        CallBack onRewind = () => { };
+        CallBack onUpdate = () => { };
+        CallBack onComplete = () => { };
+        CallBack onCompleteLoop = () => { };
         public virtual void Init()
         {
             onStart = TweenCore.TweenPreference.onStart;
@@ -58,5 +58,12 @@ namespace OVERIZE
             onCompleteLoop += callBack;
             return this;
         }
+        public void OnStart() => onStart();
+        public void OnPlay() => onPlay();
+        public void OnPause() => onPause();
+        public void OnRewind() => onRewind();
+        public void OnUpdate() => onUpdate();
+        public void OnComplete() => onComplete();
+        public void OnCompleteLoop() => onCompleteLoop();
     }
 }
